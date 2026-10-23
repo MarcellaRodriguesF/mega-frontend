@@ -60,6 +60,7 @@ export default function LoginForm() {
         label="Senha"
         name="password"
         type="password"
+        showPasswordToggle
         placeholder="Digite sua senha"
         autoComplete="current-password"
         value={password}

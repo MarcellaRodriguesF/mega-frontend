@@ -1,0 +1,33 @@
+.appShell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.workspace {
+  display: flex;
+  min-width: 0;
+  min-height: 100vh;
+  flex: 1;
+  flex-direction: column;
+}
+
+.main {
+  width: 100%;
+  flex: 1;
+  padding: 38px var(--page-padding) 48px;
+}
+
+.pageContainer {
+  width: min(100%, var(--content-max-width));
+  margin: 0 auto;
+}
+
+.overlay {
+  position: fixed;
+  z-index: 4;
+  inset: 0;
+  display: var(--sidebar-overlay-display);
+  border: 0;
+  background: color-mix(in srgb, var(--color-brand-black) 48%, transparent);
+  cursor: pointer;
+}

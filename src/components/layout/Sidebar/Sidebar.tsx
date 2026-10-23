@@ -57,13 +57,29 @@ const navigationGroups = [
   },
 ] as const;
 
-export default function Sidebar({ collapsed, onClose, onToggleCollapse, sidebarRef }: SidebarProps) {
+export default function Sidebar({
+  collapsed,
+  onClose,
+  onToggleCollapse,
+  sidebarRef,
+}: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className={styles.sidebar} id="mega-sidebar" ref={sidebarRef} aria-label="Barra lateral">
+    <aside
+      className={styles.sidebar}
+      id="mega-sidebar"
+      ref={sidebarRef}
+      aria-label="Barra lateral"
+    >
       <div className={styles.sidebarTop}>
-        <Link className={styles.brand} href="/dashboard" aria-label="MEGA, ir para dashboard" data-sidebar-brand onClick={onClose}>
+        <Link
+          className={styles.brand}
+          href="/dashboard"
+          aria-label="MEGA, ir para dashboard"
+          data-sidebar-brand
+          onClick={onClose}
+        >
           <Image
             className={styles.brandLogo}
             src={collapsed ? "/favicon.svg" : "/logo.svg"}
@@ -87,7 +103,9 @@ export default function Sidebar({ collapsed, onClose, onToggleCollapse, sidebarR
 
       <nav className={styles.navigation} aria-label="Navegação principal">
         <div className={styles.navGroup}>
-          <p className={styles.groupLabel} data-group-label>Início</p>
+          <p className={styles.groupLabel} data-group-label>
+            Início
+          </p>
           <Link
             className={`${styles.navLink} ${pathname === "/dashboard" ? styles.activeLink : ""}`}
             data-nav-link
@@ -98,13 +116,17 @@ export default function Sidebar({ collapsed, onClose, onToggleCollapse, sidebarR
             onClick={onClose}
           >
             <House size={20} weight="regular" aria-hidden="true" />
-            <span className={styles.navText} data-nav-text>Dashboard</span>
+            <span className={styles.navText} data-nav-text>
+              Dashboard
+            </span>
           </Link>
         </div>
         {navigationGroups.map((group) => (
           <div className={styles.navGroup} key={group.label}>
             <p className={styles.groupLabel} data-group-label>
-              {group.Icon ? <group.Icon size={13} weight="regular" aria-hidden="true" /> : null}
+              {group.Icon ? (
+                <group.Icon size={13} weight="regular" aria-hidden="true" />
+              ) : null}
               <span>{group.label}</span>
             </p>
             {group.items.map(({ label, href, Icon }) => (
@@ -119,7 +141,9 @@ export default function Sidebar({ collapsed, onClose, onToggleCollapse, sidebarR
                 onClick={onClose}
               >
                 <Icon size={20} weight="regular" aria-hidden="true" />
-                <span className={styles.navText} data-nav-text>{label}</span>
+                <span className={styles.navText} data-nav-text>
+                  {label}
+                </span>
               </Link>
             ))}
           </div>
@@ -127,12 +151,16 @@ export default function Sidebar({ collapsed, onClose, onToggleCollapse, sidebarR
       </nav>
 
       <div className={styles.sidebarBottom}>
-        <p className={styles.sidebarFooter} data-sidebar-footer>Plataforma de operação e gestão</p>
+        <p className={styles.sidebarFooter} data-sidebar-footer>
+          Plataforma de operação e gestão
+        </p>
         <button
           className={styles.collapseButton}
           data-collapse-button
           type="button"
-          aria-label={collapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
+          aria-label={
+            collapsed ? "Expandir menu lateral" : "Recolher menu lateral"
+          }
           aria-pressed={collapsed}
           onClick={onToggleCollapse}
         >
@@ -141,7 +169,9 @@ export default function Sidebar({ collapsed, onClose, onToggleCollapse, sidebarR
           ) : (
             <CaretLeft size={19} weight="regular" aria-hidden="true" />
           )}
-          <span className={styles.navText} data-nav-text>{collapsed ? "Expandir menu" : "Recolher menu"}</span>
+          <span className={styles.navText} data-nav-text>
+            {collapsed ? "Expandir menu" : "Recolher menu"}
+          </span>
         </button>
       </div>
     </aside>

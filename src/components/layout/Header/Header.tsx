@@ -9,7 +9,11 @@ interface HeaderProps {
   mobileMenuOpen: boolean;
 }
 
-export default function Header({ onMenuClick, menuButtonRef, mobileMenuOpen }: HeaderProps) {
+export default function Header({
+  onMenuClick,
+  menuButtonRef,
+  mobileMenuOpen,
+}: HeaderProps) {
   return (
     <header className={styles.header}>
       <button

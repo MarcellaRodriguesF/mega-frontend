@@ -21,7 +21,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
     const menuButton = menuButtonRef.current;
     const previousOverflow = document.body.style.overflow;
     const focusTimeout = window.setTimeout(() => {
-      sidebarRef.current?.querySelector<HTMLButtonElement>("[data-mobile-close]")?.focus();
+      sidebarRef.current
+        ?.querySelector<HTMLButtonElement>("[data-mobile-close]")
+        ?.focus();
     }, 0);
     document.body.style.overflow = "hidden";
 
@@ -33,9 +35,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
       if (event.key !== "Tab" || !sidebarRef.current) return;
 
-      const focusableElements = sidebarRef.current.querySelectorAll<HTMLElement>(
-        'a[href], button:not(:disabled)',
-      );
+      const focusableElements =
+        sidebarRef.current.querySelectorAll<HTMLElement>(
+          "a[href], button:not(:disabled)",
+        );
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
 

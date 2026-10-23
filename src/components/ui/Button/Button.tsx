@@ -11,8 +11,11 @@ export default function Button({
   type = "button",
   ...props
 }: ButtonProps) {
-  const variantClass = variant === "primary" ? styles.primary : styles.secondary;
-  const classes = [styles.button, variantClass, className].filter(Boolean).join(" ");
+  const variantClass =
+    variant === "primary" ? styles.primary : styles.secondary;
+  const classes = [styles.button, variantClass, className]
+    .filter(Boolean)
+    .join(" ");
 
   return <button className={classes} type={type} {...props} />;
 }

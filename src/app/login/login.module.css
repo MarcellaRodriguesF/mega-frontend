@@ -4,7 +4,11 @@
   place-items: center;
   padding: 32px var(--page-padding);
   background:
-    radial-gradient(ellipse at 50% 0%, var(--color-primary-soft), transparent 50%),
+    radial-gradient(
+      ellipse at 50% 0%,
+      var(--color-primary-soft),
+      transparent 50%
+    ),
     var(--color-background);
 }
 

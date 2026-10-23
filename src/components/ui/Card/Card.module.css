@@ -3,5 +3,6 @@
   border-radius: 12px;
   background: var(--color-surface-elevated);
   padding: var(--card-padding);
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-brand-dark) 3%, transparent);
+  box-shadow: 0 2px 8px
+    color-mix(in srgb, var(--color-brand-dark) 3%, transparent);
 }

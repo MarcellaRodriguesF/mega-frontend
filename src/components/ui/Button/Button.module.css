@@ -10,7 +10,10 @@
   font-size: 13px;
   font-weight: 600;
   padding: 0 16px;
-  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
 }
 
 .primary {

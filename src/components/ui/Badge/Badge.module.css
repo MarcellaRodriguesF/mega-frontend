@@ -10,7 +10,11 @@
 }
 
 .success {
-  background: color-mix(in srgb, var(--color-success) 16%, var(--color-surface));
+  background: color-mix(
+    in srgb,
+    var(--color-success) 16%,
+    var(--color-surface)
+  );
   color: var(--color-success);
 }
 

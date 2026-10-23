@@ -5,7 +5,8 @@ import styles from "./ThemeToggle.module.css";
 
 export default function ThemeToggle() {
   function toggleTheme() {
-    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    const nextTheme =
+      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = nextTheme;
 
     try {
@@ -23,9 +24,19 @@ export default function ThemeToggle() {
       title="Tema claro ou escuro"
       onClick={toggleTheme}
     >
-      <Sun className={styles.sun} size={18} weight="regular" aria-hidden="true" />
+      <Sun
+        className={styles.sun}
+        size={18}
+        weight="regular"
+        aria-hidden="true"
+      />
       <span>Claro / Escuro</span>
-      <Moon className={styles.moon} size={18} weight="regular" aria-hidden="true" />
+      <Moon
+        className={styles.moon}
+        size={18}
+        weight="regular"
+        aria-hidden="true"
+      />
     </button>
   );
 }

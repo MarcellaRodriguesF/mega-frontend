@@ -13,17 +13,33 @@
   --color-surface: var(--color-brand-white);
   --color-surface-elevated: var(--color-brand-white);
   --color-text: var(--color-brand-black);
-  --color-text-secondary: color-mix(in srgb, var(--color-text) 68%, transparent);
+  --color-text-secondary: color-mix(
+    in srgb,
+    var(--color-text) 68%,
+    transparent
+  );
   --color-border: color-mix(in srgb, var(--color-brand-dark) 16%, transparent);
   --color-success: var(--color-brand-primary);
   --color-alert: #a15c00;
   --color-error: #b42318;
   --color-information: #155eef;
-  --color-primary-soft: color-mix(in srgb, var(--color-brand-support) 18%, var(--color-brand-white));
-  --color-muted-surface: color-mix(in srgb, var(--color-brand-dark) 5%, var(--color-brand-white));
+  --color-primary-soft: color-mix(
+    in srgb,
+    var(--color-brand-support) 18%,
+    var(--color-brand-white)
+  );
+  --color-muted-surface: color-mix(
+    in srgb,
+    var(--color-brand-dark) 5%,
+    var(--color-brand-white)
+  );
   --color-sidebar: var(--color-surface);
   --color-header: color-mix(in srgb, var(--color-surface) 94%, transparent);
-  --color-focus-ring: color-mix(in srgb, var(--color-brand-support) 35%, transparent);
+  --color-focus-ring: color-mix(
+    in srgb,
+    var(--color-brand-support) 35%,
+    transparent
+  );
 
   --sidebar-expanded-width: 252px;
   --sidebar-collapsed-width: 76px;
@@ -174,7 +190,8 @@ input:focus-visible {
 [data-app-shell][data-mobile-open="true"] {
   --sidebar-transform: translateX(0);
   --sidebar-visibility: visible;
-  --sidebar-shadow: 16px 0 48px color-mix(in srgb, var(--color-brand-black) 18%, transparent);
+  --sidebar-shadow: 16px 0 48px
+    color-mix(in srgb, var(--color-brand-black) 18%, transparent);
   --sidebar-overlay-display: block;
 }
 
@@ -184,20 +201,44 @@ input:focus-visible {
   --color-primary-hover: var(--color-brand-primary);
   --color-primary-active: var(--color-brand-primary);
   --color-background: var(--color-brand-dark);
-  --color-surface: color-mix(in srgb, var(--color-brand-dark) 86%, var(--color-brand-white));
-  --color-surface-elevated: color-mix(in srgb, var(--color-brand-dark) 78%, var(--color-brand-white));
+  --color-surface: color-mix(
+    in srgb,
+    var(--color-brand-dark) 86%,
+    var(--color-brand-white)
+  );
+  --color-surface-elevated: color-mix(
+    in srgb,
+    var(--color-brand-dark) 78%,
+    var(--color-brand-white)
+  );
   --color-text: var(--color-brand-white);
-  --color-text-secondary: color-mix(in srgb, var(--color-brand-white) 72%, transparent);
+  --color-text-secondary: color-mix(
+    in srgb,
+    var(--color-brand-white) 72%,
+    transparent
+  );
   --color-border: color-mix(in srgb, var(--color-brand-white) 17%, transparent);
   --color-success: var(--color-brand-support);
   --color-alert: #f4bd4f;
   --color-error: #ff8176;
   --color-information: #86a8ff;
-  --color-primary-soft: color-mix(in srgb, var(--color-brand-support) 19%, var(--color-brand-dark));
-  --color-muted-surface: color-mix(in srgb, var(--color-brand-white) 7%, var(--color-brand-dark));
+  --color-primary-soft: color-mix(
+    in srgb,
+    var(--color-brand-support) 19%,
+    var(--color-brand-dark)
+  );
+  --color-muted-surface: color-mix(
+    in srgb,
+    var(--color-brand-white) 7%,
+    var(--color-brand-dark)
+  );
   --color-sidebar: var(--color-surface);
   --color-header: color-mix(in srgb, var(--color-surface) 94%, transparent);
-  --color-focus-ring: color-mix(in srgb, var(--color-brand-support) 52%, transparent);
+  --color-focus-ring: color-mix(
+    in srgb,
+    var(--color-brand-support) 52%,
+    transparent
+  );
 }
 
 @media (prefers-reduced-motion: reduce) {

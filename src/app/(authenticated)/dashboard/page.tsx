@@ -19,10 +19,12 @@ export default function DashboardPage() {
         <div className={styles.foundationCard}>
           <div>
             <Badge status="success">Fundação</Badge>
-            <h2 className={styles.foundationTitle}>Bem-vindo à plataforma MEGA</h2>
+            <h2 className={styles.foundationTitle}>
+              Bem-vindo à plataforma MEGA
+            </h2>
             <p className={styles.foundationDescription}>
-              A estrutura inicial está pronta. As ferramentas de operação e gestão
-              serão disponibilizadas nas próximas etapas.
+              A estrutura inicial está pronta. As ferramentas de operação e
+              gestão serão disponibilizadas nas próximas etapas.
             </p>
           </div>
         </div>

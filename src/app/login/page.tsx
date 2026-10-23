@@ -7,6 +7,7 @@ import Card from "@/components/ui/Card/Card";
 import Input from "@/components/ui/Input/Input";
 import ThemeToggle from "@/components/ui/ThemeToggle/ThemeToggle";
 import styles from "./login.module.css";
+import LoginForm from "./loginForm";
 
 export const metadata: Metadata = {
   title: "Acesso",
@@ -38,21 +39,7 @@ export default function LoginPage() {
           <p className={styles.description}>
             A autenticação será habilitada em uma próxima etapa do projeto.
           </p>
-          <div className={styles.formPreview}>
-            <Input
-              label="E-mail"
-              type="email"
-              placeholder="nome@empresa.com"
-              disabled
-            />
-            <Input
-              label="Senha"
-              type="password"
-              placeholder="••••••••"
-              disabled
-            />
-            <Button disabled>Disponível em breve</Button>
-          </div>
+          <LoginForm />
         </Card>
         <p className={styles.footer}>MEGA · Plataforma de operação e gestão</p>
       </div>

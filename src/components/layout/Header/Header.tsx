@@ -1,7 +1,9 @@
 import type { RefObject } from "react";
 import { List } from "@phosphor-icons/react";
-import ThemeToggle from "@/components/ui/ThemeToggle/ThemeToggle";
+import Image from "next/image";
 import styles from "./Header.module.css";
+import UserProfile from "../UserProfile/UserProfile";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -14,6 +16,7 @@ export default function Header({
   menuButtonRef,
   mobileMenuOpen,
 }: HeaderProps) {
+  const { user, isLoading } = useAuth();
   return (
     <header className={styles.header}>
       <button
@@ -27,13 +30,21 @@ export default function Header({
       >
         <List size={22} weight="regular" aria-hidden="true" />
       </button>
-      <div className={styles.heading}>
-        <p className={styles.eyebrow}>MEGA</p>
-        <p className={styles.title}>Plataforma de gestão</p>
-      </div>
+      <Image
+        src="/images/logomega.png"
+        alt="MEGA Logo"
+        width={150}
+        height={42}
+        className={styles.logoContainer}
+      />
       <div className={styles.actions}>
-        <ThemeToggle />
-        <span className={styles.headerLabel}>Primeira entrega</span>
+        {!isLoading && user && (
+          <UserProfile
+            name={user.name ?? user.email}
+            email={user.email}
+            avatarUrl={user.avatar}
+          />
+        )}
       </div>
     </header>
   );

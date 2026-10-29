@@ -30,7 +30,6 @@ export default function ThemeToggle() {
         weight="regular"
         aria-hidden="true"
       />
-      <span>Claro / Escuro</span>
       <Moon
         className={styles.moon}
         size={18}

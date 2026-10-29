@@ -24,6 +24,8 @@ export interface LoginRequest {
 export interface AuthUser {
   id: string;
   email: string;
+  name: string;
+  avatar: string;
   accessProfile: {
     id: string;
     name: string;

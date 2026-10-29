@@ -27,6 +27,128 @@
   margin-bottom: 22px;
 }
 
+.topToggleButton {
+  display: flex;
+  width: 40px;
+  min-height: 40px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 0;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.topToggleButton:hover {
+  background: var(--color-muted-surface);
+  color: var(--color-text);
+}
+
+.topToggleButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.navigation {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 23px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.navGroup {
+  display: grid;
+  gap: 4px;
+}
+
+.groupLabel {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0 11px 4px;
+  text-transform: uppercase;
+}
+
+.navLink {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 13px;
+  border-radius: 8px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0 11px;
+  text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.navLink:hover {
+  background: var(--color-muted-surface);
+  color: var(--color-text);
+}
+
+.activeLink,
+.activeLink:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 650;
+}
+
+.navText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.closeButton {
+  display: var(--sidebar-close-display);
+  width: 40px;
+  min-height: 40px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 0;
+}
+
+.closeButton:hover {
+  background: var(--color-muted-surface);
+  color: var(--color-text);
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.sidebarTop {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
 .brand {
   display: flex;
   min-width: 0;
@@ -43,7 +165,6 @@
   max-width: 100%;
   border-radius: 4px;
   background: var(--color-brand-white);
-  padding: 4px;
 }
 
 .navigation {
@@ -104,51 +225,4 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.sidebarBottom {
-  display: grid;
-  gap: 11px;
-  border-top: 1px solid var(--color-border);
-  padding-top: 14px;
-}
-
-.sidebarFooter {
-  color: var(--color-text-secondary);
-  font-size: 11px;
-  line-height: 1.5;
-  padding: 0 10px;
-}
-
-.collapseButton,
-.closeButton {
-  display: flex;
-  min-height: 40px;
-  align-items: center;
-  gap: 12px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  font-size: 12px;
-  padding: 0 11px;
-}
-
-.collapseButton {
-  display: var(--sidebar-collapse-display);
-}
-
-.collapseButton:hover,
-.closeButton:hover {
-  background: var(--color-muted-surface);
-  color: var(--color-text);
-}
-
-.closeButton {
-  display: var(--sidebar-close-display);
-  width: 40px;
-  flex: 0 0 auto;
-  justify-content: center;
-  padding: 0;
 }

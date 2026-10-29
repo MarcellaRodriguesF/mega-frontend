@@ -16,6 +16,7 @@ import {
   Users,
   WifiHigh,
   X,
+  List,
 } from "@phosphor-icons/react";
 import styles from "./Sidebar.module.css";
 
@@ -28,31 +29,17 @@ interface SidebarProps {
 
 const navigationGroups = [
   {
-    label: "Operação",
-    Icon: null,
     items: [
+      { label: "Dashboard", href: "/dashboard", Icon: House },
       { label: "Clientes", href: "/clients", Icon: Users },
       { label: "Usinas", href: "/plants", Icon: SolarPanel },
       { label: "Implantações", href: "/implementations", Icon: Clipboard },
       { label: "Chamados", href: "/tickets", Icon: Headset },
-    ],
-  },
-  {
-    label: "Cadastros",
-    Icon: null,
-    items: [{ label: "Provedores", href: "/providers", Icon: WifiHigh }],
-  },
-  {
-    label: "Gestão",
-    Icon: null,
-    items: [{ label: "Relatórios", href: "/reports", Icon: ChartBar }],
-  },
-  {
-    label: "Configurações",
-    Icon: Gear,
-    items: [
+      { label: "Provedores", href: "/providers", Icon: WifiHigh },
+      { label: "Relatórios", href: "/reports", Icon: ChartBar },
       { label: "Usuários", href: "/users", Icon: User },
       { label: "Permissões", href: "/permissions", Icon: ShieldCheck },
+      
     ],
   },
 ] as const;
@@ -73,23 +60,19 @@ export default function Sidebar({
       aria-label="Barra lateral"
     >
       <div className={styles.sidebarTop}>
-        <Link
-          className={styles.brand}
-          href="/dashboard"
-          aria-label="MEGA, ir para dashboard"
-          data-sidebar-brand
-          onClick={onClose}
+        <button
+          className={styles.topToggleButton}
+          type="button"
+          aria-label={
+            collapsed ? "Expandir menu lateral" : "Recolher menu lateral"
+          }
+          aria-pressed={collapsed}
+          onClick={onToggleCollapse}
+          title={collapsed ? "Expandir menu" : "Recolher menu"}
         >
-          <Image
-            className={styles.brandLogo}
-            src={collapsed ? "/favicon.svg" : "/logo.svg"}
-            alt=""
-            width={collapsed ? 46 : 142}
-            height={collapsed ? 32 : 137}
-            data-brand-logo
-            priority
-          />
-        </Link>
+          <List size={22} weight="regular" aria-hidden="true" />
+        </button>
+
         <button
           className={styles.closeButton}
           type="button"
@@ -103,33 +86,8 @@ export default function Sidebar({
 
       <nav className={styles.navigation} aria-label="Navegação principal">
         <div className={styles.navGroup}>
-          <p className={styles.groupLabel} data-group-label>
-            Início
-          </p>
-          <Link
-            className={`${styles.navLink} ${pathname === "/dashboard" ? styles.activeLink : ""}`}
-            data-nav-link
-            href="/dashboard"
-            aria-label="Dashboard"
-            aria-current={pathname === "/dashboard" ? "page" : undefined}
-            title={collapsed ? "Dashboard" : undefined}
-            onClick={onClose}
-          >
-            <House size={20} weight="regular" aria-hidden="true" />
-            <span className={styles.navText} data-nav-text>
-              Dashboard
-            </span>
-          </Link>
-        </div>
-        {navigationGroups.map((group) => (
-          <div className={styles.navGroup} key={group.label}>
-            <p className={styles.groupLabel} data-group-label>
-              {group.Icon ? (
-                <group.Icon size={13} weight="regular" aria-hidden="true" />
-              ) : null}
-              <span>{group.label}</span>
-            </p>
-            {group.items.map(({ label, href, Icon }) => (
+          {navigationGroups.map((group) =>
+            group.items.map(({ label, href, Icon }) => (
               <Link
                 className={`${styles.navLink} ${pathname === href ? styles.activeLink : ""}`}
                 data-nav-link
@@ -145,35 +103,11 @@ export default function Sidebar({
                   {label}
                 </span>
               </Link>
-            ))}
-          </div>
-        ))}
+            )),
+          )}
+        </div>
       </nav>
 
-      <div className={styles.sidebarBottom}>
-        <p className={styles.sidebarFooter} data-sidebar-footer>
-          Plataforma de operação e gestão
-        </p>
-        <button
-          className={styles.collapseButton}
-          data-collapse-button
-          type="button"
-          aria-label={
-            collapsed ? "Expandir menu lateral" : "Recolher menu lateral"
-          }
-          aria-pressed={collapsed}
-          onClick={onToggleCollapse}
-        >
-          {collapsed ? (
-            <CaretRight size={19} weight="regular" aria-hidden="true" />
-          ) : (
-            <CaretLeft size={19} weight="regular" aria-hidden="true" />
-          )}
-          <span className={styles.navText} data-nav-text>
-            {collapsed ? "Expandir menu" : "Recolher menu"}
-          </span>
-        </button>
-      </div>
     </aside>
   );
 }

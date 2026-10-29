@@ -12,9 +12,10 @@
   backdrop-filter: blur(10px);
 }
 
-.heading {
-  min-width: 0;
-  flex: 1;
+.logoContainer {
+  display: flex;
+  width: auto;
+  height: 42px;
 }
 
 .eyebrow {
@@ -32,7 +33,9 @@
 
 .actions {
   display: flex;
+  width: 100%;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
 }
 

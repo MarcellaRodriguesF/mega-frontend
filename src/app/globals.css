@@ -43,7 +43,7 @@
 
   --sidebar-expanded-width: 252px;
   --sidebar-collapsed-width: 76px;
-  --sidebar-logo-width: 142px;
+  --sidebar-logo-width: 76px;
   --sidebar-current-width: var(--sidebar-panel-width);
   --sidebar-panel-width: min(84vw, 300px);
   --sidebar-position: fixed;

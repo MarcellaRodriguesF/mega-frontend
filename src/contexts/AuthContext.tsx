@@ -2,12 +2,14 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
   type ReactNode,
 } from "react";
-
+import { useRouter } from "next/navigation";
+import { registerSessionExpiredHandler } from "@/services/api/session-handler";
 import { authApi } from "@/services/api/auth/auth.api";
 import type { AuthUser } from "@/services/api/auth/auth.types";
 
@@ -15,15 +17,17 @@ interface AuthContextValue {
   user: AuthUser | null;
   isLoading: boolean;
   refreshUser: () => Promise<void>;
+  handleSessionExpired: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  async function refreshUser() {
+  const refreshUser = useCallback(async () => {
     try {
       const response = await authApi.me();
       setUser(response.data.user);
@@ -32,14 +36,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, []);
+
+  const handleSessionExpired = useCallback(() => {
+    setUser(null);
+    router.replace("/login");
+  }, [router]);
 
   useEffect(() => {
     void refreshUser();
-  }, []);
+  }, [refreshUser]);
+
+  useEffect(() => {
+  return registerSessionExpiredHandler(handleSessionExpired);
+}, [handleSessionExpired]);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, refreshUser }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        refreshUser,
+        handleSessionExpired,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

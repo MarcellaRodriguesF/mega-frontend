@@ -1,7 +1,53 @@
+import { notifySessionExpired } from "./session-handler";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export interface ApiErrorDetail {
+  field?: string;
+  message: string;
+}
+
+interface ApiErrorOptions {
+  code?: string;
+  details?: ApiErrorDetail[];
+  response?: unknown;
+}
 
 interface ApiRequestOptions extends RequestInit {
   body?: BodyInit | null;
+}
+
+export class ApiError extends Error {
+  public readonly code: string;
+  public readonly details?: ApiErrorDetail[];
+  public readonly response?: unknown;
+
+  constructor(
+    message: string,
+    public readonly status: number,
+    options: ApiErrorOptions = {},
+  ) {
+    super(message);
+
+    this.name = "ApiError";
+    this.code = options.code ?? "UNKNOWN_ERROR";
+    this.details = options.details;
+    this.response = options.response;
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function parseErrorDetails(value: unknown): ApiErrorDetail[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+
+  return value.filter(
+    (item): item is ApiErrorDetail =>
+      isRecord(item) &&
+      typeof item.message === "string" &&
+      (item.field === undefined || typeof item.field === "string"),
+  );
 }
 
 async function request<T>(
@@ -32,44 +78,46 @@ async function request<T>(
   }
 
   const contentType = response.headers.get("content-type");
-  const data = contentType?.includes("application/json")
-    ? await response.json()
-    : await response.text();
+  const rawBody = await response.text();
+
+  let data: unknown = rawBody;
+
+  if (contentType?.includes("application/json") && rawBody) {
+    try {
+      data = JSON.parse(rawBody);
+    } catch {
+      data = rawBody;
+    }
+  }
 
   if (!response.ok) {
+    const errorBody = isRecord(data) ? data : undefined;
+    const errorData = isRecord(errorBody?.error) ? errorBody.error : undefined;
+
     const message =
-      typeof data === "object" && data !== null && "message" in data
-        ? String(data.message)
+      typeof errorBody?.message === "string"
+        ? errorBody.message
         : `Erro na requisição (${response.status}).`;
 
-    const errorData =
-      typeof data === "object" && data !== null && "error" in data
-        ? data.error
-        : undefined;
-
     const code =
-      typeof errorData === "object" && errorData !== null && "code" in errorData
-        ? String(errorData.code)
-        : "UNKNOWN_ERROR";
+      typeof errorData?.code === "string" ? errorData.code : "UNKNOWN_ERROR";
+
+    const normalizedPath = path.split("?")[0].replace(/\/+$/, "");
+    const isAuthEndpoint =
+      normalizedPath === "/auth/login" || normalizedPath === "/auth/logout";
+
+    if (response.status === 401 && !isAuthEndpoint) {
+      notifySessionExpired();
+    }
 
     throw new ApiError(message, response.status, {
       code,
+      details: parseErrorDetails(errorData?.details),
       response: data,
     });
   }
 
   return data as T;
-}
-
-export class ApiError extends Error {
-  constructor(
-    message: string,
-    public readonly status: number,
-    public readonly data?: unknown,
-  ) {
-    super(message);
-    this.name = "ApiError";
-  }
 }
 
 export const apiClient = {

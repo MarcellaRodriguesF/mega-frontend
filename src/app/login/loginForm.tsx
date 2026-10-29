@@ -1,13 +1,13 @@
 "use client";
-
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-
 import Button from "@/components/ui/Button/Button";
 import Input from "@/components/ui/Input/Input";
+import FormMessage from "@/components/ui/FormMessage/FormMessage";
 import { authApi } from "@/services/api/auth/auth.api";
 import { ApiError } from "@/services/api/api-client";
 import styles from "./login.module.css";
+import { getApiErrorMessage } from "@/services/api/error-messages";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -15,11 +15,17 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [invalidCredentials, setInvalidCredentials] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  function clearError() {
+    setError("");
+    setInvalidCredentials(false);
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError("");
+    clearError();
     setIsLoading(true);
 
     try {
@@ -29,9 +35,15 @@ export default function LoginForm() {
       router.refresh();
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(
-          err.status === 401 ? "E-mail ou senha inválidos." : err.message,
-        );
+        if (
+          err.code === "INVALID_CREDENTIALS" ||
+          (err.status === 401 && err.code === "UNKNOWN_ERROR")
+        ) {
+          setError("E-mail ou senha inválidos.");
+          setInvalidCredentials(true);
+        } else {
+          setError(getApiErrorMessage(err.code, err.message));
+        }
       } else {
         setError(
           "Não foi possível conectar ao servidor. Verifique sua conexão.",
@@ -51,9 +63,13 @@ export default function LoginForm() {
         placeholder="nome@empresa.com"
         autoComplete="username"
         value={email}
-        onChange={(event) => setEmail(event.target.value)}
+        onChange={(event) => {
+          setEmail(event.target.value);
+          clearError();
+        }}
         required
         disabled={isLoading}
+        error={invalidCredentials ? error : ""}
       />
 
       <Input
@@ -64,20 +80,23 @@ export default function LoginForm() {
         placeholder="Digite sua senha"
         autoComplete="current-password"
         value={password}
-        onChange={(event) => setPassword(event.target.value)}
+        onChange={(event) => {
+          setPassword(event.target.value);
+          clearError();
+        }}
         required
         disabled={isLoading}
+        error={invalidCredentials ? error : ""}
       />
 
-      {error && (
-        <p role="alert" aria-live="polite">
-          {error}
-        </p>
-      )}
+      {error && <FormMessage message={error} />}
 
-      <Button type="submit" disabled={isLoading}>
-        {isLoading ? "Entrando..." : "Entrar"}
-      </Button>
+      <Button
+        type="submit"
+        loading={isLoading}
+        text={"Entrar"}
+        textLoading={"Entrando..."}
+      />
     </form>
   );
 }

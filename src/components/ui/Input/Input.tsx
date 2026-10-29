@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, type InputHTMLAttributes } from "react";
+import classNames from "classnames";
 import { Eye, EyeSlash } from "@phosphor-icons/react";
 import styles from "./Input.module.css";
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   showPasswordToggle?: boolean;
+  error?: string;
 }
 
 export default function Input({
@@ -15,13 +17,17 @@ export default function Input({
   id,
   type = "text",
   showPasswordToggle = false,
+  error,
   ...props
 }: InputProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const inputId = id ?? props.name ?? label.toLowerCase().replace(/\s+/g, "-");
 
-  const classes = [styles.input, className].filter(Boolean).join(" ");
+  const classes = classNames(styles.input, className, {
+    [styles.inputError]: Boolean(error),
+  });
+
   const isPassword = type === "password";
   const inputType =
     isPassword && showPasswordToggle && isPasswordVisible ? "text" : type;
@@ -31,7 +37,14 @@ export default function Input({
       <span className={styles.label}>{label}</span>
 
       <span className={styles.inputWrapper}>
-        <input className={classes} id={inputId} type={inputType} {...props} />
+        <input
+          className={classes}
+          id={inputId}
+          type={inputType}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `${inputId}-error` : undefined}
+          {...props}
+        />
 
         {isPassword && showPasswordToggle && (
           <button

@@ -3,12 +3,18 @@ import styles from "./Button.module.css";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary";
+  loading?: boolean;
+  text: string;
+  textLoading?: string;
 }
 
 export default function Button({
   variant = "primary",
   className,
   type = "button",
+  text,
+  loading,
+  textLoading,
   ...props
 }: ButtonProps) {
   const variantClass =
@@ -17,5 +23,9 @@ export default function Button({
     .filter(Boolean)
     .join(" ");
 
-  return <button className={classes} type={type} {...props} />;
+  return (
+    <button className={classes} type={type} disabled={loading} {...props}>
+      {loading ? (textLoading ?? "Carregando...") : text}
+    </button>
+  );
 }

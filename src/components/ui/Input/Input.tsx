@@ -4,6 +4,7 @@ import { useState, type InputHTMLAttributes } from "react";
 import classNames from "classnames";
 import { Eye, EyeSlash } from "@phosphor-icons/react";
 import styles from "./Input.module.css";
+import FormMessage from "../FormMessage/FormMessage";
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -63,6 +64,10 @@ export default function Input({
           </button>
         )}
       </span>
+      <FormMessage
+        message={error ?? ""}
+        id={error ? `${inputId}-error` : undefined}
+      />
     </label>
   );
 }

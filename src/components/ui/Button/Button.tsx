@@ -24,7 +24,13 @@ export default function Button({
     .join(" ");
 
   return (
-    <button className={classes} type={type} disabled={loading} {...props}>
+    <button
+      className={classes}
+      type={type}
+      disabled={loading}
+      aria-busy={loading}
+      {...props}
+    >
       {loading ? (textLoading ?? "Carregando...") : text}
     </button>
   );

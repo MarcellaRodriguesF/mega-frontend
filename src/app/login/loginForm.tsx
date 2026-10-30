@@ -89,8 +89,6 @@ export default function LoginForm() {
         error={invalidCredentials ? error : ""}
       />
 
-      {error && <FormMessage message={error} />}
-
       <Button
         type="submit"
         loading={isLoading}

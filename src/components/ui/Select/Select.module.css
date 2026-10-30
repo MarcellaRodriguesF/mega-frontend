@@ -1,0 +1,69 @@
+.field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.label {
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.selectWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.select {
+  appearance: none;
+  width: 100%;
+  min-height: 43px;
+  padding: 0 40px 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  outline: none;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.select:focus {
+  border-color: var(--color-primary);
+}
+
+.select:disabled {
+  background: var(--color-muted-surface);
+  cursor: not-allowed;
+}
+
+.select option {
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.selectError {
+  border-color: var(--color-error);
+}
+
+.selectError:focus {
+  border-color: var(--color-error);
+}
+
+.icon {
+  position: absolute;
+  right: 12px;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.select:disabled + .icon {
+  opacity: 0.5;
+}

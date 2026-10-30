@@ -1,7 +1,8 @@
 import type { RefObject } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { PERMISSIONS } from "@/constants/enums/permissions";
 import {
   ChartBar,
   CaretLeft,
@@ -27,23 +28,6 @@ interface SidebarProps {
   sidebarRef: RefObject<HTMLElement | null>;
 }
 
-const navigationGroups = [
-  {
-    items: [
-      { label: "Dashboard", href: "/dashboard", Icon: House },
-      { label: "Clientes", href: "/clients", Icon: Users },
-      { label: "Usinas", href: "/plants", Icon: SolarPanel },
-      { label: "Implantações", href: "/implementations", Icon: Clipboard },
-      { label: "Chamados", href: "/tickets", Icon: Headset },
-      { label: "Provedores", href: "/providers", Icon: WifiHigh },
-      { label: "Relatórios", href: "/reports", Icon: ChartBar },
-      { label: "Usuários", href: "/users", Icon: User },
-      { label: "Permissões", href: "/permissions", Icon: ShieldCheck },
-      
-    ],
-  },
-] as const;
-
 export default function Sidebar({
   collapsed,
   onClose,
@@ -51,6 +35,67 @@ export default function Sidebar({
   sidebarRef,
 }: SidebarProps) {
   const pathname = usePathname();
+  const { hasPermission } = useAuth();
+  const navigationGroups = [
+    {
+      items: [
+        {
+          label: "Dashboard",
+          href: "/dashboard",
+          Icon: House,
+          permission: PERMISSIONS.DASHBOARD,
+        },
+        {
+          label: "Clientes",
+          href: "/clients",
+          Icon: Users,
+          permission: PERMISSIONS.CLIENTS,
+        },
+        {
+          label: "Usinas",
+          href: "/plants",
+          Icon: SolarPanel,
+          permission: PERMISSIONS.UNITS,
+        },
+        {
+          label: "Implantações",
+          href: "/implementations",
+          Icon: Clipboard,
+          permission: PERMISSIONS.IMPLEMENTATIONS,
+        },
+        {
+          label: "Chamados",
+          href: "/tickets",
+          Icon: Headset,
+          permission: PERMISSIONS.OCCURRENCES,
+        },
+        {
+          label: "Provedores",
+          href: "/providers",
+          Icon: WifiHigh,
+          permission: PERMISSIONS.PROVIDERS,
+        },
+        {
+          label: "Relatórios",
+          href: "/reports",
+          Icon: ChartBar,
+          permission: PERMISSIONS.REPORTS,
+        },
+        {
+          label: "Usuários",
+          href: "/users",
+          Icon: User,
+          permission: PERMISSIONS.USERS,
+        },
+        {
+          label: "Permissões",
+          href: "/permissions",
+          Icon: ShieldCheck,
+          permission: PERMISSIONS.ACCESS_PROFILES,
+        },
+      ],
+    },
+  ] as const;
 
   return (
     <aside
@@ -86,28 +131,31 @@ export default function Sidebar({
 
       <nav className={styles.navigation} aria-label="Navegação principal">
         <div className={styles.navGroup}>
-          {navigationGroups.map((group) =>
-            group.items.map(({ label, href, Icon }) => (
-              <Link
-                className={`${styles.navLink} ${pathname === href ? styles.activeLink : ""}`}
-                data-nav-link
-                href={href}
-                key={href}
-                aria-label={label}
-                aria-current={pathname === href ? "page" : undefined}
-                title={collapsed ? label : undefined}
-                onClick={onClose}
-              >
-                <Icon size={20} weight="regular" aria-hidden="true" />
-                <span className={styles.navText} data-nav-text>
-                  {label}
-                </span>
-              </Link>
-            )),
-          )}
+          {navigationGroups.map((group) => (
+            <div className={styles.navGroup} key="main">
+              {group.items
+                .filter(({ permission }) => hasPermission(permission))
+                .map(({ label, href, Icon }) => (
+                  <Link
+                    className={`${styles.navLink} ${pathname === href ? styles.activeLink : ""}`}
+                    data-nav-link
+                    href={href}
+                    key={href}
+                    aria-label={label}
+                    aria-current={pathname === href ? "page" : undefined}
+                    title={collapsed ? label : undefined}
+                    onClick={onClose}
+                  >
+                    <Icon size={20} weight="regular" aria-hidden="true" />
+                    <span className={styles.navText} data-nav-text>
+                      {label}
+                    </span>
+                  </Link>
+                ))}
+            </div>
+          ))}
         </div>
       </nav>
-
     </aside>
   );
 }

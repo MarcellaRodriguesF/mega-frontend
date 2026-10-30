@@ -18,6 +18,7 @@ interface AuthContextValue {
   isLoading: boolean;
   refreshUser: () => Promise<void>;
   handleSessionExpired: () => void;
+  hasPermission: (permission: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -26,6 +27,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const hasPermission = useCallback(
+    (permission: string) => {
+      return user?.permissions?.includes(permission) ?? false;
+    },
+    [user],
+  );
 
   const refreshUser = useCallback(async () => {
     try {
@@ -48,8 +56,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refreshUser]);
 
   useEffect(() => {
-  return registerSessionExpiredHandler(handleSessionExpired);
-}, [handleSessionExpired]);
+    return registerSessionExpiredHandler(handleSessionExpired);
+  }, [handleSessionExpired]);
 
   return (
     <AuthContext.Provider
@@ -58,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         refreshUser,
         handleSessionExpired,
+        hasPermission,
       }}
     >
       {children}

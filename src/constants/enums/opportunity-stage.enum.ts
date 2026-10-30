@@ -1,0 +1,8 @@
+export enum OpportunityStage {
+  QUALIFICATION = "QUALIFICADO",
+  MEETING = "REUNIÃO",
+  PROPOSAL = "PROPOSTA",
+  NEGOTIATION = "NEGOCIAÇÃO",
+  WON = "GANHO",
+  LOST = "PERDIDO",
+}

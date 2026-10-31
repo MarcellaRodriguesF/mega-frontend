@@ -6,7 +6,10 @@ import Select from "@/components/ui/Select/Select";
 import Textarea from "@/components/ui/Textarea/Textarea";
 import FormSection from "@/components/ui/FormSection/FormSection";
 
-import { CompanyRelationshipStage } from "@/constants/enums/company-relationship-stage.enum";
+import {
+  CompanyRelationshipStage,
+  CompanyRelationshipStageLabel,
+} from "@/constants/enums/company-relationship-stage.enum";
 
 import {
   companyFormSchema,
@@ -22,11 +25,12 @@ interface CompanyFormProps {
   isLoading?: boolean;
 }
 
-const relationshipStageOptions = [
-  { value: CompanyRelationshipStage.LEAD, label: "Lead" },
-  { value: CompanyRelationshipStage.PROSPECT, label: "Prospect" },
-  { value: CompanyRelationshipStage.CUSTOMER, label: "Cliente" },
-];
+const relationshipStageOptions = Object.values(CompanyRelationshipStage).map(
+  (value) => ({
+    value,
+    label: CompanyRelationshipStageLabel(value),
+  }),
+);
 
 export default function CompanyForm({
   onSubmit,
@@ -49,7 +53,7 @@ export default function CompanyForm({
       neighborhood: "",
       city: "",
       state: "",
-      relationshipStage: CompanyRelationshipStage.LEAD,
+      relationshipStage: CompanyRelationshipStage.CUSTOMER,
       observations: "",
     },
   });
@@ -171,6 +175,7 @@ export default function CompanyForm({
         <Select
           label="Estágio do relacionamento"
           options={relationshipStageOptions}
+          required
           disabled={isLoading}
           error={errors.relationshipStage?.message}
           {...register("relationshipStage")}

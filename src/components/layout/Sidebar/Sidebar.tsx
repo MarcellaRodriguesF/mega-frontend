@@ -46,8 +46,8 @@ export default function Sidebar({
           permission: PERMISSIONS.DASHBOARD,
         },
         {
-          label: "Clientes",
-          href: "/clients",
+          label: "Empresas",
+          href: "/companies",
           Icon: Users,
           permission: PERMISSIONS.CLIENTS,
         },

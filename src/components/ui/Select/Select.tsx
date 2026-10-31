@@ -18,6 +18,7 @@ export interface SelectProps extends Omit<
   options: SelectOption[];
   placeholder?: string;
   error?: string;
+  required?: boolean;
 }
 
 export default function Select({
@@ -27,6 +28,7 @@ export default function Select({
   error,
   className,
   id,
+  required = false,
   ...props
 }: SelectProps) {
   const selectId = id ?? props.name ?? label.toLowerCase().replace(/\s+/g, "-");
@@ -39,6 +41,7 @@ export default function Select({
     <div className={styles.field}>
       <label className={styles.label} htmlFor={selectId}>
         {label}
+        {required && <span className={styles.required}> *</span>}
       </label>
 
       <div className={styles.selectWrapper}>

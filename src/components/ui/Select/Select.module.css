@@ -10,6 +10,11 @@
   font-weight: 600;
 }
 
+.required {
+  color: var(--color-error);
+  font-weight: 600;
+}
+
 .selectWrapper {
   position: relative;
   display: flex;

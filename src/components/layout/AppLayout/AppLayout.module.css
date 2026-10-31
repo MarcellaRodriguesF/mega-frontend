@@ -14,7 +14,7 @@
 .main {
   width: 100%;
   flex: 1;
-  padding: 38px var(--page-padding) 48px;
+  /* padding: 38px var(--page-padding) 48px; */
 }
 
 .pageContainer {

@@ -10,6 +10,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   showPasswordToggle?: boolean;
   error?: string;
+  required?: boolean;
 }
 
 export default function Input({
@@ -19,6 +20,7 @@ export default function Input({
   type = "text",
   showPasswordToggle = false,
   error,
+  required = false,
   ...props
 }: InputProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -35,10 +37,15 @@ export default function Input({
 
   return (
     <label className={styles.field} htmlFor={inputId}>
-      <span className={styles.label}>{label}</span>
+      <span className={styles.label}>
+        {" "}
+        {label}
+        {required && <span className={styles.required}> *</span>}
+      </span>
 
       <span className={styles.inputWrapper}>
         <input
+          required={required}
           className={classes}
           id={inputId}
           type={inputType}

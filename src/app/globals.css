@@ -194,7 +194,7 @@ input:focus-visible {
     --menu-trigger-display: none;
     --page-padding: 36px;
     --header-padding: 36px;
-    --content-max-width: 1120px;
+    /* --content-max-width: 1120px; */
   }
 
   [data-app-shell][data-sidebar-collapsed="true"] {
@@ -222,18 +222,6 @@ input:focus-visible {
     justify-content: center;
     padding-right: 0;
     padding-left: 0;
-  }
-}
-
-@media (min-width: 1280px) {
-  :root {
-    --content-max-width: 1200px;
-  }
-}
-
-@media (min-width: 1536px) {
-  :root {
-    --content-max-width: 1320px;
   }
 }
 

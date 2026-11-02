@@ -10,6 +10,7 @@ interface DataTableMobileProps<T> {
   data: T[];
   getRowKey: (item: T) => string;
   actions?: (item: T) => ReactNode;
+  onRowClick?: (item: T) => void;
 }
 
 export default function DataTableMobile<T>({
@@ -17,6 +18,7 @@ export default function DataTableMobile<T>({
   data,
   getRowKey,
   actions,
+  onRowClick,
 }: DataTableMobileProps<T>) {
   const mobileColumns = columns.filter((column) => !column.hideOnMobile);
 
@@ -48,7 +50,38 @@ export default function DataTableMobile<T>({
         const isActive = String(statusValue).toUpperCase() === "ACTIVE";
 
         return (
-          <article key={getRowKey(item)} className={styles.mobileCard}>
+          <article
+            key={getRowKey(item)}
+            className={`${styles.mobileCard} ${
+              onRowClick ? styles.clickableRow : ""
+            }`}
+            onClick={(event) => {
+              if (!onRowClick) return;
+
+              const target = event.target as HTMLElement;
+
+              if (
+                target.closest(
+                  "button, a, input, select, textarea, [role='button']",
+                )
+              ) {
+                return;
+              }
+
+              onRowClick(item);
+            }}
+            onKeyDown={
+              onRowClick
+                ? (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      onRowClick(item);
+                    }
+                  }
+                : undefined
+            }
+            tabIndex={onRowClick ? 0 : undefined}
+          >
             <div className={styles.mobileCardHeader}>
               {titleColumn && (
                 <div className={styles.mobileTitle}>

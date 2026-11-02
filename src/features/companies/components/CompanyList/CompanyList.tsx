@@ -13,6 +13,7 @@ import {
 } from "@/constants/enums/companies/company-status.enum";
 
 import type { Company } from "@/services/api/companies/companies.types";
+import { useRouter } from "next/navigation";
 
 function normalizeText(value: string): string {
   return value
@@ -26,6 +27,7 @@ export default function CompanyList({
   companies,
   isLoading,
 }: CompanyListProps) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
 
   const filteredCompanies = useMemo(() => {
@@ -127,6 +129,7 @@ export default function CompanyList({
           ),
         },
       ]}
+      onRowClick={(company) => router.push(`/companies/${company.id}`)}
       data={filteredCompanies}
       getRowKey={(company) => company.id}
       isLoading={isLoading}

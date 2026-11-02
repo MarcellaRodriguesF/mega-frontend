@@ -29,6 +29,7 @@ export default function DataTable<T>({
   isLoading = false,
   emptyMessage = "Nenhum registro encontrado.",
   actions,
+  onRowClick,
   searchPlaceholder = "Buscar registros...",
   searchValue,
   onSearchChange,
@@ -38,31 +39,21 @@ export default function DataTable<T>({
 }: DataTableProps<T>) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(pageSizeOptions[0] ?? 10);
-
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
 
   const totalItems = data.length;
-
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-
   const startIndex = (currentPage - 1) * pageSize;
-
   const endIndex = Math.min(startIndex + pageSize, totalItems);
 
   function handleSort(key: string) {
     setSortConfig((current) => {
       if (current?.key !== key) {
-        return {
-          key,
-          direction: "asc",
-        };
+        return { key, direction: "asc" };
       }
 
       if (current.direction === "asc") {
-        return {
-          key,
-          direction: "desc",
-        };
+        return { key, direction: "desc" };
       }
 
       return null;
@@ -77,11 +68,8 @@ export default function DataTable<T>({
     const recordA = a as Record<string, unknown>;
     const recordB = b as Record<string, unknown>;
 
-    const aValue = recordA[sortConfig.key];
-    const bValue = recordB[sortConfig.key];
-
-    const comparison = String(aValue ?? "").localeCompare(
-      String(bValue ?? ""),
+    const comparison = String(recordA[sortConfig.key] ?? "").localeCompare(
+      String(recordB[sortConfig.key] ?? ""),
       "pt-BR",
       {
         numeric: true,
@@ -109,10 +97,23 @@ export default function DataTable<T>({
     setCurrentPage(1);
   }
 
-  const renderToolbar = () => {
-    if (!onSearchChange && !toolbar) {
-      return null;
+  function handleRowClick(
+    event: React.MouseEvent<HTMLTableRowElement>,
+    item: T,
+  ) {
+    if (!onRowClick) return;
+
+    const target = event.target as HTMLElement;
+
+    if (target.closest("button, a, input, select, textarea, [role='button']")) {
+      return;
     }
+
+    onRowClick(item);
+  }
+
+  const renderToolbar = () => {
+    if (!onSearchChange && !toolbar) return null;
 
     return (
       <div className={styles.toolbar}>
@@ -189,7 +190,26 @@ export default function DataTable<T>({
 
                 <tbody>
                   {paginatedData.map((item) => (
-                    <tr key={getRowKey(item)}>
+                    <tr
+                      key={getRowKey(item)}
+                      onClick={
+                        onRowClick
+                          ? (event) => handleRowClick(event, item)
+                          : undefined
+                      }
+                      onKeyDown={
+                        onRowClick
+                          ? (event) => {
+                              if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                onRowClick(item);
+                              }
+                            }
+                          : undefined
+                      }
+                      tabIndex={onRowClick ? 0 : undefined}
+                      className={onRowClick ? styles.clickableRow : undefined}
+                    >
                       {columns.map((column) => (
                         <td
                           key={String(column.key)}
@@ -221,6 +241,7 @@ export default function DataTable<T>({
               data={paginatedData}
               getRowKey={getRowKey}
               actions={actions}
+              onRowClick={onRowClick}
             />
           </div>
         </>

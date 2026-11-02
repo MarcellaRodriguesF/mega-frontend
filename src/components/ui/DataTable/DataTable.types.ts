@@ -23,6 +23,7 @@ export interface DataTableProps<T> {
   emptyMessage?: string;
 
   actions?: (item: T) => ReactNode;
+  onRowClick?: (item: T) => void;
 
   searchPlaceholder?: string;
   searchValue?: string;

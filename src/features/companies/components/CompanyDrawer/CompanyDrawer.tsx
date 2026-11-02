@@ -14,6 +14,7 @@ interface CompanyDrawerProps {
   onClose: () => void;
   onSubmit: (data: CompanyFormData) => void | Promise<void>;
   isLoading?: boolean;
+  mode?: "create" | "edit";
 }
 
 export default function CompanyDrawer({
@@ -21,13 +22,20 @@ export default function CompanyDrawer({
   onClose,
   onSubmit,
   isLoading = false,
+  mode = "create",
 }: CompanyDrawerProps) {
+  const isEditing = mode === "edit";
+
   return (
     <Drawer
       open={open}
       onClose={onClose}
-      title="Nova empresa"
-      description="Preencha os dados para cadastrar uma nova empresa."
+      title={isEditing ? "Editar empresa" : "Nova empresa"}
+      description={
+        isEditing
+          ? "Atualize os dados cadastrais e o endereço da empresa."
+          : "Preencha os dados para cadastrar uma nova empresa."
+      }
       footer={
         <div className={styles.actions}>
           <Button
@@ -38,7 +46,7 @@ export default function CompanyDrawer({
           />
 
           <Button
-            text="Salvar empresa"
+            text={isEditing ? "Salvar alterações" : "Salvar empresa"}
             type="submit"
             form="company-form"
             loading={isLoading}

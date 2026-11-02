@@ -1,43 +1,14 @@
+import { CompanyRelationshipStage } from "@/constants/enums/companies/company-relationship-stage.enum";
 import { ApiSuccess } from "../auth/auth.types";
-import { CompanyRelationshipStage } from "@/constants/enums/company-relationship-stage.enum";
-import { RecordStatus } from "@/constants/enums/record-status.enum";
+import { CompanyStatus } from "@/constants/enums/companies/company-status.enum";
+import { CompanyAddressType } from "@/constants/enums/companies/company-address-type.enum";
 
-export interface CreateCompanyRequest {
-  corporateName?: string | null;
-  tradeName: string;
-  cnpj?: string | null;
-  zipCode?: string | null;
-  street?: string | null;
-  number?: string | null;
-  complement?: string | null;
-  neighborhood?: string | null;
-  city?: string | null;
-  state?: string | null;
-  relationshipStage?: CompanyRelationshipStage;
-  observations?: string | null;
-}
 
-export interface UpdateCompanyRequest {
-  corporateName?: string | null;
-  tradeName?: string;
-  cnpj?: string | null;
-  zipCode?: string | null;
-  street?: string | null;
-  number?: string | null;
-  complement?: string | null;
-  neighborhood?: string | null;
-  city?: string | null;
-  state?: string | null;
-  relationshipStage?: CompanyRelationshipStage;
-  status?: RecordStatus;
-  observations?: string | null;
-}
-
-export interface Company {
+export interface CompanyAddress {
   id: string;
-  corporateName: string | null;
-  tradeName: string;
-  cnpj: string | null;
+  companyId: string;
+  name: string;
+  type: CompanyAddressType;
   zipCode: string | null;
   street: string | null;
   number: string | null;
@@ -45,9 +16,58 @@ export interface Company {
   neighborhood: string | null;
   city: string | null;
   state: string | null;
-  relationshipStage: CompanyRelationshipStage;
-  status: RecordStatus;
+  latitude: number | null;
+  longitude: number | null;
+  isPrimary: boolean;
   observations: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCompanyAddressRequest {
+  name: string;
+  type?: CompanyAddressType;
+  zipCode?: string | null;
+  street?: string | null;
+  number?: string | null;
+  complement?: string | null;
+  neighborhood?: string | null;
+  city?: string | null;
+  state?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  isPrimary?: boolean;
+  observations?: string | null;
+}
+
+export interface CreateCompanyRequest {
+  corporateName?: string | null;
+  tradeName: string;
+  cnpj?: string | null;
+  relationshipStage?: CompanyRelationshipStage;
+  observations?: string | null;
+  address?: CreateCompanyAddressRequest;
+}
+
+export interface UpdateCompanyRequest {
+  corporateName?: string | null;
+  tradeName?: string;
+  cnpj?: string | null;
+  relationshipStage?: CompanyRelationshipStage;
+  status?: CompanyStatus;
+  observations?: string | null;
+  address?: CreateCompanyAddressRequest;
+}
+
+export interface Company {
+  id: string;
+  corporateName: string | null;
+  tradeName: string;
+  cnpj: string | null;
+  relationshipStage: CompanyRelationshipStage;
+  status: CompanyStatus;
+  observations: string | null;
+  addresses: CompanyAddress[];
   createdAt: string;
   updatedAt: string;
 }

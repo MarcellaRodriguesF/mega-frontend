@@ -1,0 +1,524 @@
+.container {
+  width: 100%;
+  min-width: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* Cabeçalho */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  padding: var(--spacing-5);
+}
+
+.heading {
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.description {
+  margin: 5px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.count {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Barra de ferramentas */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+}
+
+.searchWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  width: 100%;
+  max-width: 340px;
+  height: 40px;
+  padding: 0 var(--spacing-3);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s ease;
+}
+
+.searchWrapper:focus-within {
+  border-color: var(--color-primary);
+}
+
+.search {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.search::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.toolbarActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+/* Seletor de colunas */
+
+.columnSelector {
+  position: relative;
+}
+
+.toolbarButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 var(--spacing-3);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 13px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.toolbarButton:hover {
+  background: var(--color-background-secondary);
+  border-color: var(--color-text-secondary);
+}
+
+.columnMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  display: grid;
+  gap: var(--spacing-2);
+  min-width: 190px;
+  max-height: 280px;
+  padding: var(--spacing-3);
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.columnOption {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--color-text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.columnOption input {
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* Tabela desktop */
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table thead {
+  background: var(--color-background-secondary);
+}
+
+.table th {
+  padding: 13px var(--spacing-4);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 15px var(--spacing-4);
+  color: var(--color-text);
+  font-size: 13px;
+  border-top: 1px solid var(--color-border);
+}
+
+.table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background: var(--color-background-secondary);
+}
+
+.left {
+  text-align: left;
+}
+
+.center {
+  text-align: center;
+}
+
+.right {
+  text-align: right;
+}
+
+.actionsHeader,
+.actionsCell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Ordenação */
+
+.sortButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.sortButton:hover {
+  color: var(--color-primary);
+}
+
+.sortButton svg {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+}
+
+.sortButton:hover svg {
+  color: var(--color-primary);
+}
+
+/* Estados */
+
+.state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  padding: var(--spacing-5);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Responsividade */
+
+.desktopView {
+  display: block;
+}
+
+.mobileView {
+  display: none;
+}
+
+/* Cards mobile */
+
+.mobileList {
+  display: grid;
+  gap: var(--spacing-3);
+}
+
+.mobileCard {
+  display: grid;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.mobileField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mobileLabel {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.mobileValue {
+  color: var(--color-text);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.mobileActions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--spacing-2);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Paginação */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.paginationInfo,
+.pageSizeLabel,
+.pageIndicator {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.pageSizeLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pageSizeSelect {
+  height: 34px;
+  padding: 0 8px;
+  color: var(--color-text);
+  font: inherit;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.paginationButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background: var(--color-background-secondary);
+}
+
+.paginationButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Tablet e mobile */
+
+@media (max-width: 768px) {
+  /* Remove completamente o card externo */
+  .container {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  /* Busca diretamente na tela */
+  .toolbar {
+    padding: 0 0 var(--spacing-3);
+    background: transparent;
+  }
+
+  .searchWrapper {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+  }
+
+  /* Cards individuais */
+  .mobileView {
+    display: block;
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+
+  .mobileList {
+    display: grid;
+    gap: var(--spacing-3);
+    padding: 0;
+  }
+
+  .mobileCard {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  .desktopView {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .count {
+    font-size: 11px;
+  }
+
+  .paginationControls {
+    gap: var(--spacing-2);
+  }
+
+  .pageSizeLabel {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Card mobile compacto */
+
+.mobileList {
+  display: grid;
+  gap: var(--spacing-3);
+}
+
+.mobileCard {
+  display: grid;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.mobileCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  min-width: 0;
+}
+
+.mobileTitle {
+  min-width: 0;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.mobileStatus {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  color: var(--color-text-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--color-background-secondary);
+  border-radius: 20px;
+}
+
+.mobileStatusActive {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.mobileGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-3);
+}
+
+.mobileField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mobileFieldFull {
+  display: flex;
+  flex-direction: column;
+  grid-column: 1 / -1;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mobileLabel {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+}
+
+.mobileValue {
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.mobileActions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--spacing-2);
+  border-top: 1px solid var(--color-border);
+}

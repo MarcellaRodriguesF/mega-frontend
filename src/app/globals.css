@@ -64,6 +64,26 @@
   --page-header-direction: column;
   --content-max-width: 100%;
 
+  /* Cores padronizadas para badges e status */
+
+  --color-status-green: #15803d;
+  --color-status-green-bg: #dcfce7;
+
+  --color-status-red: #b91c1c;
+  --color-status-red-bg: #fee2e2;
+
+  --color-status-yellow: #a16207;
+  --color-status-yellow-bg: #fef9c3;
+
+  --color-status-blue: #1d4ed8;
+  --color-status-blue-bg: #dbeafe;
+
+  --color-status-purple: #7e22ce;
+  --color-status-purple-bg: #f3e8ff;
+
+  --color-status-gray: #475569;
+  --color-status-gray-bg: #f1f5f9;
+
   /* Tipografia */
   --font-size-xs: 12px;
   --font-size-sm: 13px;
@@ -277,6 +297,26 @@ input:focus-visible {
     var(--color-brand-support) 52%,
     transparent
   );
+
+  /* Cores padronizadas para badges e status - Dark */
+
+  --color-status-green: #86efac;
+  --color-status-green-bg: #14532d;
+
+  --color-status-red: #fca5a5;
+  --color-status-red-bg: #7f1d1d;
+
+  --color-status-yellow: #fde047;
+  --color-status-yellow-bg: #713f12;
+
+  --color-status-blue: #93c5fd;
+  --color-status-blue-bg: #1e3a8a;
+
+  --color-status-purple: #d8b4fe;
+  --color-status-purple-bg: #581c87;
+
+  --color-status-gray: #cbd5e1;
+  --color-status-gray-bg: #334155;
 }
 
 @media (prefers-reduced-motion: reduce) {

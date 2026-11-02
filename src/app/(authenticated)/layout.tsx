@@ -6,6 +6,8 @@ import { useRouter, usePathname } from "next/navigation";
 import AppLayout from "@/components/layout/AppLayout/AppLayout";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import MegaLoader from "@/components/ui/MegaLoader/MegaLoader";
+import { ToastProvider } from "@/contexts/ToastContext";
+import QueryProvider from "@/providers/QueryProvider";
 
 function ProtectedLayout({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -19,9 +21,7 @@ function ProtectedLayout({ children }: { children: ReactNode }) {
   }, [isLoading, user, router, pathname]);
 
   if (isLoading || !user) {
-    return (
-    <MegaLoader/>
-    );
+    return <MegaLoader />;
   }
 
   return <AppLayout>{children}</AppLayout>;
@@ -33,8 +33,12 @@ export default function AuthenticatedLayout({
   children: ReactNode;
 }) {
   return (
-    <AuthProvider>
-      <ProtectedLayout>{children}</ProtectedLayout>
-    </AuthProvider>
+    <QueryProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <ProtectedLayout>{children}</ProtectedLayout>
+        </ToastProvider>
+      </AuthProvider>
+    </QueryProvider>
   );
 }

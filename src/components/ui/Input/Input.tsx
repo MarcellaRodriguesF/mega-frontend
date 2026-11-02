@@ -11,6 +11,8 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   showPasswordToggle?: boolean;
   error?: string;
   required?: boolean;
+  helperText?: string;
+  helperTextType?: "info" | "error" | "success";
 }
 
 export default function Input({
@@ -21,6 +23,8 @@ export default function Input({
   showPasswordToggle = false,
   error,
   required = false,
+  helperText,
+  helperTextType = "info",
   ...props
 }: InputProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -71,6 +75,15 @@ export default function Input({
           </button>
         )}
       </span>
+
+      {helperText && (
+        <p
+          className={styles.helperText + " " + styles[helperTextType]}
+          id={helperText ? `${inputId}-helper` : undefined}
+        >
+          {helperText}
+        </p>
+      )}
       <FormMessage
         message={error ?? ""}
         id={error ? `${inputId}-error` : undefined}

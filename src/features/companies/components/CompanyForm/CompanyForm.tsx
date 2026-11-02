@@ -1,15 +1,16 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useCallback } from "react";
+import { useForm, type FieldPath } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import Input from "@/components/ui/Input/Input";
-import Select from "@/components/ui/Select/Select";
 import Textarea from "@/components/ui/Textarea/Textarea";
 import FormSection from "@/components/ui/FormSection/FormSection";
 
-import {
-  CompanyRelationshipStage,
-  CompanyRelationshipStageLabel,
-} from "@/constants/enums/company-relationship-stage.enum";
+import { CompanyRelationshipStage } from "@/constants/enums/companies/company-relationship-stage.enum";
+
+import { CompanyAddressType } from "@/constants/enums/companies/company-address-type.enum";
 
 import {
   companyFormSchema,
@@ -18,19 +19,16 @@ import {
 } from "@/features/companies/schemas/company-form.schema";
 
 import styles from "./CompanyForm.module.css";
-import { zodResolver } from "@hookform/resolvers/zod";
+import AddressForm, {
+  AddressFormErrors,
+  AddressFormField,
+  AddressFormValues,
+} from "@/components/forms/AddressForm/AddressForm";
 
 interface CompanyFormProps {
   onSubmit: (data: CompanyFormData) => void | Promise<void>;
   isLoading?: boolean;
 }
-
-const relationshipStageOptions = Object.values(CompanyRelationshipStage).map(
-  (value) => ({
-    value,
-    label: CompanyRelationshipStageLabel(value),
-  }),
-);
 
 export default function CompanyForm({
   onSubmit,
@@ -40,23 +38,67 @@ export default function CompanyForm({
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm<CompanyFormInput, unknown, CompanyFormData>({
     resolver: zodResolver(companyFormSchema),
     defaultValues: {
       corporateName: "",
       tradeName: "",
       cnpj: "",
-      zipCode: "",
-      street: "",
-      number: "",
-      complement: "",
-      neighborhood: "",
-      city: "",
-      state: "",
       relationshipStage: CompanyRelationshipStage.CUSTOMER,
       observations: "",
+      address: {
+        name: "Matriz",
+        type: CompanyAddressType.HEADQUARTERS,
+        zipCode: "",
+        street: "",
+        number: "",
+        complement: "",
+        neighborhood: "",
+        city: "",
+        state: "",
+        latitude: null,
+        longitude: null,
+        isPrimary: true,
+        observations: "",
+      },
     },
   });
+
+  const address = watch("address");
+
+  // Atualiza os campos de endereço no React Hook Form.
+  const handleAddressChange = useCallback(
+    (field: AddressFormField, value: string) => {
+      setValue(`address.${field}` as FieldPath<CompanyFormInput>, value, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    },
+    [setValue],
+  );
+
+  // Transforma os erros do Zod no formato esperado pelo AddressForm.
+  const addressErrors: AddressFormErrors = {
+    zipCode: errors.address?.zipCode?.message,
+    street: errors.address?.street?.message,
+    number: errors.address?.number?.message,
+    complement: errors.address?.complement?.message,
+    neighborhood: errors.address?.neighborhood?.message,
+    city: errors.address?.city?.message,
+    state: errors.address?.state?.message,
+  };
+
+  const addressValues: AddressFormValues = {
+    zipCode: address?.zipCode ?? "",
+    street: address?.street ?? "",
+    number: address?.number ?? "",
+    complement: address?.complement ?? "",
+    neighborhood: address?.neighborhood ?? "",
+    city: address?.city ?? "",
+    state: address?.state ?? "",
+  };
 
   return (
     <form
@@ -101,100 +143,24 @@ export default function CompanyForm({
 
       <FormSection
         title="Endereço"
-        description="Localização e endereço da empresa."
+        description="Informe o CEP para preencher automaticamente os dados de localização."
       >
-        <Input
-          label="CEP"
-          placeholder="00000-000"
-          inputMode="numeric"
-          maxLength={9}
+        <AddressForm
+          value={addressValues}
+          onChange={handleAddressChange}
+          errors={addressErrors}
           disabled={isLoading}
-          error={errors.zipCode?.message}
-          {...register("zipCode")}
-        />
-
-        <Input
-          label="Rua / Avenida"
-          placeholder="Nome do logradouro"
-          maxLength={255}
-          disabled={isLoading}
-          error={errors.street?.message}
-          {...register("street")}
-        />
-
-        <Input
-          label="Número"
-          placeholder="Nº"
-          maxLength={20}
-          disabled={isLoading}
-          error={errors.number?.message}
-          {...register("number")}
-        />
-
-        <Input
-          label="Complemento"
-          placeholder="Sala, conjunto, bloco..."
-          maxLength={150}
-          disabled={isLoading}
-          error={errors.complement?.message}
-          {...register("complement")}
-        />
-
-        <Input
-          label="Bairro"
-          placeholder="Nome do bairro"
-          maxLength={100}
-          disabled={isLoading}
-          error={errors.neighborhood?.message}
-          {...register("neighborhood")}
-        />
-
-        <Input
-          label="Cidade"
-          placeholder="Nome da cidade"
-          maxLength={100}
-          disabled={isLoading}
-          error={errors.city?.message}
-          {...register("city")}
-        />
-
-        <Input
-          label="Estado"
-          placeholder="UF"
-          maxLength={2}
-          disabled={isLoading}
-          error={errors.state?.message}
-          {...register("state")}
         />
       </FormSection>
 
-      <FormSection
-        title="Relacionamento"
-        description="Defina o estágio atual do relacionamento comercial."
-      >
-        <Select
-          label="Estágio do relacionamento"
-          options={relationshipStageOptions}
-          required
-          disabled={isLoading}
-          error={errors.relationshipStage?.message}
-          {...register("relationshipStage")}
-        />
-      </FormSection>
-
-      <FormSection
-        title="Observações"
-        description="Adicione informações complementares sobre a empresa."
-      >
-        <Textarea
-          label="Observações"
-          placeholder="Digite informações relevantes sobre a empresa..."
-          rows={4}
-          disabled={isLoading}
-          error={errors.observations?.message}
-          {...register("observations")}
-        />
-      </FormSection>
+      <Textarea
+        label="Observações"
+        placeholder="Digite informações relevantes sobre a empresa..."
+        rows={4}
+        disabled={isLoading}
+        error={errors.observations?.message}
+        {...register("observations")}
+      />
     </form>
   );
 }

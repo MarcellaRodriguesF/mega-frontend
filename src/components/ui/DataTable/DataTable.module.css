@@ -190,7 +190,13 @@
 }
 
 .table tbody tr:hover {
-  background: var(--color-background-secondary);
+  background: var(--color-primary-soft);
+  cursor: pointer;
+}
+
+.table tbody tr:hover td:first-child {
+  color: var(--color-primary);
+  font-weight: 700;
 }
 
 .left {

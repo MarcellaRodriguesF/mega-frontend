@@ -16,7 +16,7 @@ export default function InfoField({
 
   return (
     <div className={styles.infoField}>
-      <span className={styles.infoFieldLabel}>{label}</span>
+      <span className={styles.infoFieldLabel}>{label + ":"}</span>
       <strong className={styles.infoFieldValue}>
         {hasValue ? value : fallback}
       </strong>

@@ -3,7 +3,6 @@ import { ApiSuccess } from "../auth/auth.types";
 import { CompanyStatus } from "@/constants/enums/companies/company-status.enum";
 import { CompanyAddressType } from "@/constants/enums/companies/company-address-type.enum";
 
-
 export interface CompanyAddress {
   id: string;
   companyId: string;
@@ -68,6 +67,20 @@ export interface Company {
   status: CompanyStatus;
   observations: string | null;
   addresses: CompanyAddress[];
+  createdAt: string;
+  updatedAt: string;
+  contacts: ContactsCompany[];
+}
+
+export interface ContactsCompany {
+  id: string;
+  companyId: string;
+  name: string;
+  role: string | null;
+  email: string;
+  phone: string;
+  whatsapp: string | null;
+  isPrimary: boolean;
   createdAt: string;
   updatedAt: string;
 }

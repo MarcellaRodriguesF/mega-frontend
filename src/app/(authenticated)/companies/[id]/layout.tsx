@@ -24,11 +24,11 @@ import { useToast } from "@/contexts/ToastContext";
 
 import { PencilIcon, TrashIcon } from "@phosphor-icons/react";
 import Modal from "@/components/ui/Modal/Modal";
+import IconButton from "@/components/ui/IconButton/IconButton";
 
 const companyTabs = [
   { value: "general", label: "Dados gerais" },
   { value: "documents", label: "Documentos" },
-  { value: "contacts", label: "Contatos" },
   { value: "opportunities", label: "Oportunidades" },
 ];
 
@@ -204,16 +204,16 @@ export default function CompanyDetailsLayout({
         action={
           company ? (
             <>
-              <Button
-                variant="outline"
-                text={<PencilIcon size={16} />}
+              <IconButton
+                action="edit"
                 onClick={handleOpenEditDrawer}
+                size="md"
               />
 
-              <Button
-                variant="outline"
-                text={<TrashIcon size={16} />}
+              <IconButton
+                action="delete"
                 onClick={handleOpenDeleteModal}
+                size="md"
               />
             </>
           ) : undefined

@@ -1,15 +1,28 @@
 "use client";
 
-import { Buildings, MapPin, FileText } from "@phosphor-icons/react";
+import {
+  Buildings,
+  MapPin,
+  FileText,
+  PhoneIcon,
+  PencilIcon,
+} from "@phosphor-icons/react";
 
 import { useCompany } from "@/contexts/CompanyContext";
 
-import InfoCard from "@/components/ui/InfoCard/InfoCard";
 import InfoCardGrid from "@/components/ui/InfoCardGrid/InfoCardGrid";
 import InfoField from "@/components/ui/InfoField/InfoField";
 import { CompanyRelationshipStageLabel } from "@/constants/enums/companies/company-relationship-stage.enum";
 import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
-import { CompanyStatusColor, CompanyStatusLabel } from "@/constants/enums/companies/company-status.enum";
+import {
+  CompanyStatusColor,
+  CompanyStatusLabel,
+} from "@/constants/enums/companies/company-status.enum";
+import Button from "@/components/ui/Button/Button";
+import { List } from "@/components/ui/List/List";
+import Card from "@/components/ui/Card/Card";
+import { formatPhone } from "@/utils/format-phone";
+import IconButton from "@/components/ui/IconButton/IconButton";
 
 export default function CompanyGeneralPage() {
   const { company } = useCompany();
@@ -20,7 +33,7 @@ export default function CompanyGeneralPage() {
 
   return (
     <InfoCardGrid>
-      <InfoCard title="Dados cadastrais" icon={<Buildings size={20} />}>
+      <Card title="Dados cadastrais" icon={<Buildings size={20} />}>
         <InfoField label="Nome fantasia" value={company.tradeName} />
 
         <InfoField label="Razão social" value={company.corporateName} />
@@ -41,9 +54,9 @@ export default function CompanyGeneralPage() {
             />
           }
         />
-      </InfoCard>
+      </Card>
 
-      <InfoCard
+      <Card
         title="Endereço principal"
         icon={<MapPin size={20} />}
         description={
@@ -69,14 +82,32 @@ export default function CompanyGeneralPage() {
             <InfoField label="Estado" value={primaryAddress.state} />
           </>
         )}
-      </InfoCard>
+      </Card>
 
-      <InfoCard title="Observações" icon={<FileText size={20} />}>
+      <Card title="Observações" icon={<FileText size={20} />}>
         <InfoField
           label="Informações adicionais"
           value={company.observations}
         />
-      </InfoCard>
+      </Card>
+
+      <Card
+        title="Contatos"
+        display="default"
+        icon={<PhoneIcon size={20} />}
+        actions={<IconButton action="add" size="sm" />}
+      >
+        <List
+          items={company.contacts}
+          keyExtractor={(contact) => contact.id}
+          getItem={(contact) => ({
+            title: contact.name,
+            subtitle: formatPhone(contact.phone) || "-",
+            description: contact.email || "-",
+          })}
+          renderActions={(contact) => <IconButton action="edit" size="sm" />}
+        />
+      </Card>
     </InfoCardGrid>
   );
 }

@@ -5,21 +5,25 @@ import { useParams, usePathname, useRouter } from "next/navigation";
 
 import { PageContainer } from "@/components/layout/PageContainer/PageContainer";
 import PageHeader from "@/components/ui/PageHeader/PageHeader";
-import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
 import Tabs from "@/components/ui/Tabs/Tabs";
 import type { PageStateType } from "@/components/ui/PageState/PageState";
+import Button from "@/components/ui/Button/Button";
+
+import CompanyDrawer from "@/features/companies/components/CompanyDrawer/CompanyDrawer";
 
 import { companiesApi } from "@/services/api/companies/companies.api";
 import { ApiError } from "@/services/api/api-client";
-
-import {
-  CompanyStatusColor,
-  CompanyStatusLabel,
-} from "@/constants/enums/companies/company-status.enum";
+import { getApiErrorMessage } from "@/services/api/error-messages";
 
 import type { Company } from "@/services/api/companies/companies.types";
+import type { CompanyFormData } from "@/features/companies/schemas/company-form.schema";
 
 import { CompanyProvider } from "@/contexts/CompanyContext";
+import { useDrawer } from "@/hooks/useDrawer";
+import { useToast } from "@/contexts/ToastContext";
+
+import { PencilIcon, TrashIcon } from "@phosphor-icons/react";
+import Modal from "@/components/ui/Modal/Modal";
 
 const companyTabs = [
   { value: "general", label: "Dados gerais" },
@@ -28,7 +32,7 @@ const companyTabs = [
   { value: "opportunities", label: "Oportunidades" },
 ];
 
-function getPageState(statusCode?: number): PageStateType | undefined {
+function getPageState(statusCode?: number): PageStateType {
   if (!statusCode) return "error";
 
   switch (statusCode) {
@@ -49,6 +53,9 @@ export default function CompanyDetailsLayout({
   const params = useParams<{ id: string }>();
   const pathname = usePathname();
   const router = useRouter();
+
+  const { openDrawer, closeDrawer } = useDrawer();
+  const toast = useToast();
 
   const [company, setCompany] = useState<Company | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -95,6 +102,88 @@ export default function CompanyDetailsLayout({
     router.push(`/companies/${params.id}/${value}`);
   }
 
+  async function handleUpdateCompany(data: CompanyFormData) {
+    try {
+      const response = await companiesApi.update(params.id, data);
+
+      setCompany(response.data);
+      closeDrawer();
+
+      toast.success("Os dados da empresa foram atualizados.", {
+        title: "Empresa atualizada!",
+      });
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? getApiErrorMessage(error.code, error.message)
+          : "Não foi possível atualizar a empresa. Tente novamente.";
+
+      toast.error(message, {
+        title: "Erro ao atualizar empresa",
+      });
+
+      throw error;
+    }
+  }
+
+  async function handleDeleteCompany() {
+    if (!company) return;
+
+    try {
+      await companiesApi.delete(company.id);
+
+      closeDrawer();
+
+      toast.success("A empresa foi excluída com sucesso.", {
+        title: "Empresa excluída!",
+      });
+
+      router.push("/companies");
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? getApiErrorMessage(error.code, error.message)
+          : "Não foi possível excluir a empresa. Tente novamente.";
+
+      toast.error(message, {
+        title: "Erro ao excluir empresa",
+      });
+
+      throw error;
+    }
+  }
+
+  function handleOpenEditDrawer() {
+    if (!company) return;
+
+    openDrawer(
+      <CompanyDrawer
+        open
+        onClose={closeDrawer}
+        onSubmit={handleUpdateCompany}
+        mode="edit"
+        company={company}
+      />,
+    );
+  }
+
+  function handleOpenDeleteModal() {
+    if (!company) return;
+
+    openDrawer(
+      <Modal
+        open
+        variant="danger"
+        title="Excluir empresa?"
+        description={`A empresa ${company.tradeName} será excluída permanentemente. Essa ação não poderá ser desfeita.`}
+        confirmText="Excluir empresa"
+        cancelText="Cancelar"
+        onConfirm={handleDeleteCompany}
+        onClose={closeDrawer}
+      />,
+    );
+  }
+
   const page = (
     <PageContainer
       state={
@@ -114,10 +203,19 @@ export default function CompanyDetailsLayout({
         description="Detalhes e informações cadastrais da empresa."
         action={
           company ? (
-            <StatusBadge
-              label={CompanyStatusLabel(company.status)}
-              color={CompanyStatusColor(company.status)}
-            />
+            <>
+              <Button
+                variant="outline"
+                text={<PencilIcon size={16} />}
+                onClick={handleOpenEditDrawer}
+              />
+
+              <Button
+                variant="outline"
+                text={<TrashIcon size={16} />}
+                onClick={handleOpenDeleteModal}
+              />
+            </>
           ) : undefined
         }
       />

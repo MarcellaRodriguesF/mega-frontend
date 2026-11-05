@@ -11,6 +11,7 @@ import FormSection from "@/components/ui/FormSection/FormSection";
 import { CompanyRelationshipStage } from "@/constants/enums/companies/company-relationship-stage.enum";
 
 import { CompanyAddressType } from "@/constants/enums/companies/company-address-type.enum";
+import type { Company } from "@/services/api/companies/companies.types";
 
 import {
   companyFormSchema,
@@ -28,11 +29,13 @@ import AddressForm, {
 interface CompanyFormProps {
   onSubmit: (data: CompanyFormData) => void | Promise<void>;
   isLoading?: boolean;
+  initialData?: Company;
 }
 
 export default function CompanyForm({
   onSubmit,
   isLoading = false,
+  initialData,
 }: CompanyFormProps) {
   const {
     register,
@@ -40,32 +43,34 @@ export default function CompanyForm({
     formState: { errors },
     watch,
     setValue,
+    reset,
   } = useForm<CompanyFormInput, unknown, CompanyFormData>({
     resolver: zodResolver(companyFormSchema),
     defaultValues: {
-      corporateName: "",
-      tradeName: "",
-      cnpj: "",
-      relationshipStage: CompanyRelationshipStage.CUSTOMER,
-      observations: "",
+      corporateName: initialData?.corporateName ?? "",
+      tradeName: initialData?.tradeName ?? "",
+      cnpj: initialData?.cnpj ?? "",
+      relationshipStage:
+        initialData?.relationshipStage ?? CompanyRelationshipStage.CUSTOMER,
+      observations: initialData?.observations ?? "",
       address: {
-        name: "Matriz",
-        type: CompanyAddressType.HEADQUARTERS,
-        zipCode: "",
-        street: "",
-        number: "",
-        complement: "",
-        neighborhood: "",
-        city: "",
-        state: "",
-        latitude: null,
-        longitude: null,
-        isPrimary: true,
-        observations: "",
+        name: initialData?.addresses?.[0]?.name ?? "Matriz",
+        type:
+          initialData?.addresses?.[0]?.type ?? CompanyAddressType.HEADQUARTERS,
+        zipCode: initialData?.addresses?.[0]?.zipCode ?? "",
+        street: initialData?.addresses?.[0]?.street ?? "",
+        number: initialData?.addresses?.[0]?.number ?? "",
+        complement: initialData?.addresses?.[0]?.complement ?? "",
+        neighborhood: initialData?.addresses?.[0]?.neighborhood ?? "",
+        city: initialData?.addresses?.[0]?.city ?? "",
+        state: initialData?.addresses?.[0]?.state ?? "",
+        latitude: initialData?.addresses?.[0]?.latitude ?? null,
+        longitude: initialData?.addresses?.[0]?.longitude ?? null,
+        isPrimary: initialData?.addresses?.[0]?.isPrimary ?? true,
+        observations: initialData?.addresses?.[0]?.observations ?? "",
       },
     },
   });
-
   const address = watch("address");
 
   // Atualiza os campos de endereço no React Hook Form.

@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import MegaLoader from "@/components/ui/MegaLoader/MegaLoader";
 import { ToastProvider } from "@/contexts/ToastContext";
 import QueryProvider from "@/providers/QueryProvider";
+import { DrawerProvider } from "@/contexts/DrawerContext";
 
 function ProtectedLayout({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -36,7 +37,9 @@ export default function AuthenticatedLayout({
     <QueryProvider>
       <AuthProvider>
         <ToastProvider>
-          <ProtectedLayout>{children}</ProtectedLayout>
+          <DrawerProvider>
+            <ProtectedLayout>{children}</ProtectedLayout>
+          </DrawerProvider>
         </ToastProvider>
       </AuthProvider>
     </QueryProvider>

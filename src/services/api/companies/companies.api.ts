@@ -24,4 +24,8 @@ export const companiesApi = {
   update(id: string, data: UpdateCompanyRequest): Promise<CompanyResponse> {
     return apiClient.patch<CompanyResponse>(`/companies/${id}`, data);
   },
+
+  delete(id: string): Promise<void> {
+    return apiClient.delete<void>(`/companies/${id}`);
+  },
 };

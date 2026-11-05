@@ -9,7 +9,7 @@
   font: inherit;
   font-size: 13px;
   font-weight: 600;
-  padding: 0 16px;
+  padding: 0 12px;
   transition:
     background-color 150ms ease,
     border-color 150ms ease,
@@ -42,4 +42,15 @@
 .button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+.outline {
+  border-color: var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+}
+
+.outline:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  color: var(--color-brand-white);
 }

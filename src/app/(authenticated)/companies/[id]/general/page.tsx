@@ -8,6 +8,8 @@ import InfoCard from "@/components/ui/InfoCard/InfoCard";
 import InfoCardGrid from "@/components/ui/InfoCardGrid/InfoCardGrid";
 import InfoField from "@/components/ui/InfoField/InfoField";
 import { CompanyRelationshipStageLabel } from "@/constants/enums/companies/company-relationship-stage.enum";
+import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
+import { CompanyStatusColor, CompanyStatusLabel } from "@/constants/enums/companies/company-status.enum";
 
 export default function CompanyGeneralPage() {
   const { company } = useCompany();
@@ -28,6 +30,16 @@ export default function CompanyGeneralPage() {
         <InfoField
           label="Etapa de relacionamento"
           value={CompanyRelationshipStageLabel(company.relationshipStage)}
+        />
+
+        <InfoField
+          label="Status"
+          value={
+            <StatusBadge
+              label={CompanyStatusLabel(company.status)}
+              color={CompanyStatusColor(company.status)}
+            />
+          }
         />
       </InfoCard>
 

@@ -2,7 +2,7 @@ import styles from "./InfoField.module.css";
 
 interface InfoFieldProps {
   label: string;
-  value?: string | number | null;
+  value?: string | number | null | React.ReactNode;
   fallback?: string;
 }
 

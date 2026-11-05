@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
+
 import Drawer from "@/components/layout/Drawer/Drawer";
 import Button from "@/components/ui/Button/Button";
 
 import CompanyForm from "../CompanyForm/CompanyForm";
 
 import type { CompanyFormData } from "@/features/companies/schemas/company-form.schema";
+import type { Company } from "@/services/api/companies/companies.types";
 
 import styles from "./CompanyDrawer.module.css";
 
@@ -15,6 +18,7 @@ interface CompanyDrawerProps {
   onSubmit: (data: CompanyFormData) => void | Promise<void>;
   isLoading?: boolean;
   mode?: "create" | "edit";
+  company?: Company;
 }
 
 export default function CompanyDrawer({
@@ -23,8 +27,21 @@ export default function CompanyDrawer({
   onSubmit,
   isLoading = false,
   mode = "create",
+  company,
 }: CompanyDrawerProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const isEditing = mode === "edit";
+  const loading = isLoading || isSubmitting;
+
+  async function handleSubmit(data: CompanyFormData) {
+    try {
+      setIsSubmitting(true);
+      await onSubmit(data);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
     <Drawer
@@ -42,19 +59,23 @@ export default function CompanyDrawer({
             variant="secondary"
             text="Cancelar"
             onClick={onClose}
-            disabled={isLoading}
+            disabled={loading}
           />
 
           <Button
             text={isEditing ? "Salvar alterações" : "Salvar empresa"}
             type="submit"
             form="company-form"
-            loading={isLoading}
+            loading={loading}
           />
         </div>
       }
     >
-      <CompanyForm onSubmit={onSubmit} isLoading={isLoading} />
+      <CompanyForm
+        onSubmit={handleSubmit}
+        isLoading={loading}
+        initialData={company}
+      />
     </Drawer>
   );
 }

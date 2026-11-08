@@ -77,8 +77,8 @@ export interface ContactsCompany {
   companyId: string;
   name: string;
   role: string | null;
-  email: string;
-  phone: string;
+  email: string | null;
+  phone: string | null;
   whatsapp: string | null;
   isPrimary: boolean;
   createdAt: string;

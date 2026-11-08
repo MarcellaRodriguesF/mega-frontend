@@ -6,10 +6,12 @@ import type { Company } from "@/services/api/companies/companies.types";
 
 interface CompanyContextProps {
   company: Company;
+  updateCompany: (company: Company) => void;
 }
 
 interface CompanyProviderProps {
   company: Company;
+  updateCompany: (company: Company) => void;
   children: ReactNode;
 }
 
@@ -17,9 +19,13 @@ const CompanyContext = createContext<CompanyContextProps | undefined>(
   undefined,
 );
 
-export function CompanyProvider({ company, children }: CompanyProviderProps) {
+export function CompanyProvider({
+  company,
+  updateCompany,
+  children,
+}: CompanyProviderProps) {
   return (
-    <CompanyContext.Provider value={{ company }}>
+    <CompanyContext.Provider value={{ company, updateCompany }}>
       {children}
     </CompanyContext.Provider>
   );

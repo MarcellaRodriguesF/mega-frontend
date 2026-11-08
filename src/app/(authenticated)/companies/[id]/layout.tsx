@@ -227,7 +227,9 @@ export default function CompanyDetailsLayout({
   );
 
   return company ? (
-    <CompanyProvider company={company}>{page}</CompanyProvider>
+    <CompanyProvider company={company} updateCompany={setCompany}>
+      {page}
+    </CompanyProvider>
   ) : (
     page
   );

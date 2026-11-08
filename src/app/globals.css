@@ -93,10 +93,10 @@
   --font-size-xl: 22px;
   --font-size-2xl: 28px;
 
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+  --font-weight-regular: 500;
+  --font-weight-medium: 600;
+  --font-weight-semibold: 700;
+  --font-weight-bold: 800;
 
   /* Espaçamentos */
   --spacing-1: 4px;
@@ -150,7 +150,7 @@ body {
 body {
   color: var(--color-text);
   background: var(--color-background);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-manrope), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

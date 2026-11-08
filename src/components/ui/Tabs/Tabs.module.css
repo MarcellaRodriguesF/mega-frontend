@@ -43,6 +43,7 @@
 .tab.active {
   background: var(--color-primary-soft);
   color: var(--color-primary);
+  font-weight: 600;
 }
 
 .tab:disabled {

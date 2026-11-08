@@ -21,13 +21,12 @@ import type { CompanyFormData } from "@/features/companies/schemas/company-form.
 import { CompanyProvider } from "@/contexts/CompanyContext";
 import { useDrawer } from "@/hooks/useDrawer";
 import { useToast } from "@/contexts/ToastContext";
-
-import { PencilIcon, TrashIcon } from "@phosphor-icons/react";
 import Modal from "@/components/ui/Modal/Modal";
 import IconButton from "@/components/ui/IconButton/IconButton";
 
 const companyTabs = [
   { value: "general", label: "Dados gerais" },
+  { value: "units", label: "Unidades" },
   { value: "documents", label: "Documentos" },
   { value: "opportunities", label: "Oportunidades" },
 ];

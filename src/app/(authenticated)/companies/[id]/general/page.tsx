@@ -231,14 +231,6 @@ export default function CompanyGeneralPage() {
           </>
         )}
       </Card>
-
-      <Card title="Observações" icon={<FileText size={20} />}>
-        <InfoField
-          label="Informações adicionais"
-          value={company.observations}
-        />
-      </Card>
-
       <Card
         title="Contatos"
         display="default"
@@ -274,6 +266,12 @@ export default function CompanyGeneralPage() {
               />
             </>
           )}
+        />
+      </Card>
+      <Card title="Observações" icon={<FileText size={20} />}>
+        <InfoField
+          label="Informações adicionais"
+          value={company.observations}
         />
       </Card>
     </InfoCardGrid>

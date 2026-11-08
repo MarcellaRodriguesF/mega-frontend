@@ -17,3 +17,7 @@ export function formatPhone(value?: string | null): string {
 
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
+
+export function unformatPhone(value?: string | null): string {
+  return value?.replace(/\D/g, "").slice(0, 11) ?? "";
+}

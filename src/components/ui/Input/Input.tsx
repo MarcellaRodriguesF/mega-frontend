@@ -3,11 +3,19 @@
 import { useState, type InputHTMLAttributes } from "react";
 import classNames from "classnames";
 import { Eye, EyeSlash } from "@phosphor-icons/react";
+
 import styles from "./Input.module.css";
 import FormMessage from "../FormMessage/FormMessage";
+import { formatPhone, unformatPhone } from "@/utils/format-phone";
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+type CustomInputType = InputHTMLAttributes<HTMLInputElement>["type"] | "phone";
+
+export interface InputProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "type"
+> {
   label: string;
+  type?: CustomInputType;
   showPasswordToggle?: boolean;
   error?: string;
   required?: boolean;
@@ -25,37 +33,73 @@ export default function Input({
   required = false,
   helperText,
   helperTextType = "info",
+  value,
+  defaultValue,
+  onChange,
   ...props
 }: InputProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const inputId = id ?? props.name ?? label.toLowerCase().replace(/\s+/g, "-");
 
+  const isPhone = type === "phone";
+  const isPassword = type === "password";
+
+  const inputType = isPhone
+    ? "tel"
+    : isPassword && showPasswordToggle && isPasswordVisible
+      ? "text"
+      : type;
+
   const classes = classNames(styles.input, className, {
     [styles.inputError]: Boolean(error),
   });
 
-  const isPassword = type === "password";
-  const inputType =
-    isPassword && showPasswordToggle && isPasswordVisible ? "text" : type;
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    if (isPhone) {
+      const digits = unformatPhone(event.target.value);
+
+      event.target.value = formatPhone(digits);
+    }
+
+    onChange?.(event);
+  }
+
+  const formattedValue =
+    isPhone && value !== undefined ? formatPhone(String(value)) : value;
+
+  const formattedDefaultValue =
+    isPhone && defaultValue !== undefined
+      ? formatPhone(String(defaultValue))
+      : defaultValue;
 
   return (
     <label className={styles.field} htmlFor={inputId}>
       <span className={styles.label}>
-        {" "}
         {label}
         {required && <span className={styles.required}> *</span>}
       </span>
 
       <span className={styles.inputWrapper}>
         <input
-          required={required}
-          className={classes}
+          {...props}
           id={inputId}
           type={inputType}
+          required={required}
+          className={classes}
+          value={formattedValue}
+          defaultValue={formattedDefaultValue}
+          onChange={handleChange}
+          inputMode={isPhone ? "numeric" : props.inputMode}
+          maxLength={isPhone ? 15 : props.maxLength}
           aria-invalid={Boolean(error)}
-          aria-describedby={error ? `${inputId}-error` : undefined}
-          {...props}
+          aria-describedby={
+            error
+              ? `${inputId}-error`
+              : helperText
+                ? `${inputId}-helper`
+                : undefined
+          }
         />
 
         {isPassword && showPasswordToggle && (
@@ -78,12 +122,13 @@ export default function Input({
 
       {helperText && (
         <p
-          className={styles.helperText + " " + styles[helperTextType]}
-          id={helperText ? `${inputId}-helper` : undefined}
+          className={classNames(styles.helperText, styles[helperTextType])}
+          id={`${inputId}-helper`}
         >
           {helperText}
         </p>
       )}
+
       <FormMessage
         message={error ?? ""}
         id={error ? `${inputId}-error` : undefined}

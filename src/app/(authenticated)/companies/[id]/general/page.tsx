@@ -12,19 +12,24 @@ import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
 import IconButton from "@/components/ui/IconButton/IconButton";
 import Card from "@/components/ui/Card/Card";
 import { List } from "@/components/ui/List/List";
+import Modal from "@/components/ui/Modal/Modal";
+
+import ContactDrawer from "@/features/contacts/ContactDrawer/ContactDrawer";
 
 import { CompanyRelationshipStageLabel } from "@/constants/enums/companies/company-relationship-stage.enum";
 import {
   CompanyStatusColor,
   CompanyStatusLabel,
 } from "@/constants/enums/companies/company-status.enum";
+
 import { contactsApi } from "@/services/api/contacts/contacts.api";
 import { ApiError } from "@/services/api/api-client";
 import { getApiErrorMessage } from "@/services/api/error-messages";
 
 import { formatPhone } from "@/utils/format-phone";
-import ContactDrawer from "@/features/contacts/ContactDrawer/ContactDrawer";
-import { ContactFormData } from "@/features/companies/schemas/contacts.schema";
+
+import type { Contact } from "@/services/api/contacts/contacts.types";
+import type { ContactFormData } from "@/features/companies/schemas/contacts.schema";
 
 export default function CompanyGeneralPage() {
   const { company, updateCompany } = useCompany();
@@ -35,25 +40,32 @@ export default function CompanyGeneralPage() {
     company.addresses.find((address) => address.isPrimary) ??
     company.addresses[0];
 
+  function sortContacts(contacts: Contact[]) {
+    return [...contacts].sort((a, b) => {
+      if (a.isPrimary !== b.isPrimary) {
+        return a.isPrimary ? -1 : 1;
+      }
+
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  function updateContactList(contact: Contact) {
+    updateCompany({
+      ...company,
+      contacts: sortContacts([
+        ...company.contacts.filter((item) => item.id !== contact.id),
+        contact,
+      ]),
+    });
+  }
+
+  // CADASTRAR CONTATO
   async function handleCreateContact(data: ContactFormData) {
     try {
       const response = await contactsApi.create(company.id, data);
 
-      updateCompany({
-        ...company,
-        contacts: [
-          ...company.contacts.filter(
-            (contact) => contact.id !== response.data.id,
-          ),
-          response.data,
-        ].sort((a, b) => {
-          if (a.isPrimary !== b.isPrimary) {
-            return a.isPrimary ? -1 : 1;
-          }
-
-          return a.name.localeCompare(b.name);
-        }),
-      });
+      updateContactList(response.data);
 
       closeDrawer();
 
@@ -81,6 +93,88 @@ export default function CompanyGeneralPage() {
         onClose={closeDrawer}
         onSubmit={handleCreateContact}
         mode="create"
+      />,
+    );
+  }
+
+  // EDITAR CONTATO
+  async function handleUpdateContact(contactId: string, data: ContactFormData) {
+    try {
+      const response = await contactsApi.update(company.id, contactId, data);
+
+      updateContactList(response.data);
+
+      closeDrawer();
+
+      toast.success("O contato foi atualizado com sucesso.", {
+        title: "Contato atualizado!",
+      });
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? getApiErrorMessage(error.code, error.message)
+          : "Não foi possível atualizar o contato. Tente novamente.";
+
+      toast.error(message, {
+        title: "Erro ao atualizar contato",
+      });
+
+      throw error;
+    }
+  }
+
+  function handleOpenEditContactDrawer(contact: Contact) {
+    openDrawer(
+      <ContactDrawer
+        open
+        onClose={closeDrawer}
+        onSubmit={(data) => handleUpdateContact(contact.id, data)}
+        mode="edit"
+        contact={contact}
+      />,
+    );
+  }
+
+  // EXCLUIR CONTATO
+  async function handleDeleteContact(contact: Contact) {
+    try {
+      await contactsApi.delete(company.id, contact.id);
+
+      updateCompany({
+        ...company,
+        contacts: company.contacts.filter((item) => item.id !== contact.id),
+      });
+
+      closeDrawer();
+
+      toast.success("O contato foi excluído com sucesso.", {
+        title: "Contato excluído!",
+      });
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? getApiErrorMessage(error.code, error.message)
+          : "Não foi possível excluir o contato. Tente novamente.";
+
+      toast.error(message, {
+        title: "Erro ao excluir contato",
+      });
+
+      throw error;
+    }
+  }
+
+  function handleOpenDeleteContactModal(contact: Contact) {
+    openDrawer(
+      <Modal
+        open
+        variant="danger"
+        title="Excluir contato?"
+        description={`O contato ${contact.name} será excluído permanentemente. Essa ação não poderá ser desfeita.`}
+        confirmText="Excluir contato"
+        cancelText="Cancelar"
+        onConfirm={() => handleDeleteContact(contact)}
+        onClose={closeDrawer}
       />,
     );
   }
@@ -165,7 +259,21 @@ export default function CompanyGeneralPage() {
             subtitle: formatPhone(contact.phone) || "-",
             description: contact.email || "-",
           })}
-          renderActions={() => <IconButton action="edit" size="sm" />}
+          renderActions={(contact) => (
+            <>
+              <IconButton
+                action="edit"
+                size="sm"
+                onClick={() => handleOpenEditContactDrawer(contact)}
+              />
+
+              <IconButton
+                action="delete"
+                size="sm"
+                onClick={() => handleOpenDeleteContactModal(contact)}
+              />
+            </>
+          )}
         />
       </Card>
     </InfoCardGrid>

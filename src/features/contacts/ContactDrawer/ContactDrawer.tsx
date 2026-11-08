@@ -6,7 +6,10 @@ import Drawer from "@/components/layout/Drawer/Drawer";
 import Button from "@/components/ui/Button/Button";
 import { Contact } from "@/services/api/contacts/contacts.types";
 import ContactForm from "../ContactForm/ContactForm";
-import { ContactFormData, ContactFormInput } from "@/features/companies/schemas/contacts.schema";
+import {
+  ContactFormData,
+  ContactFormInput,
+} from "@/features/companies/schemas/contacts.schema";
 
 interface ContactDrawerProps {
   open: boolean;
@@ -61,7 +64,7 @@ export default function ContactDrawer({
           : "Preencha os dados para adicionar um novo contato à empresa."
       }
       footer={
-        <div >
+        <>
           <Button
             variant="secondary"
             text="Cancelar"
@@ -75,7 +78,7 @@ export default function ContactDrawer({
             text={isEditing ? "Salvar alterações" : "Salvar contato"}
             loading={loading}
           />
-        </div>
+        </>
       }
     >
       <ContactForm

@@ -5,10 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { PERMISSIONS } from "@/constants/enums/permissions";
 import {
   ChartBar,
-  CaretLeft,
-  CaretRight,
   Clipboard,
-  Gear,
   Headset,
   House,
   ShieldCheck,
@@ -88,8 +85,8 @@ export default function Sidebar({
           permission: PERMISSIONS.USERS,
         },
         {
-          label: "Permissões",
-          href: "/permissions",
+          label: "Perfis de acesso",
+          href: "/access-profiles",
           Icon: ShieldCheck,
           permission: PERMISSIONS.ACCESS_PROFILES,
         },
@@ -137,12 +134,14 @@ export default function Sidebar({
                 .filter(({ permission }) => hasPermission(permission))
                 .map(({ label, href, Icon }) => (
                   <Link
-                    className={`${styles.navLink} ${pathname === href ? styles.activeLink : ""}`}
+                    className={`${styles.navLink} ${pathname.startsWith(href) ? styles.activeLink : ""}`}
                     data-nav-link
                     href={href}
                     key={href}
                     aria-label={label}
-                    aria-current={pathname === href ? "page" : undefined}
+                    aria-current={
+                      pathname.startsWith(href) ? "page" : undefined
+                    }
                     title={collapsed ? label : undefined}
                     onClick={onClose}
                   >

@@ -196,7 +196,6 @@
 
 .table tbody tr:hover td:first-child {
   color: var(--color-primary);
-  font-weight: 700;
 }
 
 .left {

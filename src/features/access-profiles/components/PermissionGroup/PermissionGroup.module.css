@@ -1,0 +1,239 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--text-secondary, #64748b);
+}
+
+.summary strong {
+  color: var(--text-primary, #111827);
+  font-weight: 600;
+}
+
+.clearButton {
+  border: 0;
+  background: transparent;
+  color: var(--primary-color, #2563eb);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.clearButton:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.clearButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.moduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.moduleCard {
+  overflow: hidden;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 10px;
+  background: var(--card-background, #ffffff);
+  transition: border-color 0.2s ease;
+}
+
+.moduleCard:has(.permissionList) {
+  border-color: var(--border-color, #d1d5db);
+}
+
+.moduleHeader {
+  display: flex;
+  align-items: center;
+  min-height: 76px;
+  gap: 12px;
+  padding: 14px 18px;
+}
+
+.expandButton {
+  display: flex;
+  flex: 0 0 28px;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.expandButton:hover {
+  background: var(--hover-background, #f3f4f6);
+}
+
+.chevron {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--text-secondary, #64748b);
+  border-bottom: 2px solid var(--text-secondary, #64748b);
+  transform: rotate(-45deg);
+  transition: transform 0.2s ease;
+}
+
+.chevronExpanded {
+  transform: rotate(45deg);
+}
+
+.moduleInfo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.moduleName {
+  color: var(--text-primary, #111827);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.moduleDescription {
+  color: var(--text-secondary, #6b7280);
+  font-size: 12px;
+}
+
+.moduleControl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.partialIndicator {
+  color: var(--text-secondary, #64748b);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.permissionList {
+  padding: 0 18px 8px 58px;
+  border-top: 1px solid var(--border-color, #f1f5f9);
+}
+
+.permissionItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 68px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color, #f1f5f9);
+}
+
+.permissionItem:last-child {
+  border-bottom: 0;
+}
+
+.permissionInfo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.permissionName {
+  color: var(--text-primary, #1f2937);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.permissionDescription {
+  color: var(--text-secondary, #6b7280);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Toggle */
+
+.toggle {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 36px;
+  align-items: center;
+  justify-content: flex-start;
+  width: 36px;
+  height: 21px;
+  padding: 3px;
+  border: 0;
+  border-radius: 20px;
+  background: #cbd5e1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.toggle:hover {
+  background: #94a3b8;
+}
+
+.toggleActive {
+  justify-content: flex-end;
+  background: var(--primary-color, #2563eb);
+}
+
+.toggleActive:hover {
+  background: var(--primary-color-hover, #1d4ed8);
+}
+
+.toggleThumb {
+  display: block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 18%);
+  transition: transform 0.2s ease;
+}
+
+.toggle:focus-visible,
+.expandButton:focus-visible,
+.moduleInfo:focus-visible,
+.clearButton:focus-visible {
+  outline: 2px solid var(--primary-color, #2563eb);
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .summary {
+    align-items: flex-start;
+  }
+
+  .moduleHeader {
+    padding: 12px;
+  }
+
+  .permissionList {
+    padding-right: 12px;
+    padding-left: 24px;
+  }
+
+  .permissionItem {
+    min-height: 64px;
+  }
+}

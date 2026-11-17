@@ -1,4 +1,5 @@
 import { notifySessionExpired } from "./session-handler";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export interface ApiErrorDetail {
@@ -12,8 +13,14 @@ interface ApiErrorOptions {
   response?: unknown;
 }
 
-interface ApiRequestOptions extends RequestInit {
+interface ApiRequestOptions extends Omit<RequestInit, "body"> {
   body?: BodyInit | null;
+}
+
+export interface ApiBlob {
+  blob: Blob;
+  fileName: string | null;
+  mimeType: string | null;
 }
 
 export class ApiError extends Error {
@@ -50,36 +57,77 @@ function parseErrorDetails(value: unknown): ApiErrorDetail[] | undefined {
   );
 }
 
-async function request<T>(
-  path: string,
-  options: ApiRequestOptions = {},
-): Promise<T> {
+function serializeBody(body: unknown): BodyInit | null | undefined {
+  if (body === undefined) return undefined;
+
+  if (
+    body instanceof FormData ||
+    body instanceof Blob ||
+    body instanceof URLSearchParams ||
+    body instanceof ArrayBuffer
+  ) {
+    return body;
+  }
+
+  return JSON.stringify(body);
+}
+
+function applyHeaders(headers: Headers, body: BodyInit | null | undefined) {
+  if (body instanceof FormData) {
+    headers.delete("Content-Type");
+    return;
+  }
+
+  if (body) {
+    headers.set("Content-Type", "application/json");
+  }
+}
+
+async function execute(path: string, options: ApiRequestOptions) {
   if (!API_URL) {
     throw new Error("A variável NEXT_PUBLIC_API_URL não está configurada.");
   }
 
   const headers = new Headers(options.headers);
+  applyHeaders(headers, options.body);
 
-  if (options.body && !(options.body instanceof FormData)) {
-    headers.set("Content-Type", "application/json");
+  return fetch(`${API_URL}${path.startsWith("/") ? path : `/${path}`}`, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
+}
+
+function throwApiError(path: string, response: Response, data: unknown): never {
+  const errorBody = isRecord(data) ? data : undefined;
+  const errorData = isRecord(errorBody?.error) ? errorBody.error : undefined;
+
+  const message =
+    typeof errorBody?.message === "string"
+      ? errorBody.message
+      : `Erro na requisição (${response.status}).`;
+
+  const code =
+    typeof errorData?.code === "string" ? errorData.code : "UNKNOWN_ERROR";
+
+  const normalizedPath = path.split("?")[0].replace(/\/+$/, "");
+  const isAuthEndpoint =
+    normalizedPath === "/auth/login" || normalizedPath === "/auth/logout";
+
+  if (response.status === 401 && !isAuthEndpoint) {
+    notifySessionExpired();
   }
 
-  const response = await fetch(
-    `${API_URL}${path.startsWith("/") ? path : `/${path}`}`,
-    {
-      ...options,
-      headers,
-      credentials: "include",
-    },
-  );
+  throw new ApiError(message, response.status, {
+    code,
+    details: parseErrorDetails(errorData?.details),
+    response: data,
+  });
+}
 
-  if (response.status === 204) {
-    return undefined as T;
-  }
-
+async function parseResponseBody(response: Response) {
   const contentType = response.headers.get("content-type");
   const rawBody = await response.text();
-
   let data: unknown = rawBody;
 
   if (contentType?.includes("application/json") && rawBody) {
@@ -90,34 +138,63 @@ async function request<T>(
     }
   }
 
-  if (!response.ok) {
-    const errorBody = isRecord(data) ? data : undefined;
-    const errorData = isRecord(errorBody?.error) ? errorBody.error : undefined;
+  return data;
+}
 
-    const message =
-      typeof errorBody?.message === "string"
-        ? errorBody.message
-        : `Erro na requisição (${response.status}).`;
+function fileNameFromContentDisposition(header: string | null) {
+  if (!header) return null;
 
-    const code =
-      typeof errorData?.code === "string" ? errorData.code : "UNKNOWN_ERROR";
+  const encoded = /filename\*=UTF-8''([^;]+)/i.exec(header);
 
-    const normalizedPath = path.split("?")[0].replace(/\/+$/, "");
-    const isAuthEndpoint =
-      normalizedPath === "/auth/login" || normalizedPath === "/auth/logout";
-
-    if (response.status === 401 && !isAuthEndpoint) {
-      notifySessionExpired();
+  if (encoded?.[1]) {
+    try {
+      return decodeURIComponent(encoded[1]);
+    } catch {
+      return encoded[1];
     }
+  }
 
-    throw new ApiError(message, response.status, {
-      code,
-      details: parseErrorDetails(errorData?.details),
-      response: data,
-    });
+  const quoted = /filename="([^"]*)"/i.exec(header);
+  return quoted?.[1] ?? null;
+}
+
+async function request<T>(
+  path: string,
+  options: ApiRequestOptions = {},
+): Promise<T> {
+  const response = await execute(path, options);
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  const data = await parseResponseBody(response);
+
+  if (!response.ok) {
+    throwApiError(path, response, data);
   }
 
   return data as T;
+}
+
+async function requestBlob(
+  path: string,
+  options: ApiRequestOptions = {},
+): Promise<ApiBlob> {
+  const response = await execute(path, options);
+
+  if (!response.ok) {
+    const data = await parseResponseBody(response);
+    throwApiError(path, response, data);
+  }
+
+  return {
+    blob: await response.blob(),
+    fileName: fileNameFromContentDisposition(
+      response.headers.get("content-disposition"),
+    ),
+    mimeType: response.headers.get("content-type"),
+  };
 }
 
 export const apiClient = {
@@ -129,7 +206,7 @@ export const apiClient = {
     return request<T>(path, {
       ...options,
       method: "POST",
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: serializeBody(body),
     });
   },
 
@@ -137,7 +214,7 @@ export const apiClient = {
     return request<T>(path, {
       ...options,
       method: "PUT",
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: serializeBody(body),
     });
   },
 
@@ -145,11 +222,15 @@ export const apiClient = {
     return request<T>(path, {
       ...options,
       method: "PATCH",
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: serializeBody(body),
     });
   },
 
   delete<T>(path: string, options?: ApiRequestOptions) {
     return request<T>(path, { ...options, method: "DELETE" });
+  },
+
+  getBlob(path: string) {
+    return requestBlob(path, { method: "GET", cache: "no-store" });
   },
 };

@@ -22,12 +22,6 @@ interface ProviderDocumentDrawerProps {
   document?: ProviderDocument;
 }
 
-function toDateInput(value?: string | null) {
-  if (!value) return "";
-
-  return value.slice(0, 10);
-}
-
 export default function ProviderDocumentDrawer({
   open,
   onClose,
@@ -44,9 +38,7 @@ export default function ProviderDocumentDrawer({
   const initialData: ProviderDocumentFormInput | undefined = document
     ? {
         name: document.name,
-        fileName: document.fileName,
-        mimeType: document.mimeType ?? "",
-        sizeBytes: document.sizeBytes,
+        file: null,
         observations: document.observations ?? "",
       }
     : undefined;
@@ -89,9 +81,12 @@ export default function ProviderDocumentDrawer({
       }
     >
       <ProviderDocumentForm
+        key={document?.id ?? "new-provider-document"}
         onSubmit={handleSubmit}
         isLoading={loading}
         initialData={initialData}
+        requireFile={!isEditing}
+        currentFileName={document?.fileName}
       />
     </Drawer>
   );

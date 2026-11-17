@@ -11,6 +11,8 @@ import type { ProviderDocument } from "@/services/api/providers/providers.types"
 interface ProviderDocumentsProps {
   documents: ProviderDocument[];
   onAdd: () => void;
+  onView: (document: ProviderDocument) => void;
+  onDownload: (document: ProviderDocument) => void;
   onEdit: (document: ProviderDocument) => void;
   onDelete: (document: ProviderDocument) => void;
 }
@@ -30,6 +32,8 @@ function formatDate(value?: string | null) {
 export default function ProviderDocuments({
   documents,
   onAdd,
+  onView,
+  onDownload,
   onEdit,
   onDelete,
 }: ProviderDocumentsProps) {
@@ -51,6 +55,18 @@ export default function ProviderDocuments({
         })}
         renderActions={(document) => (
           <>
+            <IconButton
+              action="view"
+              size="sm"
+              onClick={() => onView(document)}
+            />
+
+            <IconButton
+              action="download"
+              size="sm"
+              onClick={() => onDownload(document)}
+            />
+
             <IconButton
               action="edit"
               size="sm"

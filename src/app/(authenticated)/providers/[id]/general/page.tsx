@@ -217,6 +217,46 @@ export default function ProviderGeneralPage() {
     }
   }
 
+  async function handleViewDocument(document: ProviderDocument) {
+    try {
+      await providerDocumentsApi.open(
+        provider.id,
+        document.id,
+        document.fileName,
+      );
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? getApiErrorMessage(error.code, error.message)
+          : error instanceof Error
+            ? error.message
+            : "Não foi possível visualizar o documento. Tente novamente.";
+
+      toast.error(message, {
+        title: "Erro ao visualizar documento",
+      });
+    }
+  }
+
+  async function handleDownloadDocument(document: ProviderDocument) {
+    try {
+      await providerDocumentsApi.download(
+        provider.id,
+        document.id,
+        document.fileName,
+      );
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? getApiErrorMessage(error.code, error.message)
+          : "Não foi possível baixar o documento. Tente novamente.";
+
+      toast.error(message, {
+        title: "Erro ao baixar documento",
+      });
+    }
+  }
+
   function handleOpenCreateDocumentDrawer() {
     openDrawer(
       <ProviderDocumentDrawer
@@ -332,6 +372,8 @@ export default function ProviderGeneralPage() {
       <ProviderDocuments
         documents={provider.documents}
         onAdd={handleOpenCreateDocumentDrawer}
+        onView={handleViewDocument}
+        onDownload={handleDownloadDocument}
         onEdit={handleOpenEditDocumentDrawer}
         onDelete={handleOpenDeleteDocumentModal}
       />

@@ -9,8 +9,9 @@ import Input from "@/components/ui/Input/Input";
 import Textarea from "@/components/ui/Textarea/Textarea";
 
 import {
+  createProviderDocumentFormSchema,
   providerDocumentDefaultValues,
-  providerDocumentSchema,
+  PROVIDER_DOCUMENT_ACCEPT,
   type ProviderDocumentFormData,
   type ProviderDocumentFormInput,
 } from "@/features/providers/schemas/provider-document.schema";
@@ -21,12 +22,16 @@ interface ProviderDocumentFormProps {
   onSubmit: (data: ProviderDocumentFormData) => void | Promise<void>;
   isLoading?: boolean;
   initialData?: ProviderDocumentFormInput;
+  requireFile?: boolean;
+  currentFileName?: string;
 }
 
 export default function ProviderDocumentForm({
   onSubmit,
   isLoading = false,
   initialData,
+  requireFile = true,
+  currentFileName,
 }: ProviderDocumentFormProps) {
   const {
     register,
@@ -34,33 +39,25 @@ export default function ProviderDocumentForm({
     setValue,
     formState: { errors },
   } = useForm<ProviderDocumentFormInput, unknown, ProviderDocumentFormData>({
-    resolver: zodResolver(providerDocumentSchema),
+    resolver: zodResolver(createProviderDocumentFormSchema(requireFile)),
     defaultValues: initialData ?? providerDocumentDefaultValues,
   });
 
   useEffect(() => {
-    register("mimeType");
-    register("sizeBytes");
+    register("file");
   }, [register]);
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
+    const file = event.target.files?.[0] ?? null;
 
-    if (!file) return;
-
-    setValue("fileName", file.name, {
+    setValue("file", file, {
       shouldDirty: true,
       shouldValidate: true,
     });
-
-    setValue("mimeType", file.type || null, {
-      shouldDirty: true,
-    });
-
-    setValue("sizeBytes", file.size, {
-      shouldDirty: true,
-    });
   }
+
+  const fileError =
+    typeof errors.file?.message === "string" ? errors.file.message : undefined;
 
   return (
     <form
@@ -83,9 +80,16 @@ export default function ProviderDocumentForm({
         <Input
           label="Arquivo"
           type="file"
+          accept={PROVIDER_DOCUMENT_ACCEPT}
+          required={requireFile}
           disabled={isLoading}
           onChange={handleFileChange}
-          helperText="Selecione o arquivo que deseja anexar."
+          error={fileError}
+          helperText={
+            currentFileName
+              ? `Arquivo atual: ${currentFileName}. Selecione outro apenas se quiser substituí-lo.`
+              : "PDF, imagens, TXT ou documentos do Office. Tamanho máximo de 10 MB."
+          }
         />
 
         <Textarea

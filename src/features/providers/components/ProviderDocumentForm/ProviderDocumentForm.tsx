@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type ChangeEvent } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -17,6 +17,7 @@ import {
 } from "@/features/providers/schemas/provider-document.schema";
 
 import styles from "./ProviderDocumentForm.module.css";
+import FileUpload from "@/components/ui/FileUpload/FileUpload.tsx";
 
 interface ProviderDocumentFormProps {
   onSubmit: (data: ProviderDocumentFormData) => void | Promise<void>;
@@ -37,6 +38,7 @@ export default function ProviderDocumentForm({
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<ProviderDocumentFormInput, unknown, ProviderDocumentFormData>({
     resolver: zodResolver(createProviderDocumentFormSchema(requireFile)),
@@ -47,17 +49,17 @@ export default function ProviderDocumentForm({
     register("file");
   }, [register]);
 
-  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0] ?? null;
+  const selectedFile = watch("file");
 
+  const fileError =
+    typeof errors.file?.message === "string" ? errors.file.message : undefined;
+
+  function handleFileChange(file: File | null) {
     setValue("file", file, {
       shouldDirty: true,
       shouldValidate: true,
     });
   }
-
-  const fileError =
-    typeof errors.file?.message === "string" ? errors.file.message : undefined;
 
   return (
     <form
@@ -77,19 +79,17 @@ export default function ProviderDocumentForm({
           {...register("name")}
         />
 
-        <Input
+        <FileUpload
           label="Arquivo"
-          type="file"
+          file={selectedFile ?? null}
+          onChange={handleFileChange}
+          currentFileName={currentFileName}
           accept={PROVIDER_DOCUMENT_ACCEPT}
           required={requireFile}
           disabled={isLoading}
-          onChange={handleFileChange}
           error={fileError}
-          helperText={
-            currentFileName
-              ? `Arquivo atual: ${currentFileName}. Selecione outro apenas se quiser substituí-lo.`
-              : "PDF, imagens, TXT ou documentos do Office. Tamanho máximo de 10 MB."
-          }
+          helperText="PDF, imagens, TXT ou documentos do Office."
+          maxSizeMB={10}
         />
 
         <Textarea

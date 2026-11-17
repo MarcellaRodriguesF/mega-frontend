@@ -12,6 +12,7 @@ interface ListProps<T> {
   keyExtractor: (item: T) => string;
   getItem: (item: T) => ListItemData;
   renderActions?: (item: T) => ReactNode;
+  onItemClick?: (item: T) => void;
   isLoading?: boolean;
 }
 
@@ -20,6 +21,7 @@ export function List<T>({
   keyExtractor,
   getItem,
   renderActions,
+  onItemClick,
   isLoading = false,
 }: ListProps<T>) {
   return (
@@ -34,17 +36,36 @@ export function List<T>({
             const { title, subtitle, description } = getItem(item);
 
             return (
-              <div key={keyExtractor(item)} className={styles.item}>
+              <div
+                key={keyExtractor(item)}
+                className={`${styles.item} ${onItemClick ? styles.clickable : ""}`}
+                onClick={onItemClick ? () => onItemClick(item) : undefined}
+                onKeyDown={
+                  onItemClick
+                    ? (event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          onItemClick(item);
+                        }
+                      }
+                    : undefined
+                }
+                role={onItemClick ? "button" : undefined}
+                tabIndex={onItemClick ? 0 : undefined}
+              >
                 <div className={styles.content}>
                   <strong className={styles.title}>{title}</strong>
-
                   <span className={styles.subtitle}>{subtitle}</span>
-
                   <span className={styles.description}>{description}</span>
                 </div>
 
                 {renderActions && (
-                  <div className={styles.actions}>{renderActions(item)}</div>
+                  <div
+                    className={styles.actions}
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    {renderActions(item)}
+                  </div>
                 )}
               </div>
             );

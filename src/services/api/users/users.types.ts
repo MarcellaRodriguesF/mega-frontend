@@ -10,6 +10,7 @@ export interface AccessProfile {
 export interface User {
   id: string;
   email: string;
+  name: string;
   accessProfileId: string;
   status: UserStatus;
   lastLoginAt: string | null;
@@ -20,12 +21,14 @@ export interface User {
 
 export interface CreateUserRequest {
   email: string;
+  name: string;
   password: string;
   accessProfileId: string;
 }
 
 export interface UpdateUserRequest {
   email?: string;
+  name?: string;
   password?: string;
   accessProfileId?: string;
   status?: UserStatus;

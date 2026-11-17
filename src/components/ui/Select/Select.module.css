@@ -1,7 +1,9 @@
 .field {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 7px;
   min-width: 0;
+  width: 100%;
 }
 
 .label {

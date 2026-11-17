@@ -44,11 +44,9 @@ export default function ProviderDocumentDrawer({
   const initialData: ProviderDocumentFormInput | undefined = document
     ? {
         name: document.name,
-        type: document.type,
         fileName: document.fileName,
         mimeType: document.mimeType ?? "",
         sizeBytes: document.sizeBytes,
-        expiresAt: toDateInput(document.expiresAt),
         observations: document.observations ?? "",
       }
     : undefined;

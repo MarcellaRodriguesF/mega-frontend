@@ -5,23 +5,19 @@ import type { ProviderDocument } from "../providers/providers.types";
 
 export interface CreateProviderDocumentRequest {
   name: string;
-  type: string;
   fileName: string;
-  storageKey?: string;
+  storageKey: string;
   mimeType?: string | null;
   sizeBytes?: number | null;
-  expiresAt?: string | null;
   observations?: string | null;
 }
 
 export interface UpdateProviderDocumentRequest {
   name?: string;
-  type?: string;
   fileName?: string;
   storageKey?: string;
   mimeType?: string | null;
   sizeBytes?: number | null;
-  expiresAt?: string | null;
   observations?: string | null;
 }
 

@@ -17,7 +17,7 @@ export interface ProviderDocument {
   id: string;
   providerId: string;
   name: string;
-  type: string;
+  type: string | null;
   fileName: string;
   storageKey: string;
   mimeType: string | null;

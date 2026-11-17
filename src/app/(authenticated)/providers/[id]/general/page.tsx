@@ -6,21 +6,13 @@ import Card from "@/components/ui/Card/Card";
 import InfoCardGrid from "@/components/ui/InfoCardGrid/InfoCardGrid";
 import InfoField from "@/components/ui/InfoField/InfoField";
 import Modal from "@/components/ui/Modal/Modal";
-import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
-
 import ProviderContactDrawer from "@/features/providers/components/ProviderContactDrawer/ProviderContactDrawer";
 import ProviderContacts from "@/features/providers/components/ProviderContacts/ProviderContacts";
 import ProviderDocumentDrawer from "@/features/providers/components/ProviderDocumentDrawer/ProviderDocumentDrawer";
 import ProviderDocuments from "@/features/providers/components/ProviderDocuments/ProviderDocuments";
-
 import { useProvider } from "@/contexts/ProviderContext";
 import { useDrawer } from "@/hooks/useDrawer";
 import { useToast } from "@/contexts/ToastContext";
-
-import {
-  ProviderStatusColor,
-  ProviderStatusLabel,
-} from "@/constants/enums/providers/provider-status.enum";
 
 import { providerContactsApi } from "@/services/api/provider-contacts/provider-contacts.api";
 import { providerDocumentsApi } from "@/services/api/provider-documents/provider-documents.api";
@@ -34,16 +26,6 @@ import type {
   ProviderDocument,
 } from "@/services/api/providers/providers.types";
 import ContactActions from "@/components/ui/ContactActions/ContactActions";
-
-function formatDate(value: string) {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) return "—";
-
-  return new Intl.DateTimeFormat("pt-BR", {
-    dateStyle: "short",
-  }).format(date);
-}
 
 export default function ProviderGeneralPage() {
   const { provider, updateProvider } = useProvider();

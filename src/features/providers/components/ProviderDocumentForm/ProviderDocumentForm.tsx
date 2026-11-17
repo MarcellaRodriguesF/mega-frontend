@@ -52,9 +52,11 @@ export default function ProviderDocumentForm({
       shouldDirty: true,
       shouldValidate: true,
     });
-    setValue("mimeType", file.type, {
+
+    setValue("mimeType", file.type || null, {
       shouldDirty: true,
     });
+
     setValue("sizeBytes", file.size, {
       shouldDirty: true,
     });
@@ -79,44 +81,16 @@ export default function ProviderDocumentForm({
         />
 
         <Input
-          label="Tipo"
-          placeholder="Ex.: Contrato"
-          required
-          maxLength={50}
-          disabled={isLoading}
-          error={errors.type?.message}
-          {...register("type")}
-        />
-
-        <Input
           label="Arquivo"
           type="file"
           disabled={isLoading}
           onChange={handleFileChange}
-          helperText="Selecione um arquivo para preencher o nome, o tipo e o tamanho."
-        />
-
-        <Input
-          label="Nome do arquivo"
-          placeholder="contrato.pdf"
-          required
-          maxLength={255}
-          disabled={isLoading}
-          error={errors.fileName?.message}
-          {...register("fileName")}
-        />
-
-        <Input
-          label="Validade"
-          type="date"
-          disabled={isLoading}
-          error={errors.expiresAt?.message}
-          {...register("expiresAt")}
+          helperText="Selecione o arquivo que deseja anexar."
         />
 
         <Textarea
           label="Observações"
-          placeholder="Informações sobre este documento..."
+          placeholder="Informações adicionais sobre este documento..."
           rows={4}
           disabled={isLoading}
           error={errors.observations?.message}

@@ -7,9 +7,6 @@ import Card from "@/components/ui/Card/Card";
 import IconButton from "@/components/ui/IconButton/IconButton";
 import { List } from "@/components/ui/List/List";
 import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
-
-import { formatPhone } from "@/utils/format-phone";
-
 import type { ProviderContact } from "@/services/api/providers/providers.types";
 
 import styles from "./ProviderContacts.module.css";

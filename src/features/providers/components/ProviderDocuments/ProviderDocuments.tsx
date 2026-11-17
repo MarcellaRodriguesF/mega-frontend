@@ -45,16 +45,9 @@ export default function ProviderDocuments({
         keyExtractor={(document) => document.id}
         getItem={(document) => ({
           title: document.name,
-          subtitle: document.type,
-          description:
-            [
-              document.fileName,
-              formatDate(document.expiresAt)
-                ? `Validade ${formatDate(document.expiresAt)}`
-                : null,
-            ]
-              .filter(Boolean)
-              .join(" · ") || "—",
+          description: document.fileName || "Arquivo não informado",
+          subtitle:
+            formatDate(document.createdAt) || "Data de criação não informada",
         })}
         renderActions={(document) => (
           <>

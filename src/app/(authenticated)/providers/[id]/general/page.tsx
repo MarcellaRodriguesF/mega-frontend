@@ -33,6 +33,7 @@ import type {
   ProviderContact,
   ProviderDocument,
 } from "@/services/api/providers/providers.types";
+import ContactActions from "@/components/ui/ContactActions/ContactActions";
 
 function formatDate(value: string) {
   const date = new Date(value);
@@ -63,7 +64,7 @@ export default function ProviderGeneralPage() {
     const contacts = provider.contacts
       .filter((item) => item.id !== contact.id)
       .map((item) =>
-        contact.isPrimary ? { ...item, isPrimary: false } : item,
+        contact.isPrimary ? { ...item, isPrimary: false } : item
       );
 
     updateProvider({
@@ -75,7 +76,7 @@ export default function ProviderGeneralPage() {
   function sortDocuments(documents: ProviderDocument[]) {
     return [...documents].sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   }
 
@@ -120,19 +121,19 @@ export default function ProviderGeneralPage() {
         onClose={closeDrawer}
         onSubmit={handleCreateContact}
         mode="create"
-      />,
+      />
     );
   }
 
   async function handleUpdateContact(
     contactId: string,
-    data: ProviderContactFormData,
+    data: ProviderContactFormData
   ) {
     try {
       const response = await providerContactsApi.update(
         provider.id,
         contactId,
-        data,
+        data
       );
 
       updateContactList(response.data);
@@ -163,7 +164,7 @@ export default function ProviderGeneralPage() {
         onSubmit={(data) => handleUpdateContact(contact.id, data)}
         mode="edit"
         contact={contact}
-      />,
+      />
     );
   }
 
@@ -206,7 +207,7 @@ export default function ProviderGeneralPage() {
         cancelText="Cancelar"
         onConfirm={() => handleDeleteContact(contact)}
         onClose={closeDrawer}
-      />,
+      />
     );
   }
 
@@ -241,19 +242,19 @@ export default function ProviderGeneralPage() {
         onClose={closeDrawer}
         onSubmit={handleCreateDocument}
         mode="create"
-      />,
+      />
     );
   }
 
   async function handleUpdateDocument(
     documentId: string,
-    data: ProviderDocumentFormData,
+    data: ProviderDocumentFormData
   ) {
     try {
       const response = await providerDocumentsApi.update(
         provider.id,
         documentId,
-        data,
+        data
       );
 
       updateDocumentList(response.data);
@@ -284,7 +285,7 @@ export default function ProviderGeneralPage() {
         onSubmit={(data) => handleUpdateDocument(document.id, data)}
         mode="edit"
         document={document}
-      />,
+      />
     );
   }
 
@@ -327,7 +328,7 @@ export default function ProviderGeneralPage() {
         cancelText="Cancelar"
         onConfirm={() => handleDeleteDocument(document)}
         onClose={closeDrawer}
-      />,
+      />
     );
   }
 
@@ -335,20 +336,8 @@ export default function ProviderGeneralPage() {
     <InfoCardGrid>
       <Card title="Dados cadastrais" icon={<Buildings size={20} />}>
         <InfoField label="Nome" value={provider.name} />
-
-        <InfoField
-          label="Status"
-          value={
-            <StatusBadge
-              label={ProviderStatusLabel(provider.status)}
-              color={ProviderStatusColor(provider.status)}
-            />
-          }
-        />
-
-        <InfoField label="Observações" value={provider.observations} />
-
-        <InfoField label="Cadastro" value={formatDate(provider.createdAt)} />
+        <InfoField label="Observações" value={provider.observations} />{" "}
+        <ContactActions phone={provider.phone} label="Telefone" />
       </Card>
 
       <ProviderContacts

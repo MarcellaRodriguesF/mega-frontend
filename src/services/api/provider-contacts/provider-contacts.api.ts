@@ -8,7 +8,6 @@ export interface CreateProviderContactRequest {
   role?: string | null;
   email?: string | null;
   phone?: string | null;
-  whatsapp?: string | null;
   isPrimary?: boolean;
 }
 
@@ -17,7 +16,6 @@ export interface UpdateProviderContactRequest {
   role?: string | null;
   email?: string | null;
   phone?: string | null;
-  whatsapp?: string | null;
   isPrimary?: boolean;
 }
 

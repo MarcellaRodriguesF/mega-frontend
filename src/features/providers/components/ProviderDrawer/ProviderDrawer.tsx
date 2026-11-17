@@ -97,6 +97,7 @@ export default function ProviderDrawer(props: ProviderDrawerProps) {
           isLoading={loading}
           initialData={{
             name: props.provider.name,
+            phone: props.provider.phone ?? "",
             observations: props.provider.observations ?? "",
             status: props.provider.status,
           }}

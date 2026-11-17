@@ -31,10 +31,6 @@ const providerContactDraftSchema = z
       .string()
       .trim()
       .max(20, "O telefone deve ter no máximo 20 caracteres."),
-    whatsapp: z
-      .string()
-      .trim()
-      .max(20, "O WhatsApp deve ter no máximo 20 caracteres."),
     isPrimary: z.boolean(),
   })
   .superRefine((contact, context) => {
@@ -43,7 +39,6 @@ const providerContactDraftSchema = z
       contact.role,
       contact.email,
       contact.phone,
-      contact.whatsapp,
     ].some((value) => value.length > 0);
 
     if (!hasValue) return;
@@ -76,7 +71,6 @@ function toNullableContact(contact: ProviderContactDraft) {
     contact.role,
     contact.email,
     contact.phone,
-    contact.whatsapp,
   ].some((value) => value.length > 0);
 
   if (!hasValue) return null;
@@ -86,7 +80,6 @@ function toNullableContact(contact: ProviderContactDraft) {
     role: contact.role || null,
     email: contact.email || null,
     phone: contact.phone || null,
-    whatsapp: contact.whatsapp || null,
     isPrimary: contact.isPrimary,
   };
 }
@@ -94,17 +87,20 @@ function toNullableContact(contact: ProviderContactDraft) {
 export const providerFormSchema = z
   .object({
     name: providerNameSchema,
+    phone: z.string().trim().max(20, "O telefone deve ter no máximo 20 caracteres."),
     observations: providerObservationsSchema,
     contact: providerContactDraftSchema,
   })
   .transform((data) => ({
     name: data.name,
+    phone: data.phone,
     observations: data.observations,
     contact: toNullableContact(data.contact),
   }));
 
 export const providerEditFormSchema = z.object({
   name: providerNameSchema,
+  phone: z.string().trim().max(20, "O telefone deve ter no máximo 20 caracteres."),
   observations: providerObservationsSchema,
   status: z.nativeEnum(ProviderStatus),
 });
@@ -120,6 +116,5 @@ export const providerContactDraftDefaultValues: ProviderContactDraft = {
   role: "",
   email: "",
   phone: "",
-  whatsapp: "",
   isPrimary: true,
 };

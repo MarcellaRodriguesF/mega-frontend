@@ -13,6 +13,7 @@ import { formatPhone } from "@/utils/format-phone";
 import type { ProviderContact } from "@/services/api/providers/providers.types";
 
 import styles from "./ProviderContacts.module.css";
+import ContactActions from "@/components/ui/ContactActions/ContactActions";
 
 interface ProviderContactsProps {
   contacts: ProviderContact[];
@@ -57,16 +58,9 @@ export default function ProviderContacts({
             </span>
           ),
           subtitle: contact.role || "Cargo não informado",
-          description:
-            [
-              contact.email,
-              contact.phone ? `Tel. ${formatPhone(contact.phone)}` : null,
-              contact.whatsapp
-                ? `WhatsApp ${formatPhone(contact.whatsapp)}`
-                : null,
-            ]
-              .filter(Boolean)
-              .join(" · ") || "—",
+          description: (
+            <ContactActions phone={contact.phone} label="Telefone" />
+          ),
         })}
         renderActions={(contact) => (
           <>

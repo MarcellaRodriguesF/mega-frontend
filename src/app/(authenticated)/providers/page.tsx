@@ -76,6 +76,7 @@ export default function ProvidersPage() {
       const response = await providersApi.create({
         name: data.name,
         observations: data.observations,
+        phone: data.phone,
       });
 
       if (data.contact) {
@@ -125,7 +126,7 @@ export default function ProvidersPage() {
         open
         onClose={closeDrawer}
         onSubmit={handleCreateProvider}
-      />,
+      />
     );
   }
 

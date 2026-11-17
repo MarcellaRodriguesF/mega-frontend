@@ -2,10 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import CheckBoxInput from "@/components/ui/CheckBoxInput/CheckBoxInput";
 import Input from "@/components/ui/Input/Input";
-import Select from "@/components/ui/Select/Select";
 import Textarea from "@/components/ui/Textarea/Textarea";
 
 import { ProviderStatus } from "@/constants/enums/providers/provider-status.enum";
@@ -21,6 +18,7 @@ import {
 } from "@/features/providers/schemas/provider-form.schema";
 
 import styles from "./ProviderForm.module.css";
+import FormSection from "@/components/ui/FormSection/FormSection";
 
 interface ProviderCreateFormProps {
   mode?: "create";
@@ -60,6 +58,7 @@ function ProviderCreateForm({
     resolver: zodResolver(providerFormSchema),
     defaultValues: {
       name: "",
+      phone: "",
       observations: "",
       contact: providerContactDraftDefaultValues,
     },
@@ -72,59 +71,15 @@ function ProviderCreateForm({
       onSubmit={handleSubmit(onSubmit)}
       noValidate
     >
-      <Input
-        label="Nome do provedor"
-        placeholder="Ex.: Mega Telecom"
-        required
-        maxLength={255}
-        disabled={isLoading}
-        error={errors.name?.message}
-        {...register("name")}
-      />
-
-      <Textarea
-        label="Observações"
-        placeholder="Digite informações relevantes sobre o provedor..."
-        rows={4}
-        disabled={isLoading}
-        error={errors.observations?.message}
-        {...register("observations")}
-      />
-
-      <div className={styles.contactSection}>
-        <div>
-          <h3 className={styles.sectionTitle}>Contato</h3>
-          <p className={styles.sectionDescription}>
-            Opcional. Cadastre um contato junto com o provedor.
-          </p>
-        </div>
-
+      <FormSection isContentGrid>
         <Input
-          label="Nome do contato"
-          placeholder="Ex.: João Silva"
-          maxLength={150}
-          disabled={isLoading}
-          error={errors.contact?.name?.message}
-          {...register("contact.name")}
-        />
-
-        <Input
-          label="Cargo"
-          placeholder="Ex.: Gerente comercial"
-          maxLength={100}
-          disabled={isLoading}
-          error={errors.contact?.role?.message}
-          {...register("contact.role")}
-        />
-
-        <Input
-          label="E-mail"
-          type="email"
-          placeholder="Ex.: joao@provedor.com"
+          label="Nome do provedor"
+          placeholder="Ex.: Mega Telecom"
+          required
           maxLength={255}
           disabled={isLoading}
-          error={errors.contact?.email?.message}
-          {...register("contact.email")}
+          error={errors.name?.message}
+          {...register("name")}
         />
 
         <Input
@@ -134,28 +89,19 @@ function ProviderCreateForm({
           inputMode="tel"
           type="phone"
           disabled={isLoading}
-          error={errors.contact?.phone?.message}
-          {...register("contact.phone")}
+          error={errors.phone?.message}
+          {...register("phone")}
         />
 
-        <Input
-          label="WhatsApp"
-          placeholder="(34) 99999-9999"
-          maxLength={20}
-          inputMode="tel"
-          type="phone"
+        <Textarea
+          label="Observações"
+          placeholder="Digite informações relevantes sobre o provedor..."
+          rows={4}
           disabled={isLoading}
-          error={errors.contact?.whatsapp?.message}
-          {...register("contact.whatsapp")}
+          error={errors.observations?.message}
+          {...register("observations")}
         />
-
-        <CheckBoxInput
-          label="Definir como contato principal"
-          helperText="Este contato será identificado como o principal do provedor."
-          disabled={isLoading}
-          {...register("contact.isPrimary")}
-        />
-      </div>
+      </FormSection>
     </form>
   );
 }
@@ -176,6 +122,7 @@ function ProviderEditForm({
       name: initialData?.name ?? "",
       observations: initialData?.observations ?? "",
       status: initialData?.status ?? ProviderStatus.ACTIVE,
+      phone: initialData?.phone ?? "",
     },
   });
 
@@ -186,35 +133,37 @@ function ProviderEditForm({
       onSubmit={handleSubmit(onSubmit)}
       noValidate
     >
-      <Input
-        label="Nome do provedor"
-        placeholder="Ex.: Mega Telecom"
-        required
-        maxLength={255}
-        disabled={isLoading}
-        error={errors.name?.message}
-        {...register("name")}
-      />
+      <FormSection isContentGrid>
+        <Input
+          label="Nome do provedor"
+          placeholder="Ex.: Mega Telecom"
+          required
+          maxLength={255}
+          disabled={isLoading}
+          error={errors.name?.message}
+          {...register("name")}
+        />
 
-      <Select
-        label="Status"
-        disabled={isLoading}
-        error={errors.status?.message}
-        options={[
-          { value: ProviderStatus.ACTIVE, label: "Ativo" },
-          { value: ProviderStatus.INACTIVE, label: "Inativo" },
-        ]}
-        {...register("status")}
-      />
+        <Input
+          label="Telefone"
+          placeholder="(34) 3333-4444"
+          maxLength={20}
+          inputMode="tel"
+          type="phone"
+          disabled={isLoading}
+          error={errors.phone?.message}
+          {...register("phone")}
+        />
 
-      <Textarea
-        label="Observações"
-        placeholder="Digite informações relevantes sobre o provedor..."
-        rows={4}
-        disabled={isLoading}
-        error={errors.observations?.message}
-        {...register("observations")}
-      />
+        <Textarea
+          label="Observações"
+          placeholder="Digite informações relevantes sobre o provedor..."
+          rows={4}
+          disabled={isLoading}
+          error={errors.observations?.message}
+          {...register("observations")}
+        />
+      </FormSection>
     </form>
   );
 }

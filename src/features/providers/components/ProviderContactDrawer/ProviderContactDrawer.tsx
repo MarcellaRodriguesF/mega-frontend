@@ -41,7 +41,6 @@ export default function ProviderContactDrawer({
         role: contact.role ?? "",
         email: contact.email ?? "",
         phone: contact.phone ?? "",
-        whatsapp: contact.whatsapp ?? "",
         isPrimary: contact.isPrimary,
       }
     : undefined;

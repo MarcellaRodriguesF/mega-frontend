@@ -29,9 +29,6 @@ export const providerContactSchema = z.object({
     ),
 
   phone: optionalText(20, "O telefone deve ter no máximo 20 caracteres."),
-
-  whatsapp: optionalText(20, "O WhatsApp deve ter no máximo 20 caracteres."),
-
   isPrimary: z.boolean(),
 });
 
@@ -43,6 +40,5 @@ export const providerContactDefaultValues: ProviderContactFormInput = {
   role: "",
   email: "",
   phone: "",
-  whatsapp: "",
   isPrimary: false,
 };

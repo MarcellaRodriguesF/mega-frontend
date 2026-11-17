@@ -8,7 +8,6 @@ export interface ProviderContact {
   role: string | null;
   email: string | null;
   phone: string | null;
-  whatsapp: string | null;
   isPrimary: boolean;
   createdAt: string;
   updatedAt: string;
@@ -46,6 +45,7 @@ export interface Provider {
   id: string;
   name: string;
   status: ProviderStatus;
+  phone: string | null;
   observations: string | null;
   contacts: ProviderContact[];
   documents: ProviderDocument[];
@@ -60,12 +60,14 @@ export interface Provider {
 export interface CreateProviderRequest {
   name: string;
   observations?: string | null;
+  phone?: string | null;
 }
 
 export interface UpdateProviderRequest {
   name?: string;
   observations?: string | null;
   status?: ProviderStatus;
+  phone?: string | null;
 }
 
 export type ProviderResponse = ApiSuccess<Provider>;

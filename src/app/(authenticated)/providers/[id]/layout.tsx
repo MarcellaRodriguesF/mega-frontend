@@ -104,7 +104,7 @@ export default function ProviderDetailsLayout({
       const response = await providersApi.update(params.id, {
         name: data.name,
         observations: data.observations,
-        status: data.status,
+        phone: data.phone,
       });
 
       setProvider(response.data);

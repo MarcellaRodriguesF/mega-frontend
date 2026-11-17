@@ -2,8 +2,6 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import CheckBoxInput from "@/components/ui/CheckBoxInput/CheckBoxInput";
 import FormSection from "@/components/ui/FormSection/FormSection";
 import Input from "@/components/ui/Input/Input";
 
@@ -83,25 +81,7 @@ export default function ProviderContactForm({
           error={errors.phone?.message}
           {...register("phone")}
         />
-
-        <Input
-          label="WhatsApp"
-          placeholder="(34) 99999-9999"
-          maxLength={20}
-          inputMode="tel"
-          type="phone"
-          disabled={isLoading}
-          error={errors.whatsapp?.message}
-          {...register("whatsapp")}
-        />
       </FormSection>
-
-      <CheckBoxInput
-        label="Definir como contato principal"
-        helperText="Este contato será identificado como o principal do provedor."
-        disabled={isLoading}
-        {...register("isPrimary")}
-      />
     </form>
   );
 }

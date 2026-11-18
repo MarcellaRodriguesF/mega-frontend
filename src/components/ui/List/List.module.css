@@ -1,7 +1,6 @@
 .container {
   width: 100%;
   overflow: hidden;
-  background: var(--background, #ffffff);
 }
 
 .items {

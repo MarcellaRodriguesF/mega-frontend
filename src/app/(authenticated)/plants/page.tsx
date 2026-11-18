@@ -41,23 +41,15 @@ export default function PlantsPage() {
     }
   }, [toast]);
 
-  useEffect(() => {
-    loadUnits();
-  }, [loadUnits]);
+  //   useEffect(() => {
+  //     loadUnits();
+  //   }, [loadUnits]);
 
   return (
     <PageContainer>
       <PageHeader
-        title="Usinas"
-        description="Gerencie as usinas e unidades vinculadas às empresas."
-        action={
-          <Button
-            text="Nova usina"
-            onClick={() => {
-              // Vamos conectar o formulário nesta próxima etapa.
-            }}
-          />
-        }
+        title="Unidades"
+        description="Gerencie as unidades vinculadas às empresas."
       />
 
       <UnitList units={units} isLoading={isLoading} />

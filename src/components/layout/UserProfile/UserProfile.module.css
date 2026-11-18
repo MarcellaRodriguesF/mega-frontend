@@ -1,0 +1,174 @@
+.profile {
+  position: relative;
+  min-width: 0;
+}
+
+.profileButton {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.profileButton:hover,
+.profileButton[aria-expanded="true"] {
+  border-color: var(--color-border);
+  background: var(--color-muted-surface);
+}
+
+.profileButton:focus-visible,
+.logoutButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.avatar {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.userInfo {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.name,
+.email,
+.dropdownName,
+.dropdownEmail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.name {
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.email {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+}
+
+.caret {
+  flex: 0 0 auto;
+  color: var(--color-text-secondary);
+}
+
+.dropdown {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(280px, calc(100vw - 24px));
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  box-shadow: var(--sidebar-shadow);
+}
+
+.dropdownUser {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+}
+
+.dropdownName {
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dropdownEmail {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.divider {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--color-border);
+}
+
+.logoutButton {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0 10px;
+  width: fit-content;
+}
+
+.logoutButton:hover:not(:disabled) {
+  background: var(--color-muted-surface);
+  color: var(--color-primary);
+}
+
+.logoutButton:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.error {
+  margin: 8px 10px;
+  color: var(--color-danger, #dc2626);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.container {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+@media (max-width: 640px) {
+  .userInfo,
+  .caret {
+    display: none;
+  }
+
+  .profileButton {
+    padding: 2px;
+  }
+}

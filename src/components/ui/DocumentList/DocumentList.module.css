@@ -1,0 +1,153 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.document {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 72px;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+  border-bottom-color: #e9e9e9;
+  border-radius: 9px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.document:last-child {
+  border-bottom-color: transparent;
+}
+
+.document:hover {
+  background: #f7f8f7;
+  border-color: #e9e9e9;
+}
+
+.document:focus-visible {
+  outline: 2px solid var(--color-primary, #496b35);
+  outline-offset: 2px;
+}
+
+.fileIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 42px;
+  border-radius: 7px;
+  color: #737373;
+  background: #f3f4f3;
+}
+
+.info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  gap: 5px;
+}
+
+.name {
+  overflow: hidden;
+  color: #292929;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metadata {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: #858585;
+  font-size: 11px;
+}
+
+.separator {
+  color: #b5b5b5;
+}
+
+.menuWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.menuButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  color: #777;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.menuButton:hover {
+  background: #e9ebe9;
+}
+
+.menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 5px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  width: 170px;
+  padding: 5px;
+  border: 1px solid #ededed;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  color: #444;
+  background: transparent;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu button:hover {
+  background: #f5f5f5;
+}
+
+.menu .deleteAction {
+  color: #d04444;
+}
+
+.state {
+  padding: 28px 16px;
+  color: #858585;
+  font-size: 13px;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .document {
+    gap: 10px;
+    padding: 10px 8px;
+  }
+}

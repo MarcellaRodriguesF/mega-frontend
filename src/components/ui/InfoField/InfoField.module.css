@@ -1,0 +1,18 @@
+.infoField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.infoFieldLabel {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.infoFieldValue {
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}

@@ -1,0 +1,44 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.description {
+  margin: 0 0 14px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.validation {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--color-background-secondary);
+}
+
+.validation strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.validation p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}

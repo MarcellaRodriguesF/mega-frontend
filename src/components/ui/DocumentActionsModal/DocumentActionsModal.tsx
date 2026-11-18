@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
-
-import { X, Eye, Download, FileText } from "@phosphor-icons/react";
+import { DownloadSimple, Eye, X } from "@phosphor-icons/react";
 
 import styles from "./DocumentActionsModal.module.css";
 
@@ -10,8 +8,8 @@ interface DocumentActionsModalProps {
   open: boolean;
   documentName: string;
   onClose: () => void;
-  onView: () => void | Promise<void>;
-  onDownload: () => void | Promise<void>;
+  onView: () => void;
+  onDownload: () => void;
 }
 
 export default function DocumentActionsModal({
@@ -21,91 +19,38 @@ export default function DocumentActionsModal({
   onView,
   onDownload,
 }: DocumentActionsModalProps) {
-  useEffect(() => {
-    if (!open) return;
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open, onClose]);
-
   if (!open) return null;
 
-  async function handleView() {
-    await onView();
-    onClose();
-  }
-
-  async function handleDownload() {
-    await onDownload();
-    onClose();
-  }
-
   return (
-    <div
-      className={styles.overlay}
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
-    >
+    <div className={styles.overlay} onClick={onClose}>
       <div
         className={styles.modal}
         role="dialog"
         aria-modal="true"
         aria-labelledby="document-actions-title"
-        aria-describedby="document-actions-description"
+        onClick={(event) => event.stopPropagation()}
       >
         <button
           type="button"
-          className={styles.closeButton}
+          className={styles.close}
           onClick={onClose}
-          aria-label="Fechar modal"
+          aria-label="Fechar"
         >
-          <X size={20} />
+          <X size={19} />
         </button>
 
-        <div className={styles.iconWrapper}>
-          <FileText size={28} weight="duotone" />
-        </div>
+        <h3 id="document-actions-title">{documentName}</h3>
 
-        <h2 id="document-actions-title" className={styles.title}>
-          Documento
-        </h2>
-
-        <p
-          id="document-actions-description"
-          className={styles.description}
-          title={documentName}
-        >
-          {documentName}
-        </p>
+        <p>O que deseja fazer com este documento?</p>
 
         <div className={styles.actions}>
-          <button
-            type="button"
-            className={styles.actionButton}
-            onClick={handleView}
-          >
+          <button type="button" onClick={onView}>
             <Eye size={19} />
             Visualizar
           </button>
 
-          <button
-            type="button"
-            className={styles.actionButton}
-            onClick={handleDownload}
-          >
-            <Download size={19} />
+          <button type="button" onClick={onDownload}>
+            <DownloadSimple size={19} />
             Baixar
           </button>
         </div>

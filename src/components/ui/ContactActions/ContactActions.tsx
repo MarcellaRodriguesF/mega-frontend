@@ -18,7 +18,7 @@ export default function ContactActions({ label, phone }: ContactActionsProps) {
 
   return (
     <div className={styles.container}>
-      <span className={styles.label}>{label}:</span>
+      {/* <span className={styles.label}>{label}:</span> */}
 
       {hasPhone ? (
         <button

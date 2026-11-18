@@ -1,13 +1,13 @@
+
 "use client";
 
-import { useState } from "react";
 import { FileText } from "@phosphor-icons/react";
 
 import Card from "@/components/ui/Card/Card";
 import IconButton from "@/components/ui/IconButton/IconButton";
-import { List } from "@/components/ui/List/List";
-import DocumentActionsModal from "@/components/ui/DocumentActionsModal/DocumentActionsModal";
+import DocumentList from "@/components/ui/DocumentList/DocumentList";
 
+import type { DocumentListItem } from "@/types/document.types";
 import type { ProviderDocument } from "@/services/api/providers/providers.types";
 
 interface ProviderDocumentsProps {
@@ -19,18 +19,6 @@ interface ProviderDocumentsProps {
   onDelete: (document: ProviderDocument) => void;
 }
 
-function formatDate(value?: string | null) {
-  if (!value) return null;
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) return null;
-
-  return new Intl.DateTimeFormat("pt-BR", {
-    dateStyle: "short",
-  }).format(date);
-}
-
 export default function ProviderDocuments({
   documents,
   onAdd,
@@ -39,57 +27,46 @@ export default function ProviderDocuments({
   onEdit,
   onDelete,
 }: ProviderDocumentsProps) {
-  const [selectedDocument, setSelectedDocument] =
-    useState<ProviderDocument | null>(null);
+  const documentItems: DocumentListItem[] = documents.map((document) => ({
+    id: document.id,
+    name: document.name,
+    fileName: document.fileName,
+    mimeType: document.mimeType,
+    createdAt: document.createdAt,
+  }));
+
+  function getProviderDocument(item: DocumentListItem) {
+    return documents.find((document) => document.id === item.id);
+  }
 
   return (
-    <>
-      <Card
-        title="Documentos"
-        display="default"
-        icon={<FileText size={20} />}
-        actions={<IconButton action="add" size="sm" onClick={onAdd} />}
-      >
-        <List
-          items={documents}
-          keyExtractor={(document) => document.id}
-          getItem={(document) => ({
-            title: document.name,
-            description: document.fileName || "Arquivo não informado",
-            subtitle:
-              formatDate(document.createdAt) || "Data de criação não informada",
-          })}
-          onItemClick={setSelectedDocument}
-          renderActions={(document) => (
-            <>
-              <IconButton
-                action="edit"
-                size="sm"
-                onClick={() => onEdit(document)}
-              />
-              <IconButton
-                action="delete"
-                size="sm"
-                onClick={() => onDelete(document)}
-              />
-            </>
-          )}
-        />
-      </Card>
-
-      <DocumentActionsModal
-        open={!!selectedDocument}
-        documentName={selectedDocument?.name ?? ""}
-        onClose={() => setSelectedDocument(null)}
-        onView={() => {
-          if (!selectedDocument) return;
-          return onView(selectedDocument);
+    <Card
+      title="Documentos"
+      display="default"
+      icon={<FileText size={20} />}
+      actions={
+        <IconButton action="add" size="sm" onClick={onAdd} />
+      }
+    >
+      <DocumentList
+        documents={documentItems}
+        onView={(item) => {
+          const document = getProviderDocument(item);
+          if (document) return onView(document);
         }}
-        onDownload={() => {
-          if (!selectedDocument) return;
-          return onDownload(selectedDocument);
+        onDownload={(item) => {
+          const document = getProviderDocument(item);
+          if (document) return onDownload(document);
+        }}
+        onEdit={(item) => {
+          const document = getProviderDocument(item);
+          if (document) onEdit(document);
+        }}
+        onDelete={(item) => {
+          const document = getProviderDocument(item);
+          if (document) onDelete(document);
         }}
       />
-    </>
+    </Card>
   );
 }

@@ -33,6 +33,7 @@ interface AddressFormProps {
   onChange: (field: AddressFormField, value: string) => void;
   errors?: AddressFormErrors;
   disabled?: boolean;
+  initialZipCode?: string | null;
 }
 
 interface ViaCepResponse {
@@ -67,6 +68,7 @@ export default function AddressForm({
   onChange,
   errors = {},
   disabled = false,
+  initialZipCode = null,
 }: AddressFormProps) {
   const [isSearchingCep, setIsSearchingCep] = useState(false);
   const [cepMessage, setCepMessage] = useState("");
@@ -74,9 +76,10 @@ export default function AddressForm({
     "success" | "error" | "info" | undefined
   >();
 
-  const lastSearchedCep = useRef("");
+  // Evita consultar novamente o CEP que já estava cadastrado.
+  const lastSearchedCep = useRef((initialZipCode ?? "").replace(/\D/g, ""));
+
   const pendingCepCity = useRef<PendingCepCity | null>(null);
-  const previousState = useRef(value.state);
 
   const {
     data: municipalities = [],
@@ -88,22 +91,8 @@ export default function AddressForm({
     (field: AddressFormField, newValue: string) => {
       onChange(field, newValue);
     },
-    [onChange],
+    [onChange]
   );
-
-  // Limpa a cidade quando o usuário altera manualmente o estado.
-  useEffect(() => {
-    if (previousState.current === value.state) return;
-
-    previousState.current = value.state;
-
-    // Preserva a cidade quando a mudança de estado veio do ViaCEP.
-    if (pendingCepCity.current?.state === value.state) return;
-
-    pendingCepCity.current = null;
-
-    handleChange("city", "");
-  }, [value.state, handleChange]);
 
   // Seleciona a cidade depois que os municípios do IBGE são carregados.
   useEffect(() => {
@@ -119,14 +108,14 @@ export default function AddressForm({
     }
 
     const municipality = municipalities.find(
-      (item) => normalizeText(item.label) === normalizeText(pending.city),
+      (item) => normalizeText(item.label) === normalizeText(pending.city)
     );
+
+    pendingCepCity.current = null;
 
     if (municipality) {
       handleChange("city", municipality.value);
     }
-
-    pendingCepCity.current = null;
   }, [
     municipalities,
     isLoadingMunicipalities,
@@ -135,19 +124,18 @@ export default function AddressForm({
     handleChange,
   ]);
 
-  // Consulta automaticamente o CEP.
+  // Consulta automaticamente o CEP quando ele é alterado.
   useEffect(() => {
     const cleanCep = value.zipCode.replace(/\D/g, "");
 
+    // CEP incompleto: não há consulta nem atualização de estado.
     if (cleanCep.length !== 8) {
       lastSearchedCep.current = "";
       pendingCepCity.current = null;
-      setCepMessage("");
-      setCepMessageType(undefined);
-      setIsSearchingCep(false);
       return;
     }
 
+    // Não consulta novamente o CEP já carregado ou consultado.
     if (lastSearchedCep.current === cleanCep) return;
 
     lastSearchedCep.current = cleanCep;
@@ -163,7 +151,7 @@ export default function AddressForm({
 
         const response = await fetch(
           `https://viacep.com.br/ws/${cleanCep}/json/`,
-          { signal: controller.signal },
+          { signal: controller.signal }
         );
 
         if (!response.ok) {
@@ -178,14 +166,16 @@ export default function AddressForm({
           return;
         }
 
-        // Guarda a cidade e a UF para selecionar após a consulta ao IBGE.
         pendingCepCity.current = {
           city: data.localidade || "",
           state: data.uf || "",
         };
 
+        // Atualiza os dados encontrados pelo ViaCEP.
         handleChange("street", data.logradouro || "");
         handleChange("neighborhood", data.bairro || "");
+
+        // Não limpa a cidade: ela será selecionada após carregar o IBGE.
         handleChange("state", data.uf || "");
 
         setCepMessage("Endereço localizado com sucesso.");
@@ -196,7 +186,7 @@ export default function AddressForm({
         }
 
         setCepMessage(
-          "Não foi possível consultar o CEP. Preencha manualmente.",
+          "Não foi possível consultar o CEP. Preencha manualmente."
         );
         setCepMessageType("error");
       } finally {
@@ -223,6 +213,28 @@ export default function AddressForm({
     return () => clearTimeout(timeout);
   }, [cepMessage]);
 
+  // CEP alterado pelo usuário.
+  function handleZipCodeChange(newValue: string) {
+    setCepMessage("");
+    setCepMessageType(undefined);
+
+    if (newValue.replace(/\D/g, "").length !== 8) {
+      setIsSearchingCep(false);
+    }
+
+    handleChange("zipCode", newValue);
+  }
+
+  // Estado alterado manualmente pelo usuário.
+  function handleStateChange(newState: string) {
+    if (newState === value.state) return;
+
+    pendingCepCity.current = null;
+
+    handleChange("city", "");
+    handleChange("state", newState);
+  }
+
   return (
     <>
       <Input
@@ -232,7 +244,7 @@ export default function AddressForm({
         maxLength={9}
         disabled={disabled}
         value={value.zipCode}
-        onChange={(event) => handleChange("zipCode", event.target.value)}
+        onChange={(event) => handleZipCodeChange(event.target.value)}
         error={errors.zipCode}
         helperText={
           isSearchingCep ? "Consultando CEP..." : cepMessage || undefined
@@ -286,7 +298,7 @@ export default function AddressForm({
         placeholder="UF"
         disabled={disabled}
         value={value.state}
-        onChange={(event) => handleChange("state", event.target.value)}
+        onChange={(event) => handleStateChange(event.target.value)}
         error={errors.state}
       />
 

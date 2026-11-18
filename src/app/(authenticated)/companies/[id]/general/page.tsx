@@ -1,6 +1,6 @@
 "use client";
 
-import { Buildings, MapPin, FileText, PhoneIcon } from "@phosphor-icons/react";
+import { Buildings, FileText, PhoneIcon } from "@phosphor-icons/react";
 
 import { useCompany } from "@/contexts/CompanyContext";
 import { useDrawer } from "@/hooks/useDrawer";
@@ -30,6 +30,11 @@ import { formatPhone } from "@/utils/format-phone";
 
 import type { Contact } from "@/services/api/contacts/contacts.types";
 import type { ContactFormData } from "@/features/companies/schemas/contacts.schema";
+import AddressCard from "@/components/ui/AddressCard/AddressCard";
+import { companiesApi } from "@/services/api/companies/companies.api";
+import type { AddressFormData } from "@/features/addresses/schemas/address.schema";
+import AddressDrawer from "@/features/addresses/components/AddressDrawer/AddressDrawer";
+import { formatCnpj } from "@/utils/format-cnpj";
 
 export default function CompanyGeneralPage() {
   const { company, updateCompany } = useCompany();
@@ -58,6 +63,64 @@ export default function CompanyGeneralPage() {
         contact,
       ]),
     });
+  }
+
+  // EDITAR ENDEREÇO
+  function handleOpenEditAddressDrawer() {
+    openDrawer(
+      <AddressDrawer
+        open
+        onClose={closeDrawer}
+        initialData={primaryAddress}
+        onSubmit={handleUpdateAddress}
+      />
+    );
+  }
+
+  async function handleUpdateAddress(data: AddressFormData) {
+    try {
+      if (!primaryAddress) {
+        toast.error("Não foi possível identificar o endereço da empresa.");
+        return;
+      }
+
+      const response = await companiesApi.update(company.id, {
+        address: {
+          name: primaryAddress.name,
+          type: primaryAddress.type,
+          zipCode: data.zipCode,
+          street: data.street,
+          number: data.number,
+          complement: data.complement,
+          neighborhood: data.neighborhood,
+          city: data.city,
+          state: data.state,
+          latitude: primaryAddress.latitude,
+          longitude: primaryAddress.longitude,
+          isPrimary: primaryAddress.isPrimary,
+          observations: primaryAddress.observations,
+        },
+      });
+
+      updateCompany(response.data);
+
+      closeDrawer();
+
+      toast.success("O endereço foi atualizado com sucesso.", {
+        title: "Endereço atualizado!",
+      });
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? getApiErrorMessage(error.code, error.message)
+          : "Não foi possível atualizar o endereço. Tente novamente.";
+
+      toast.error(message, {
+        title: "Erro ao atualizar endereço",
+      });
+
+      throw error;
+    }
   }
 
   // CADASTRAR CONTATO
@@ -93,7 +156,7 @@ export default function CompanyGeneralPage() {
         onClose={closeDrawer}
         onSubmit={handleCreateContact}
         mode="create"
-      />,
+      />
     );
   }
 
@@ -131,7 +194,7 @@ export default function CompanyGeneralPage() {
         onSubmit={(data) => handleUpdateContact(contact.id, data)}
         mode="edit"
         contact={contact}
-      />,
+      />
     );
   }
 
@@ -175,7 +238,7 @@ export default function CompanyGeneralPage() {
         cancelText="Cancelar"
         onConfirm={() => handleDeleteContact(contact)}
         onClose={closeDrawer}
-      />,
+      />
     );
   }
 
@@ -186,13 +249,7 @@ export default function CompanyGeneralPage() {
 
         <InfoField label="Razão social" value={company.corporateName} />
 
-        <InfoField label="CNPJ" value={company.cnpj} />
-
-        <InfoField
-          label="Etapa de relacionamento"
-          value={CompanyRelationshipStageLabel(company.relationshipStage)}
-        />
-
+        <InfoField label="CNPJ" value={formatCnpj(company.cnpj)} />
         <InfoField
           label="Status"
           value={
@@ -204,33 +261,11 @@ export default function CompanyGeneralPage() {
         />
       </Card>
 
-      <Card
-        title="Endereço principal"
-        icon={<MapPin size={20} />}
-        description={
-          !primaryAddress ? "Nenhum endereço cadastrado." : undefined
-        }
-      >
-        {primaryAddress && (
-          <>
-            <InfoField label="Identificação" value={primaryAddress.name} />
+      <AddressCard
+        address={primaryAddress}
+        onEdit={handleOpenEditAddressDrawer}
+      />
 
-            <InfoField label="CEP" value={primaryAddress.zipCode} />
-
-            <InfoField label="Logradouro" value={primaryAddress.street} />
-
-            <InfoField label="Número" value={primaryAddress.number} />
-
-            <InfoField label="Complemento" value={primaryAddress.complement} />
-
-            <InfoField label="Bairro" value={primaryAddress.neighborhood} />
-
-            <InfoField label="Cidade" value={primaryAddress.city} />
-
-            <InfoField label="Estado" value={primaryAddress.state} />
-          </>
-        )}
-      </Card>
       <Card
         title="Contatos"
         display="default"

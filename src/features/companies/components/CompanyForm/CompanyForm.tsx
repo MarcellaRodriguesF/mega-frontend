@@ -20,6 +20,7 @@ import {
 } from "@/features/companies/schemas/company-form.schema";
 
 import styles from "./CompanyForm.module.css";
+import { formatCnpj } from "@/utils/format-cnpj";
 import AddressForm, {
   AddressFormErrors,
   AddressFormField,
@@ -49,7 +50,7 @@ export default function CompanyForm({
     defaultValues: {
       corporateName: initialData?.corporateName ?? "",
       tradeName: initialData?.tradeName ?? "",
-      cnpj: initialData?.cnpj ?? "",
+      cnpj: formatCnpj(initialData?.cnpj),
       relationshipStage:
         initialData?.relationshipStage ?? CompanyRelationshipStage.CUSTOMER,
       observations: initialData?.observations ?? "",
@@ -81,7 +82,7 @@ export default function CompanyForm({
         shouldValidate: true,
       });
     },
-    [setValue],
+    [setValue]
   );
 
   // Transforma os erros do Zod no formato esperado pelo AddressForm.
@@ -137,26 +138,27 @@ export default function CompanyForm({
 
         <Input
           label="CNPJ"
+          type="cnpj"
           placeholder="00.000.000/0000-00"
-          inputMode="numeric"
-          maxLength={18}
           disabled={isLoading}
           error={errors.cnpj?.message}
           {...register("cnpj")}
         />
       </FormSection>
 
-      <FormSection
-        title="Endereço"
-        description="Informe o CEP para preencher automaticamente os dados de localização."
-      >
-        <AddressForm
-          value={addressValues}
-          onChange={handleAddressChange}
-          errors={addressErrors}
-          disabled={isLoading}
-        />
-      </FormSection>
+      {!initialData && (
+        <FormSection
+          title="Endereço"
+          description="Informe o CEP para preencher automaticamente os dados de localização."
+        >
+          <AddressForm
+            value={addressValues}
+            onChange={handleAddressChange}
+            errors={addressErrors}
+            disabled={isLoading}
+          />
+        </FormSection>
+      )}
 
       <Textarea
         label="Observações"

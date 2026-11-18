@@ -13,6 +13,7 @@ import {
 } from "@/constants/enums/companies/company-status.enum";
 
 import type { Company } from "@/services/api/companies/companies.types";
+import { formatCnpj } from "@/utils/format-cnpj";
 import { useRouter } from "next/navigation";
 
 function normalizeText(value: string): string {
@@ -90,7 +91,7 @@ export default function CompanyList({
           key: "cnpj",
           header: "CNPJ",
           sortable: true,
-          render: (company) => company.cnpj || "—",
+          render: (company) => formatCnpj(company.cnpj) || "—",
         },
         {
           key: "addresses",

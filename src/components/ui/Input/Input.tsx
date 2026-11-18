@@ -6,9 +6,13 @@ import { Eye, EyeSlash } from "@phosphor-icons/react";
 
 import styles from "./Input.module.css";
 import FormMessage from "../FormMessage/FormMessage";
+import { formatCnpj, unformatCnpj } from "@/utils/format-cnpj";
 import { formatPhone, unformatPhone } from "@/utils/format-phone";
 
-type CustomInputType = InputHTMLAttributes<HTMLInputElement>["type"] | "phone";
+type CustomInputType =
+  | InputHTMLAttributes<HTMLInputElement>["type"]
+  | "phone"
+  | "cnpj";
 
 export interface InputProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -43,13 +47,16 @@ export default function Input({
   const inputId = id ?? props.name ?? label.toLowerCase().replace(/\s+/g, "-");
 
   const isPhone = type === "phone";
+  const isCnpj = type === "cnpj";
   const isPassword = type === "password";
 
   const inputType = isPhone
     ? "tel"
-    : isPassword && showPasswordToggle && isPasswordVisible
+    : isCnpj
       ? "text"
-      : type;
+      : isPassword && showPasswordToggle && isPasswordVisible
+        ? "text"
+        : type;
 
   const classes = classNames(styles.input, className, {
     [styles.inputError]: Boolean(error),
@@ -57,21 +64,33 @@ export default function Input({
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (isPhone) {
-      const digits = unformatPhone(event.target.value);
+      event.target.value = formatPhone(unformatPhone(event.target.value));
+    }
 
-      event.target.value = formatPhone(digits);
+    if (isCnpj) {
+      event.target.value = formatCnpj(unformatCnpj(event.target.value));
     }
 
     onChange?.(event);
   }
 
   const formattedValue =
-    isPhone && value !== undefined ? formatPhone(String(value)) : value;
+    value === undefined
+      ? value
+      : isPhone
+        ? formatPhone(String(value))
+        : isCnpj
+          ? formatCnpj(String(value))
+          : value;
 
   const formattedDefaultValue =
-    isPhone && defaultValue !== undefined
-      ? formatPhone(String(defaultValue))
-      : defaultValue;
+    defaultValue === undefined
+      ? defaultValue
+      : isPhone
+        ? formatPhone(String(defaultValue))
+        : isCnpj
+          ? formatCnpj(String(defaultValue))
+          : defaultValue;
 
   return (
     <label className={styles.field} htmlFor={inputId}>
@@ -90,8 +109,8 @@ export default function Input({
           value={formattedValue}
           defaultValue={formattedDefaultValue}
           onChange={handleChange}
-          inputMode={isPhone ? "numeric" : props.inputMode}
-          maxLength={isPhone ? 15 : props.maxLength}
+          inputMode={isPhone || isCnpj ? "numeric" : props.inputMode}
+          maxLength={isPhone ? 15 : isCnpj ? 18 : props.maxLength}
           aria-invalid={Boolean(error)}
           aria-describedby={
             error

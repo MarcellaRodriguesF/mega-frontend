@@ -2,10 +2,14 @@
 import { apiClient } from "../api-client";
 
 export interface ReverseGeocodingResult {
-  city: string;
-  state: string;
-  country: string;
-  plusCode: string;
+    city: string;
+    state: string;
+    country: string;
+    plusCode: string;
+    zipCode: string | null;
+    street: string | null;
+    number: string | null;
+    neighborhood: string | null;
 }
 
 interface ReverseGeocodingResponse {

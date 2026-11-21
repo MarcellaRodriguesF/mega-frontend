@@ -1,5 +1,5 @@
 "use client";
-import { ArrowSquareOutIcon, MapPin, MapTrifold } from "@phosphor-icons/react";
+import { ArrowSquareOutIcon, MapPinIcon } from "@phosphor-icons/react";
 import styles from "./AddressCard.module.css";
 import IconButton from "../IconButton/IconButton";
 import LocationMap from "@/components/ui/LocationMap/LocationMap";
@@ -111,7 +111,7 @@ export default function AddressCard({
             />
           ) : (
             <div className={styles.empty}>
-              <MapPin size={24} />
+              <MapPinIcon size={16} />
               <span>
                 {hasAddress
                   ? "Coordenadas não cadastradas para exibir o mapa."

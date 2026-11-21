@@ -162,7 +162,6 @@ export default function UnitForm({
   }
 
   async function handleCoordinatesBlur() {
-    console.log("HANDLE COORDINATES BLUR EXECUTOU");
     const coordinates = parseCoordinatePair(coordinatesInput);
 
     if (!coordinates) return;
@@ -176,18 +175,53 @@ export default function UnitForm({
         coordinates.longitude
       );
 
-      setValue("address.city", response.data.city, {
+      const result = response.data;
+
+      // Cidade e estado
+      setValue("address.city", result.city, {
         shouldDirty: true,
         shouldValidate: true,
       });
 
-      setValue("address.state", response.data.state, {
+      setValue("address.state", result.state, {
         shouldDirty: true,
         shouldValidate: true,
       });
+
+      // CEP
+      if (result.zipCode) {
+        setValue("address.zipCode", result.zipCode, {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+      }
+
+      // Rua, estrada ou referência
+      if (result.street) {
+        setValue("address.street", result.street, {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+      }
+
+      // Número
+      if (result.number) {
+        setValue("address.number", result.number, {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+      }
+
+      // Bairro ou região
+      if (result.neighborhood) {
+        setValue("address.neighborhood", result.neighborhood, {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+      }
 
       setLocationLookupMessage(
-        `${response.data.city} / ${response.data.state} • Plus Code: ${response.data.plusCode}`
+        `${result.city} / ${result.state} • Plus Code: ${result.plusCode}`
       );
     } catch (error) {
       console.error("Erro ao identificar localização:", error);

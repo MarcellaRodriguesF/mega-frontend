@@ -1,26 +1,26 @@
 "use client";
-
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeSlash } from "@phosphor-icons/react";
 import Button from "@/components/ui/Button/Button";
+import Input from "@/components/ui/Input/Input";
 import FormMessage from "@/components/ui/FormMessage/FormMessage";
 import { authApi } from "@/services/api/auth/auth.api";
 import { ApiError } from "@/services/api/api-client";
-import { getApiErrorMessage } from "@/services/api/error-messages";
 import styles from "./login.module.css";
+import { getApiErrorMessage } from "@/services/api/error-messages";
 
 export default function LoginForm() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [invalidCredentials, setInvalidCredentials] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   function clearError() {
     setError("");
+    setInvalidCredentials(false);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -40,6 +40,7 @@ export default function LoginForm() {
           (err.status === 401 && err.code === "UNKNOWN_ERROR")
         ) {
           setError("E-mail ou senha inválidos.");
+          setInvalidCredentials(true);
         } else {
           setError(getApiErrorMessage(err.code, err.message));
         }
@@ -54,65 +55,45 @@ export default function LoginForm() {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <label className={styles.field}>
-        <span>E-mail</span>
-        <input
-          name="email"
-          type="email"
-          placeholder="nome@empresa.com"
-          autoComplete="username"
-          value={email}
-          onChange={(event) => {
-            setEmail(event.target.value);
-            clearError();
-          }}
-          required
-          disabled={isLoading}
-        />
-      </label>
+    <form className={styles.formPreview} onSubmit={handleSubmit}>
+      <Input
+        label="E-mail"
+        name="email"
+        type="email"
+        placeholder="nome@empresa.com"
+        autoComplete="username"
+        value={email}
+        onChange={(event) => {
+          setEmail(event.target.value);
+          clearError();
+        }}
+        required
+        disabled={isLoading}
+        error={invalidCredentials ? error : ""}
+      />
 
-      <label className={styles.field}>
-        <span>Senha</span>
-        <span className={styles.passwordWrap}>
-          <input
-            name="password"
-            type={showPassword ? "text" : "password"}
-            placeholder="Digite sua senha"
-            autoComplete="current-password"
-            value={password}
-            onChange={(event) => {
-              setPassword(event.target.value);
-              clearError();
-            }}
-            required
-            disabled={isLoading}
-          />
-          <button
-            type="button"
-            className={styles.passwordToggle}
-            onClick={() => setShowPassword((visible) => !visible)}
-            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-            aria-pressed={showPassword}
-            disabled={isLoading}
-          >
-            {showPassword ? (
-              <EyeSlash size={18} weight="regular" />
-            ) : (
-              <Eye size={18} weight="regular" />
-            )}
-          </button>
-        </span>
-      </label>
-
-      <FormMessage message={error} />
+      <Input
+        label="Senha"
+        name="password"
+        type="password"
+        showPasswordToggle
+        placeholder="Digite sua senha"
+        autoComplete="current-password"
+        value={password}
+        onChange={(event) => {
+          setPassword(event.target.value);
+          clearError();
+        }}
+        required
+        disabled={isLoading}
+        error={invalidCredentials ? error : ""}
+      />
 
       <Button
         type="submit"
-        className={styles.submit}
         loading={isLoading}
-        text="Entrar"
-        textLoading="Entrando..."
+        text={"Entrar"}
+        textLoading={"Entrando..."}
       />
     </form>
   );

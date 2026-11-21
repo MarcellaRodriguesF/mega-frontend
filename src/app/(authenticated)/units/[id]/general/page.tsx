@@ -14,6 +14,7 @@ import {
   UnitStatusColor,
 } from "@/constants/enums/units/unit-status.enum";
 import AddressCard from "@/components/ui/AddressCard/AddressCard";
+import UnitConnectivityCard from "@/features/units/components/UnitConnectivityCard/UnitConnectivityCard";
 
 export default function UnitGeneralPage() {
   const { unit } = useUnit();
@@ -41,6 +42,16 @@ export default function UnitGeneralPage() {
           }
         />{" "}
       </Card>
+
+      <UnitConnectivityCard
+        unitId={unit.id}
+        onCreate={() => {
+          // Abriremos o Drawer de cadastro na próxima etapa.
+        }}
+        onEdit={(connectivity) => {
+          // Abriremos o Drawer de edição na próxima etapa.
+        }}
+      />
 
       <AddressCard
         title="Localização"

@@ -22,34 +22,44 @@ import {
   type UnitFormInput,
 } from "@/features/units/schemas/unit-form.schema";
 
+import type { Unit } from "@/services/api/units/units.types";
+
 interface UnitFormProps {
   onSubmit: (data: UnitFormData) => void | Promise<void>;
   isLoading?: boolean;
+  initialData?: Unit;
 }
-
-const defaultValues: UnitFormInput = {
-  companyId: "",
-  name: "",
-  type: UnitType.PHOTOVOLTAIC_PLANT,
-  observations: "",
-  address: {
-    zipCode: "",
-    street: "",
-    number: "",
-    complement: "",
-    neighborhood: "",
-    city: "",
-    state: "",
-    areaType: null,
-    latitude: "",
-    longitude: "",
-  },
-};
 
 export default function UnitForm({
   onSubmit,
   isLoading = false,
+  initialData,
 }: UnitFormProps) {
+  function getDefaultValues(unit?: Unit): UnitFormInput {
+    return {
+      companyId: unit?.companyId ?? "",
+      name: unit?.name ?? "",
+      type: unit?.type ?? UnitType.PHOTOVOLTAIC_PLANT,
+      observations: unit?.observations ?? "",
+      address: {
+        zipCode: unit?.address?.zipCode ?? "",
+        street: unit?.address?.street ?? "",
+        number: unit?.address?.number ?? "",
+        complement: unit?.address?.complement ?? "",
+        neighborhood: unit?.address?.neighborhood ?? "",
+        city: unit?.address?.city ?? "",
+        state: unit?.address?.state ?? "",
+        areaType:
+          unit?.address?.areaType === "RURAL" ||
+          unit?.address?.areaType === "URBAN"
+            ? unit.address.areaType
+            : null,
+        latitude: unit?.address?.latitude ?? "",
+        longitude: unit?.address?.longitude ?? "",
+      },
+    };
+  }
+
   const [companies, setCompanies] = useState<Company[]>([]);
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
   const [companiesError, setCompaniesError] = useState("");
@@ -62,7 +72,7 @@ export default function UnitForm({
     formState: { errors },
   } = useForm<UnitFormInput, unknown, UnitFormData>({
     resolver: zodResolver(unitFormSchema),
-    defaultValues,
+    defaultValues: getDefaultValues(initialData),
   });
 
   const selectedCompanyId = useWatch({
@@ -107,21 +117,23 @@ export default function UnitForm({
     label: UnitTypeLabel[type],
   }));
 
-  const [coordinatesInput, setCoordinatesInput] = useState("");
-  const [coordinatesError, setCoordinatesError] = useState("");
+  const [coordinatesInput, setCoordinatesInput] = useState(() => {
+    const latitude = initialData?.address?.latitude;
+    const longitude = initialData?.address?.longitude;
+
+    if (latitude == null || longitude == null) return "";
+
+    return `${latitude}, ${longitude}`;
+  });
 
   function handleCoordinatesPaste(value: string) {
     setCoordinatesInput(value);
-    setCoordinatesError("");
 
     if (!value.trim()) return;
 
     const coordinates = parseCoordinatePair(value);
 
     if (!coordinates) {
-      setCoordinatesError(
-        "Não foi possível identificar as coordenadas. Confira o formato informado."
-      );
       return;
     }
 
@@ -134,8 +146,6 @@ export default function UnitForm({
       shouldDirty: true,
       shouldValidate: true,
     });
-
-    setCoordinatesError("");
   }
 
   return (
@@ -222,10 +232,9 @@ export default function UnitForm({
           type="text"
           placeholder="-23.040324, -45.703289"
           helperText={
-            coordinatesError ||
             "Cole as coordenadas copiadas do Google Maps. Ex.: 23°02'25.2\"S 45°42'11.8\"W"
           }
-          helperTextType={coordinatesError ? "error" : "info"}
+          helperTextType="info"
           value={coordinatesInput}
           onChange={(event) => handleCoordinatesPaste(event.target.value)}
           disabled={isLoading}

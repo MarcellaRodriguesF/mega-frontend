@@ -50,7 +50,7 @@ export default function Sidebar({
         },
         {
           label: "Usinas",
-          href: "/plants",
+          href: "/units",
           Icon: SolarPanel,
           permission: PERMISSIONS.UNITS,
         },

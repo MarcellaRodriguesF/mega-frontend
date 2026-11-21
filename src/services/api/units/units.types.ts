@@ -49,7 +49,7 @@ export interface CreateUnitRequest {
     neighborhood?: string | null;
     city?: string | null;
     state?: string | null;
-    areaType?: string;
+    areaType?: string | null;
     latitude?: number | null;
     longitude?: number | null;
     observations?: string | null;

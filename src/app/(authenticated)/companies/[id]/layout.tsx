@@ -2,13 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
-
 import { PageContainer } from "@/components/layout/PageContainer/PageContainer";
 import PageHeader from "@/components/ui/PageHeader/PageHeader";
 import Tabs from "@/components/ui/Tabs/Tabs";
 import type { PageStateType } from "@/components/ui/PageState/PageState";
-import Button from "@/components/ui/Button/Button";
-
 import CompanyDrawer from "@/features/companies/components/CompanyDrawer/CompanyDrawer";
 
 import { companiesApi } from "@/services/api/companies/companies.api";

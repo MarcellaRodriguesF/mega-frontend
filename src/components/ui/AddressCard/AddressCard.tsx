@@ -1,10 +1,9 @@
 "use client";
 
-import { MapPin, MapTrifold, PencilSimple } from "@phosphor-icons/react";
-
+import { MapPin, MapTrifold } from "@phosphor-icons/react";
 import styles from "./AddressCard.module.css";
-import Button from "../Button/Button";
 import IconButton from "../IconButton/IconButton";
+import LocationMap from "../LocationMap/LocationMap";
 
 export interface AddressData {
   zipCode?: string | null;
@@ -21,6 +20,10 @@ interface AddressCardProps {
   onEdit?: () => void;
   title?: string;
   isLoading?: boolean;
+
+  latitude?: number | null;
+  longitude?: number | null;
+  locationName?: string;
 }
 
 export default function AddressCard({
@@ -28,6 +31,9 @@ export default function AddressCard({
   onEdit,
   title = "Endereço",
   isLoading = false,
+  latitude,
+  longitude,
+  locationName,
 }: AddressCardProps) {
   const hasAddress =
     !!address &&
@@ -68,13 +74,7 @@ export default function AddressCard({
       <header className={styles.header}>
         <h3>{title}</h3>
 
-        {onEdit && (
-         <IconButton
-          action="edit"
-          size="sm"
-          onClick={onEdit}
-        />  
-        )}
+        {onEdit && <IconButton action="edit" size="sm" onClick={onEdit} />}
       </header>
 
       {isLoading ? (
@@ -90,6 +90,17 @@ export default function AddressCard({
               <span key={index}>{line}</span>
             ))}
           </div>
+
+          {latitude != null && longitude != null && (
+            <div className={styles.locationMap}>
+              <LocationMap
+                latitude={latitude}
+                longitude={longitude}
+                name={locationName || title}
+                location={cityLine}
+              />
+            </div>
+          )}
 
           <a
             href={mapUrl}

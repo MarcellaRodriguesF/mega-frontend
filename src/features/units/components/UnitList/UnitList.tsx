@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import Button from "@/components/ui/Button/Button";
 import DataTable from "@/components/ui/DataTable/DataTable";
 import StatusBadge, {
   StatusBadgeColor,
@@ -105,7 +105,7 @@ export default function UnitList({ units, isLoading }: UnitListProps) {
       data={filteredUnits}
       getRowKey={(unit) => unit.id}
       isLoading={isLoading}
-      onRowClick={(unit) => router.push(`/plants/${unit.id}`)}
+      onRowClick={(unit) => router.push(`/units/${unit.id}/general`)}
       searchPlaceholder="Buscar por usina, empresa ou cidade..."
       searchValue={search}
       onSearchChange={setSearch}

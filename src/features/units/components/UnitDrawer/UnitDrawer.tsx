@@ -7,6 +7,7 @@ import Button from "@/components/ui/Button/Button";
 
 import UnitForm from "../UnitForm/UnitForm";
 
+import type { Unit } from "@/services/api/units/units.types";
 import type { UnitFormData } from "@/features/units/schemas/unit-form.schema";
 
 import styles from "./UnitDrawer.module.css";
@@ -16,6 +17,8 @@ interface UnitDrawerProps {
   onClose: () => void;
   onSubmit: (data: UnitFormData) => void | Promise<void>;
   isLoading?: boolean;
+  mode?: "create" | "edit";
+  initialData?: Unit;
 }
 
 export default function UnitDrawer({
@@ -23,10 +26,13 @@ export default function UnitDrawer({
   onClose,
   onSubmit,
   isLoading = false,
+  mode = "create",
+  initialData,
 }: UnitDrawerProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loading = isLoading || isSubmitting;
+  const isEditing = mode === "edit";
 
   async function handleSubmit(data: UnitFormData) {
     try {
@@ -41,8 +47,12 @@ export default function UnitDrawer({
     <Drawer
       open={open}
       onClose={onClose}
-      title="Nova usina"
-      description="Preencha os dados para cadastrar uma nova usina."
+      title={isEditing ? "Editar unidade" : "Nova unidade"}
+      description={
+        isEditing
+          ? "Atualize os dados cadastrais da unidade."
+          : "Preencha os dados para cadastrar uma nova unidade."
+      }
       footer={
         <div className={styles.actions}>
           <Button
@@ -53,7 +63,7 @@ export default function UnitDrawer({
           />
 
           <Button
-            text="Salvar usina"
+            text={isEditing ? "Salvar alterações" : "Salvar unidade"}
             type="submit"
             form="unit-form"
             loading={loading}
@@ -61,7 +71,11 @@ export default function UnitDrawer({
         </div>
       }
     >
-      <UnitForm onSubmit={handleSubmit} isLoading={loading} />
+      <UnitForm
+        onSubmit={handleSubmit}
+        isLoading={loading}
+        initialData={initialData}
+      />
     </Drawer>
   );
 }

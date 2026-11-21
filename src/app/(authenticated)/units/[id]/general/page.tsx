@@ -15,11 +15,71 @@ import {
 } from "@/constants/enums/units/unit-status.enum";
 import AddressCard from "@/components/ui/AddressCard/AddressCard";
 import UnitConnectivityCard from "@/features/units/components/UnitConnectivityCard/UnitConnectivityCard";
+import UnitConnectivityDrawer from "@/features/units/components/UnitConnectivityDrawer/UnitConnectivityDrawer";
+import { UnitConnectivity } from "@/services/api/unit-connectivities/unit-connectivities.types";
+import { unitConnectivitiesApi } from "@/services/api/unit-connectivities/unit-connectivities.api";
+import { UnitConnectivityFormData } from "@/features/units/schemas/unit-connectivity-form.schema";
+import { useQueryClient } from "@tanstack/react-query";
+import { useDrawer } from "@/hooks/useDrawer";
 
 export default function UnitGeneralPage() {
   const { unit } = useUnit();
 
   const address = unit.address;
+  const queryClient = useQueryClient();
+  const { openDrawer, closeDrawer } = useDrawer();
+
+  function handleCreateConnectivity() {
+    openDrawer(
+      <UnitConnectivityDrawer
+        open
+        mode="create"
+        unitId={unit.id}
+        onClose={closeDrawer}
+        onSubmit={async (data) => {
+          await unitConnectivitiesApi.create({
+            ...data,
+            unitId: unit.id,
+            providerId: data.providerId || null,
+            publicIp: data.publicIp || null,
+            observations: data.observations || null,
+          });
+
+          await queryClient.invalidateQueries({
+            queryKey: ["unit-connectivities", unit.id],
+          });
+
+          closeDrawer();
+        }}
+      />
+    );
+  }
+
+  function handleEditConnectivity(connectivity: UnitConnectivity) {
+    openDrawer(
+      <UnitConnectivityDrawer
+        open
+        mode="edit"
+        unitId={unit.id}
+        connectivity={connectivity}
+        onClose={closeDrawer}
+        onSubmit={async (data: UnitConnectivityFormData) => {
+          await unitConnectivitiesApi.update(connectivity.id, {
+            ...data,
+            providerId: data.providerId || null,
+            publicIp: data.publicIp || null,
+            observations: data.observations || null,
+          });
+
+          await queryClient.invalidateQueries({
+            queryKey: ["unit-connectivities", unit.id],
+          });
+
+          closeDrawer();
+        }}
+      />
+    );
+  }
 
   return (
     <InfoCardGrid>
@@ -45,12 +105,8 @@ export default function UnitGeneralPage() {
 
       <UnitConnectivityCard
         unitId={unit.id}
-        onCreate={() => {
-          // Abriremos o Drawer de cadastro na próxima etapa.
-        }}
-        onEdit={(connectivity) => {
-          // Abriremos o Drawer de edição na próxima etapa.
-        }}
+        onCreate={handleCreateConnectivity}
+        onEdit={handleEditConnectivity}
       />
 
       <AddressCard

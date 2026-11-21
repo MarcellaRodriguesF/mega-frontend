@@ -1,12 +1,15 @@
 "use client";
 
+import { useMemo } from "react";
 import {
   MapContainer,
   TileLayer,
-  CircleMarker,
+  Marker,
   Popup,
   ZoomControl,
 } from "react-leaflet";
+import { divIcon } from "leaflet";
+
 import styles from "./LocationMap.module.css";
 
 interface LocationMapClientProps {
@@ -16,12 +19,54 @@ interface LocationMapClientProps {
   location?: string | null;
 }
 
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;",
+    };
+
+    return entities[character];
+  });
+}
+
 export default function LocationMapClient({
   latitude,
   longitude,
   name,
   location,
 }: LocationMapClientProps) {
+  const unitIcon = useMemo(
+    () =>
+      divIcon({
+        className: styles.markerContainer,
+        html: `
+          <div class="${styles.unitMarker}">
+            <div class="${styles.markerPin}">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M12 22s8-7.2 8-13A8 8 0 1 0 4 9c0 5.8 8 13 8 13Z"
+                  fill="currentColor"
+                />
+                <circle cx="12" cy="9" r="3" fill="white" />
+              </svg>
+            </div>
+
+            <div class="${styles.markerText}">
+              <strong>${escapeHtml(name)}</strong>
+              ${location ? `<span>${escapeHtml(location)}</span>` : ""}
+            </div>
+          </div>
+        `,
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
+      }),
+    [name, location]
+  );
+
   return (
     <div className={styles.mapWrapper}>
       <MapContainer
@@ -34,33 +79,23 @@ export default function LocationMapClient({
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maxZoom={19}
         />
 
         <ZoomControl position="bottomright" />
 
-        <CircleMarker
-          center={[latitude, longitude]}
-          radius={10}
-          pathOptions={{
-            color: "#FFFFFF",
-            weight: 3,
-            fillColor: "#087A4B",
-            fillOpacity: 1,
-          }}
-        >
+        <Marker position={[latitude, longitude]} icon={unitIcon}>
           <Popup>
             <div className={styles.popup}>
               <strong>{name}</strong>
-
               {location && <span>{location}</span>}
-
               <small>
                 {latitude}, {longitude}
               </small>
             </div>
           </Popup>
-        </CircleMarker>
+        </Marker>
       </MapContainer>
     </div>
   );

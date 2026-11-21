@@ -7,7 +7,7 @@ import { parseCoordinatePair } from "@/utils/coordinates";
 import Input from "@/components/ui/Input/Input";
 import Select from "@/components/ui/Select/Select";
 import FormSection from "@/components/ui/FormSection/FormSection";
-
+import { geocodingApi } from "@/services/api/geocoding/geocoding.api";
 import {
   UnitType,
   UnitTypeLabel,
@@ -63,6 +63,8 @@ export default function UnitForm({
   const [companies, setCompanies] = useState<Company[]>([]);
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(true);
   const [companiesError, setCompaniesError] = useState("");
+  const [isLookingUpLocation, setIsLookingUpLocation] = useState(false);
+  const [locationLookupMessage, setLocationLookupMessage] = useState("");
 
   const {
     register,
@@ -128,12 +130,19 @@ export default function UnitForm({
 
   function handleCoordinatesPaste(value: string) {
     setCoordinatesInput(value);
+    setLocationLookupMessage("");
 
-    if (!value.trim()) return;
+    if (!value.trim()) {
+      setValue("address.latitude", "", { shouldDirty: true });
+      setValue("address.longitude", "", { shouldDirty: true });
+      return;
+    }
 
     const coordinates = parseCoordinatePair(value);
 
     if (!coordinates) {
+      setValue("address.latitude", "", { shouldDirty: true });
+      setValue("address.longitude", "", { shouldDirty: true });
       return;
     }
 
@@ -146,6 +155,52 @@ export default function UnitForm({
       shouldDirty: true,
       shouldValidate: true,
     });
+
+    // Evita manter a cidade de coordenadas anteriores.
+    setValue("address.city", "", { shouldDirty: true });
+    setValue("address.state", "", { shouldDirty: true });
+  }
+
+  async function handleCoordinatesBlur() {
+    console.log("HANDLE COORDINATES BLUR EXECUTOU");
+    const coordinates = parseCoordinatePair(coordinatesInput);
+
+    if (!coordinates) return;
+
+    setIsLookingUpLocation(true);
+    setLocationLookupMessage("Identificando localização...");
+
+    try {
+      const response = await geocodingApi.reverse(
+        coordinates.latitude,
+        coordinates.longitude
+      );
+
+      setValue("address.city", response.data.city, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+
+      setValue("address.state", response.data.state, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+
+      setLocationLookupMessage(
+        `${response.data.city} / ${response.data.state} • Plus Code: ${response.data.plusCode}`
+      );
+    } catch (error) {
+      console.error("Erro ao identificar localização:", error);
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Erro desconhecido ao consultar localização.";
+
+      setLocationLookupMessage(message);
+    } finally {
+      setIsLookingUpLocation(false);
+    }
   }
 
   return (
@@ -232,11 +287,15 @@ export default function UnitForm({
           type="text"
           placeholder="-23.040324, -45.703289"
           helperText={
-            "Cole as coordenadas copiadas do Google Maps. Ex.: 23°02'25.2\"S 45°42'11.8\"W"
+            isLookingUpLocation
+              ? "Identificando cidade, estado e Plus Code..."
+              : locationLookupMessage ||
+                "Cole as coordenadas do Google Maps. Ex.: 20°26'20.0\"S 45°29'00.8\"W"
           }
           helperTextType="info"
           value={coordinatesInput}
           onChange={(event) => handleCoordinatesPaste(event.target.value)}
+          onBlur={handleCoordinatesBlur}
           disabled={isLoading}
         />
         {/* <Input

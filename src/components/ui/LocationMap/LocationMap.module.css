@@ -66,3 +66,105 @@
   color: #64748b;
   font-size: 12px;
 }
+
+/* Marcador personalizado da unidade */
+
+.markerContainer {
+  background: transparent;
+  border: none;
+}
+
+.unitMarker {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transform: translate(-50%, -18px);
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  width: max-content;
+  max-width: 280px;
+  padding: 10px 16px 10px 12px;
+
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.18);
+
+  color: #172b4d;
+  white-space: nowrap;
+}
+
+.unitMarker::after {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+
+  width: 14px;
+  height: 14px;
+
+  background: #ffffff;
+}
+
+.markerPin {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.markerPin svg {
+  display: block;
+  width: 44px;
+  height: 44px;
+  color: #087a4b;
+}
+
+.markerText {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  min-width: 0;
+}
+
+.markerText strong {
+  overflow: hidden;
+  color: #172b4d;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+}
+
+.markerText span {
+  overflow: hidden;
+  color: #526078;
+  font-size: 13px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+}
+
+.popup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.popup strong {
+  font-size: 13px;
+}
+
+.popup span,
+.popup small {
+  color: #64748b;
+  font-size: 12px;
+}

@@ -1,10 +1,11 @@
+
 import { z } from "zod";
 
 const optionalText = (maxLength: number) =>
   z
     .string()
     .trim()
-    .max(maxLength)
+    .max(maxLength, `O texto deve ter no máximo ${maxLength} caracteres.`)
     .transform((value) => value || null);
 
 const optionalCep = z
@@ -15,6 +16,28 @@ const optionalCep = z
     "O CEP deve conter 8 números.",
   )
   .transform((value) => value || null);
+
+
+  const coordinateSchema = (min: number, max: number) =>
+    z.preprocess(
+      (value) => {
+        if (
+          value === "" ||
+          value === undefined ||
+          value === null
+        ) {
+          return null;
+        }
+  
+        return Number(value);
+      },
+      z
+        .number()
+        .min(min, `O valor mínimo é ${min}.`)
+        .max(max, `O valor máximo é ${max}.`)
+        .nullable(),
+    );
+  
 
 const unitAddressSchema = z
   .object({
@@ -33,18 +56,17 @@ const unitAddressSchema = z
         (value) => value === null || value.length === 2,
         "Informe a sigla do estado.",
       ),
-    areaType: z.string().default("URBAN"),
-    latitude: z.number().min(-90).max(90).nullable().optional(),
-    longitude: z.number().min(-180).max(180).nullable().optional(),
-    observations: optionalText(5000),
+    areaType: z.enum(["URBAN", "RURAL"]).nullable(),
+    latitude: coordinateSchema(-90, 90),
+    longitude: coordinateSchema(-180, 180),
   })
   .refine(
     (data) =>
-      (data.latitude == null && data.longitude == null) ||
-      (data.latitude != null && data.longitude != null),
+      (data.latitude === null && data.longitude === null) ||
+      (data.latitude !== null && data.longitude !== null),
     {
       message: "Informe latitude e longitude juntas.",
-      path: ["latitude"],
+      path: ["longitude"],
     },
   );
 

@@ -5,7 +5,7 @@ import styles from "./login.module.css";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Hub MG | Acesso",
+    absolute: "Hub Mega | Acesso",
   },
 };
 
@@ -35,7 +35,7 @@ export default function LoginPage() {
 
       <header className={styles.header}>
         <Link href="/login" className={styles.brand}>
-          Hub MG
+          Hub Mega
         </Link>
       </header>
 
@@ -58,7 +58,7 @@ export default function LoginPage() {
             </span>
             <div className={styles.mark}>
               <span className={styles.kicker}>Centralize</span>
-              <h1>Hub MG</h1>
+              <h1>Hub Mega</h1>
               <span className={styles.kickerBottom}>a operação</span>
             </div>
           </div>

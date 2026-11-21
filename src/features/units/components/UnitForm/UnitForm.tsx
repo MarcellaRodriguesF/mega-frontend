@@ -3,17 +3,10 @@
 import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { parseCoordinatePair } from "@/utils/coordinates";
 import Input from "@/components/ui/Input/Input";
 import Select from "@/components/ui/Select/Select";
-import Textarea from "@/components/ui/Textarea/Textarea";
 import FormSection from "@/components/ui/FormSection/FormSection";
-
-import AddressForm, {
-  type AddressFormErrors,
-  type AddressFormField,
-  type AddressFormValues,
-} from "@/components/forms/AddressForm/AddressForm";
 
 import {
   UnitType,
@@ -47,10 +40,9 @@ const defaultValues: UnitFormInput = {
     neighborhood: "",
     city: "",
     state: "",
-    areaType: "URBAN",
-    latitude: null,
-    longitude: null,
-    observations: "",
+    areaType: null,
+    latitude: "",
+    longitude: "",
   },
 };
 
@@ -83,15 +75,14 @@ export default function UnitForm({
     name: "type",
   });
 
-  const address = useWatch({
+  const selectedZone = useWatch({
     control,
-    name: "address",
+    name: "address.areaType",
   });
 
   useEffect(() => {
     async function loadCompanies() {
       try {
-        setIsLoadingCompanies(true);
         setCompaniesError("");
 
         const response = await companiesApi.findAll();
@@ -106,33 +97,6 @@ export default function UnitForm({
     loadCompanies();
   }, []);
 
-  function handleAddressChange(field: AddressFormField, value: string) {
-    setValue(`address.${field}`, value, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-  }
-
-  const addressValues: AddressFormValues = {
-    zipCode: address?.zipCode ?? "",
-    street: address?.street ?? "",
-    number: address?.number ?? "",
-    complement: address?.complement ?? "",
-    neighborhood: address?.neighborhood ?? "",
-    city: address?.city ?? "",
-    state: address?.state ?? "",
-  };
-
-  const addressErrors: AddressFormErrors = {
-    zipCode: errors.address?.zipCode?.message,
-    street: errors.address?.street?.message,
-    number: errors.address?.number?.message,
-    complement: errors.address?.complement?.message,
-    neighborhood: errors.address?.neighborhood?.message,
-    city: errors.address?.city?.message,
-    state: errors.address?.state?.message,
-  };
-
   const companyOptions = companies.map((company) => ({
     value: company.id,
     label: company.tradeName,
@@ -143,16 +107,42 @@ export default function UnitForm({
     label: UnitTypeLabel[type],
   }));
 
+  const [coordinatesInput, setCoordinatesInput] = useState("");
+  const [coordinatesError, setCoordinatesError] = useState("");
+
+  function handleCoordinatesPaste(value: string) {
+    setCoordinatesInput(value);
+    setCoordinatesError("");
+
+    if (!value.trim()) return;
+
+    const coordinates = parseCoordinatePair(value);
+
+    if (!coordinates) {
+      setCoordinatesError(
+        "Não foi possível identificar as coordenadas. Confira o formato informado."
+      );
+      return;
+    }
+
+    setValue("address.latitude", coordinates.latitude, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+
+    setValue("address.longitude", coordinates.longitude, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+
+    setCoordinatesError("");
+  }
+
   return (
-    <form
-      id="unit-form"
-      //   className={styles.form}
-      onSubmit={handleSubmit(onSubmit)}
-      noValidate
-    >
+    <form id="unit-form" onSubmit={handleSubmit(onSubmit)} noValidate>
       <FormSection>
         <Input
-          label="Nome da usina"
+          label="Nome da unidade"
           placeholder="Ex.: UFV Uberaba 01"
           required
           maxLength={255}
@@ -175,6 +165,7 @@ export default function UnitForm({
           disabled={isLoading}
           error={errors.type?.message}
         />
+
         <Select
           label="Empresa"
           options={companyOptions}
@@ -199,11 +190,132 @@ export default function UnitForm({
               : undefined)
           }
         />
-        <AddressForm
-          value={addressValues}
-          onChange={handleAddressChange}
-          errors={addressErrors}
+      </FormSection>
+
+      <FormSection
+        title="Localização geográfica"
+        // description="Informe as coordenadas da usina, caso estejam disponíveis. Você pode copiá-las diretamente do Google Maps."
+      >
+        <Select
+          label="Zona"
+          options={[
+            { value: "RURAL", label: "Rural" },
+            { value: "URBAN", label: "Urbana" },
+          ]}
+          placeholder="Selecione a zona"
+          value={selectedZone || ""}
+          onChange={(event) =>
+            setValue(
+              "address.areaType",
+              event.target.value as "RURAL" | "URBAN",
+              {
+                shouldDirty: true,
+                shouldValidate: true,
+              }
+            )
+          }
           disabled={isLoading}
+        />
+
+        <Input
+          label="Coordenadas"
+          type="text"
+          placeholder="-23.040324, -45.703289"
+          helperText={
+            coordinatesError ||
+            "Cole as coordenadas copiadas do Google Maps. Ex.: 23°02'25.2\"S 45°42'11.8\"W"
+          }
+          helperTextType={coordinatesError ? "error" : "info"}
+          value={coordinatesInput}
+          onChange={(event) => handleCoordinatesPaste(event.target.value)}
+          disabled={isLoading}
+        />
+        {/* <Input
+          label="Latitude"
+          type="number"
+          placeholder="Ex.: -23.040324"
+          helperText="Valor decimal da latitude."
+          disabled={isLoading}
+          step="any"
+          min={-90}
+          max={90}
+          error={errors.address?.latitude?.message}
+          {...register("address.latitude")}
+        />
+
+        <Input
+          label="Longitude"
+          type="number"
+          placeholder="Ex.: -45.703289"
+          helperText="Valor decimal da longitude."
+          disabled={isLoading}
+          step="any"
+          min={-180}
+          max={180}
+          error={errors.address?.longitude?.message}
+          {...register("address.longitude")}
+        /> */}
+      </FormSection>
+
+      <FormSection
+        title="Endereço de referência"
+        description="Opcional. Preencha se houver endereço convencional ou alguma referência de localização."
+      >
+        <Input
+          label="CEP"
+          placeholder="00000-000"
+          disabled={isLoading}
+          error={errors.address?.zipCode?.message}
+          {...register("address.zipCode")}
+        />
+
+        <Input
+          label="Rua, estrada ou referência"
+          placeholder="Ex.: Estrada Municipal..."
+          disabled={isLoading}
+          error={errors.address?.street?.message}
+          {...register("address.street")}
+        />
+
+        <Input
+          label="Número"
+          placeholder="Número ou identificação"
+          disabled={isLoading}
+          error={errors.address?.number?.message}
+          {...register("address.number")}
+        />
+
+        <Input
+          label="Complemento"
+          placeholder="Complemento"
+          disabled={isLoading}
+          error={errors.address?.complement?.message}
+          {...register("address.complement")}
+        />
+
+        <Input
+          label="Bairro ou região"
+          placeholder="Bairro ou região"
+          disabled={isLoading}
+          error={errors.address?.neighborhood?.message}
+          {...register("address.neighborhood")}
+        />
+
+        <Input
+          label="Cidade"
+          placeholder="Cidade"
+          disabled={isLoading}
+          error={errors.address?.city?.message}
+          {...register("address.city")}
+        />
+
+        <Input
+          label="Estado"
+          placeholder="UF"
+          maxLength={2}
+          disabled={isLoading}
+          error={errors.address?.state?.message}
+          {...register("address.state")}
         />
       </FormSection>
     </form>

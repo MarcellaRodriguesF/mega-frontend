@@ -27,8 +27,6 @@ export default function PlantsPage() {
   const { openDrawer, closeDrawer } = useDrawer();
 
   const loadUnits = useCallback(async () => {
-    setIsLoading(true);
-
     try {
       const response = await unitsApi.findAll();
       setUnits(response.data);
@@ -41,14 +39,41 @@ export default function PlantsPage() {
       toast.error(message, {
         title: "Erro ao carregar usinas",
       });
-    } finally {
-      setIsLoading(false);
     }
   }, [toast]);
 
-    // useEffect(() => {
-    //     loadUnits();
-    // }, [loadUnits]);
+  useEffect(() => {
+    let isMounted = true;
+
+    unitsApi
+      .findAll()
+      .then((response) => {
+        if (isMounted) {
+          setUnits(response.data);
+        }
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+
+        const message =
+          err instanceof ApiError
+            ? getApiErrorMessage(err.code, err.message)
+            : "Não foi possível carregar as usinas.";
+
+        toast.error(message, {
+          title: "Erro ao carregar usinas",
+        });
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [toast]);
 
   async function handleCreateUnit(data: UnitFormData) {
     try {

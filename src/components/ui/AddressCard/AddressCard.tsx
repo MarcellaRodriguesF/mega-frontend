@@ -1,9 +1,8 @@
 "use client";
-
-import { MapPin, MapTrifold } from "@phosphor-icons/react";
+import { ArrowSquareOutIcon, MapPin, MapTrifold } from "@phosphor-icons/react";
 import styles from "./AddressCard.module.css";
 import IconButton from "../IconButton/IconButton";
-import LocationMap from "../LocationMap/LocationMap";
+import LocationMap from "@/components/ui/LocationMap/LocationMap";
 
 export interface AddressData {
   zipCode?: string | null;
@@ -20,7 +19,6 @@ interface AddressCardProps {
   onEdit?: () => void;
   title?: string;
   isLoading?: boolean;
-
   latitude?: number | null;
   longitude?: number | null;
   locationName?: string;
@@ -29,7 +27,7 @@ interface AddressCardProps {
 export default function AddressCard({
   address,
   onEdit,
-  title = "Endereço",
+  title = "Localização",
   isLoading = false,
   latitude,
   longitude,
@@ -40,6 +38,14 @@ export default function AddressCard({
     Object.values(address).some(
       (value) => typeof value === "string" && value.trim().length > 0
     );
+
+  const hasCoordinates =
+    latitude != null &&
+    longitude != null &&
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude) &&
+    Math.abs(latitude) <= 90 &&
+    Math.abs(longitude) <= 180;
 
   const streetLine = [address?.street, address?.number, address?.complement]
     .filter(Boolean)
@@ -54,71 +60,77 @@ export default function AddressCard({
     address?.zipCode ? `CEP ${address.zipCode}` : null,
   ].filter(Boolean);
 
-  const mapAddress = [
-    address?.street,
-    address?.number,
-    address?.complement,
-    address?.neighborhood,
-    address?.city,
-    address?.state,
-    address?.zipCode,
-    "Brasil",
-  ]
-    .filter(Boolean)
-    .join(", ");
+  const mapQuery = hasCoordinates
+    ? `${latitude},${longitude}`
+    : [
+        address?.street,
+        address?.number,
+        address?.neighborhood,
+        address?.city,
+        address?.state,
+        "Brasil",
+      ]
+        .filter(Boolean)
+        .join(", ");
 
-  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapAddress)}`;
+  const mapUrl = mapQuery
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`
+    : undefined;
 
   return (
     <section className={styles.card}>
       <header className={styles.header}>
         <h3>{title}</h3>
 
-        {onEdit && <IconButton action="edit" size="sm" onClick={onEdit} />}
+        <div className={styles.headerActions}>
+          {mapUrl && (
+            <a
+              href={mapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.mapButton}
+            >
+              <ArrowSquareOutIcon size={20} weight="bold" />
+            </a>
+          )}
+
+          {onEdit && <IconButton action="edit" size="sm" onClick={onEdit} />}
+        </div>
       </header>
 
       {isLoading ? (
-        <div className={styles.empty}>Carregando endereço...</div>
-      ) : hasAddress ? (
+        <div className={styles.empty}>Carregando localização...</div>
+      ) : (
         <div className={styles.content}>
-          {/* <div className={styles.iconWrapper}>
-            <MapPin size={32} weight="regular" />
-          </div> */}
-
-          <div className={styles.addressInfo}>
-            {addressLines.map((line, index) => (
-              <span key={index}>{line}</span>
-            ))}
-          </div>
-
-          {latitude != null && longitude != null && (
-            <div className={styles.locationMap}>
-              <LocationMap
-                latitude={latitude}
-                longitude={longitude}
-                name={locationName || title}
-                location={cityLine}
-              />
+          {hasCoordinates ? (
+            <LocationMap
+              latitude={latitude}
+              longitude={longitude}
+              name={locationName || title}
+              location={cityLine}
+            />
+          ) : (
+            <div className={styles.empty}>
+              <MapPin size={24} />
+              <span>
+                {hasAddress
+                  ? "Coordenadas não cadastradas para exibir o mapa."
+                  : "Nenhuma localização cadastrada."}
+              </span>
             </div>
           )}
 
-          <a
-            href={mapUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.mapButton}
-          >
-            <MapTrifold size={19} />
-            Ver no mapa
-          </a>
-        </div>
-      ) : (
-        <div className={styles.empty}>
-          <MapPin size={24} />
-          <span>Nenhum endereço cadastrado.</span>
-          {onEdit && (
+          {hasAddress && (
+            <div className={styles.addressInfo}>
+              {addressLines.map((line, index) => (
+                <span key={index}>{line}</span>
+              ))}
+            </div>
+          )}
+
+          {!hasAddress && !hasCoordinates && onEdit && (
             <button type="button" className={styles.addButton} onClick={onEdit}>
-              Adicionar endereço
+              Adicionar localização
             </button>
           )}
         </div>

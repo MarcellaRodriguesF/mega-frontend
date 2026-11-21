@@ -1,13 +1,12 @@
 .card {
   width: 100%;
-  padding: 18px 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: var(--card-padding);
   border: 1px solid var(--color-border);
   border-radius: 12px;
   background: var(--color-surface-elevated);
-  padding: var(--card-padding);
   box-shadow: 0 2px 8px
     color-mix(in srgb, var(--color-brand-dark) 3%, transparent);
 }
@@ -17,7 +16,6 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 16px;
 }
 
 .header h3 {
@@ -27,7 +25,12 @@
   font-weight: 600;
 }
 
-.editButton,
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .mapButton,
 .addButton {
   display: inline-flex;
@@ -38,101 +41,55 @@
   padding: 7px 13px;
   border: 1px solid #dce4ec;
   border-radius: 7px;
-  color: #46566a;
+  color: #176b45;
   background: #fff;
   font-size: 12px;
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease;
+  transition: background 0.2s ease;
 }
 
-.editButton:hover,
 .mapButton:hover,
 .addButton:hover {
-  border-color: #cbd7e2;
-  background: #f7f9fb;
-}
-
-.editButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  background: #f0f7f3;
 }
 
 .content {
   display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.iconWrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 72px;
-  height: 72px;
-  border-radius: 12px;
-  color: #176b45;
-  background: #edf6f0;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  gap: 16px;
 }
 
 .addressInfo {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  gap: 4px;
-  min-width: 0;
+  gap: 5px;
+  padding-top: 4px;
   color: #45566c;
   font-size: 13px;
-  line-height: 1.45;
-}
-
-.mapButton {
-  margin-left: auto;
+  line-height: 1.5;
 }
 
 .empty {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   gap: 10px;
   padding: 18px 4px;
   color: #858d98;
   font-size: 13px;
 }
 
-.locationMap {
-  width: 100%;
-  margin-top: 8px;
-}
-
-.locationMap > div {
-  height: 240px;
-}
-
 @media (max-width: 640px) {
-  .content {
+  .header {
     align-items: flex-start;
+  }
+
+  .headerActions {
     flex-wrap: wrap;
-    gap: 14px;
-  }
-
-  .iconWrapper {
-    width: 58px;
-    height: 58px;
-  }
-
-  .addressInfo {
-    flex: 1;
-    min-width: 180px;
-  }
-
-  .mapButton {
-    width: 100%;
-    margin-left: 0;
+    justify-content: flex-end;
   }
 }

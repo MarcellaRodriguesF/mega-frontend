@@ -3,10 +3,14 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { WifiHigh, WifiSlash } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
 
 import Card from "@/components/ui/Card/Card";
 import Button from "@/components/ui/Button/Button";
 import Modal from "@/components/ui/Modal/Modal";
+import IconButton from "@/components/ui/IconButton/IconButton";
+import ContactActions from "@/components/ui/ContactActions/ContactActions";
+import InfoField from "@/components/ui/InfoField/InfoField";
 
 import { unitConnectivitiesApi } from "@/services/api/unit-connectivities/unit-connectivities.api";
 import { getConnectivityTechnologyLabel } from "@/features/units/schemas/unit-connectivity-form.schema";
@@ -14,27 +18,23 @@ import { getConnectivityTechnologyLabel } from "@/features/units/schemas/unit-co
 import type { UnitConnectivity } from "@/services/api/unit-connectivities/unit-connectivities.types";
 
 import styles from "./UnitConnectivityCard.module.css";
-import IconButton from "@/components/ui/IconButton/IconButton";
-import ContactActions from "@/components/ui/ContactActions/ContactActions";
-import InfoField from "@/components/ui/InfoField/InfoField";
-import { useRouter } from "next/navigation";
 
 interface UnitConnectivityCardProps {
   unitId: string;
   onCreate: () => void;
   onEdit: (connectivity: UnitConnectivity) => void;
-  onInactivate: (connectivity: UnitConnectivity) => void | Promise<void>;
+  onDelete: (connectivity: UnitConnectivity) => void | Promise<void>;
 }
 
 export default function UnitConnectivityCard({
   unitId,
   onCreate,
   onEdit,
-  onInactivate,
+  onDelete,
 }: UnitConnectivityCardProps) {
-  const [connectivityToInactivate, setConnectivityToInactivate] =
+  const [connectivityToDelete, setConnectivityToDelete] =
     useState<UnitConnectivity | null>(null);
-  const [isInactivating, setIsInactivating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const router = useRouter();
 
@@ -48,28 +48,64 @@ export default function UnitConnectivityCard({
     queryFn: async () => {
       const response = await unitConnectivitiesApi.findByUnitId(unitId);
       return response.data.filter(
-        (connectivity) => connectivity.status === "ACTIVE"
+        (connectivity) => connectivity.status === "ACTIVE",
       );
     },
     enabled: Boolean(unitId),
   });
 
-  async function handleConfirmInactivate() {
-    if (!connectivityToInactivate) return;
+  const connectivity = connectivities[0] ?? null;
+
+  async function handleConfirmDelete() {
+    if (!connectivityToDelete) return;
 
     try {
-      setIsInactivating(true);
-      await onInactivate(connectivityToInactivate);
-      setConnectivityToInactivate(null);
+      setIsDeleting(true);
+      await onDelete(connectivityToDelete);
+      setConnectivityToDelete(null);
     } catch {
       return;
     } finally {
-      setIsInactivating(false);
+      setIsDeleting(false);
     }
   }
 
   function navigateToProvider(providerId: string) {
+    if (!providerId) return;
     router.push(`/providers/${providerId}`);
+  }
+
+  function renderActions() {
+    if (isLoading || isError) return undefined;
+
+    if (!connectivity) {
+      return (
+        <IconButton
+          action="add"
+          label="Adicionar conectividade"
+          onClick={onCreate}
+          disabled={isDeleting}
+        />
+      );
+    }
+
+    return (
+      <>
+        <IconButton
+          action="edit"
+          label="Editar conectividade"
+          onClick={() => onEdit(connectivity)}
+          disabled={isDeleting}
+        />
+
+        <IconButton
+          action="delete"
+          label="Excluir conectividade"
+          onClick={() => setConnectivityToDelete(connectivity)}
+          disabled={isDeleting}
+        />
+      </>
+    );
   }
 
   return (
@@ -77,22 +113,14 @@ export default function UnitConnectivityCard({
       <Card
         title="Conectividade"
         icon={<WifiHigh size={20} />}
-        actions={
-          connectivities.length > 0 && (
-            <IconButton
-              action="add"
-              onClick={onCreate}
-              disabled={isInactivating}
-            />
-          )
-        }
+        actions={renderActions()}
         display="default"
       >
         {isLoading ? (
-          <div className={styles.feedback}>Carregando conectividades...</div>
+          <div className={styles.feedback}>Carregando conectividade...</div>
         ) : isError ? (
           <div className={styles.feedback}>
-            <span>Não foi possível carregar as conectividades.</span>
+            <span>Não foi possível carregar a conectividade.</span>
 
             <Button
               variant="secondary"
@@ -100,90 +128,52 @@ export default function UnitConnectivityCard({
               onClick={() => refetch()}
             />
           </div>
-        ) : connectivities.length === 0 ? (
+        ) : !connectivity ? (
           <div className={styles.empty}>
             <WifiSlash size={28} />
-
-            <strong>Nenhuma conexão cadastrada</strong>
-
-            <span>
-              Cadastre a conexão de internet desta unidade para acompanhar suas
-              informações.
-            </span>
-
-            <Button text="Cadastrar conexão" onClick={onCreate} />
+            <span>Nenhuma conectividade cadastrada.</span>
           </div>
         ) : (
-          <div className={styles.list}>
-            {connectivities.map((connectivity) => (
-              <div key={connectivity.id} className={styles.connectivity}>
-                <div className={styles.header}>
-                  <div className={styles.connectionTitle}>
-                    <strong>{connectivity.name}</strong>
-                  </div>
+          <div className={styles.fields}>
+            <InfoField
+              label="Provedor"
+              value={connectivity.provider?.name ?? "Não informado"}
+              onActionsClick={
+                connectivity.provider?.id
+                  ? () => navigateToProvider(connectivity.provider?.id ?? "")
+                  : undefined
+              }
+            />
 
-                  <div className={styles.actions}>
-                    <IconButton
-                      action="edit"
-                      onClick={() => onEdit(connectivity)}
-                      disabled={isInactivating}
-                    />
+            <InfoField
+              label="Tecnologia"
+              value={getConnectivityTechnologyLabel(connectivity.technology)}
+            />
 
-                    <IconButton
-                      action="delete"
-                      onClick={() => setConnectivityToInactivate(connectivity)}
-                      disabled={isInactivating}
-                    />
-                  </div>
-                </div>
+            <InfoField
+              label="IP público"
+              value={connectivity.publicIp || "Não informado"}
+            />
 
-                <div className={styles.fields}>
-                  <InfoField
-                    label="Provedor"
-                    value={connectivity.provider?.name ?? "Não informado"}
-                    onActionsClick={() =>
-                      navigateToProvider(connectivity.provider?.id ?? "")
-                    }
-                  />
-
-                  <InfoField
-                    label="Tecnologia"
-                    value={getConnectivityTechnologyLabel(
-                      connectivity.technology
-                    )}
-                  />
-
-                  <InfoField
-                    label="IP público"
-                    value={connectivity.publicIp || "Não informado"}
-                  />
-
-                  <ContactActions
-                    phone={connectivity.provider?.phone}
-                    label="Telefone"
-                  />
-                </div>
-              </div>
-            ))}
+            <ContactActions
+              phone={connectivity.provider?.phone}
+              label="Telefone"
+            />
           </div>
         )}
       </Card>
 
       <Modal
-        open={connectivityToInactivate !== null}
+        open={connectivityToDelete !== null}
         variant="danger"
-        title="Inativar conexão?"
-        description={
-          connectivityToInactivate
-            ? `A conexão ${connectivityToInactivate.name} será inativada e deixará de aparecer na lista desta unidade.`
-            : ""
-        }
-        confirmText="Inativar conexão"
+        title="Excluir conectividade?"
+        description="A conectividade desta unidade será excluída e deixará de aparecer nesta tela."
+        confirmText="Excluir conectividade"
         cancelText="Cancelar"
-        isLoading={isInactivating}
-        onConfirm={handleConfirmInactivate}
+        isLoading={isDeleting}
+        onConfirm={handleConfirmDelete}
         onClose={() => {
-          if (!isInactivating) setConnectivityToInactivate(null);
+          if (!isDeleting) setConnectivityToDelete(null);
         }}
       />
     </>

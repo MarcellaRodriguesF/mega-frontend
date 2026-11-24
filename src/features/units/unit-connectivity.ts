@@ -18,7 +18,6 @@ export function toUnitConnectivityPayload(
 
   return {
     providerId: data.providerId,
-    name: data.name,
     technology: data.technology,
     publicIp: data.publicIp || null,
     observations: data.observations || null,

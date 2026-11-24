@@ -48,7 +48,6 @@ export interface UnitConnectivity {
 export interface CreateUnitConnectivityRequest {
   unitId: string;
   providerId: string;
-  name: string;
   technology: ConnectivityTechnology;
   publicIp?: string | null;
   observations?: string | null;
@@ -56,7 +55,6 @@ export interface CreateUnitConnectivityRequest {
 
 export interface UpdateUnitConnectivityRequest {
   providerId?: string;
-  name?: string;
   technology?: ConnectivityTechnology;
   publicIp?: string | null;
   observations?: string | null;

@@ -33,12 +33,6 @@ const ipv4Pattern = /^(\d{1,3}\.){3}\d{1,3}$/;
 export const unitConnectivityFormSchema = z.object({
   providerId: z.string().trim().min(1, "Selecione o provedor."),
 
-  name: z
-    .string()
-    .trim()
-    .min(1, "Informe o nome da conexão.")
-    .max(150, "O nome da conexão deve ter no máximo 150 caracteres."),
-
   technology: z
     .string()
     .trim()
@@ -66,7 +60,6 @@ export type UnitConnectivityFormData = z.output<
 
 export const UNIT_CONNECTIVITY_FORM_FIELDS = [
   "providerId",
-  "name",
   "technology",
   "publicIp",
   "observations",

@@ -68,7 +68,6 @@ export default function UnitConnectivityForm({
     resolver: zodResolver(unitConnectivityFormSchema),
     defaultValues: {
       providerId: initialData?.providerId ?? "",
-      name: initialData?.name ?? "",
       technology: initialTechnology(initialData?.technology),
       publicIp: initialData?.publicIp ?? "",
       observations: initialData?.observations ?? "",
@@ -126,16 +125,6 @@ export default function UnitConnectivityForm({
           }
           options={providerOptions}
           {...register("providerId")}
-        />
-
-        <Input
-          label="Nome da conexão"
-          required
-          placeholder="Ex.: Conexão principal"
-          maxLength={150}
-          disabled={isLoading}
-          error={errors.name?.message}
-          {...register("name")}
         />
 
         <Select

@@ -90,12 +90,12 @@ export default function UnitGeneralPage() {
     try {
       await unitConnectivitiesApi.delete(connectivity.id);
       await refreshConnectivities();
-      toast.success("A conexão foi inativada e não aparece mais na lista.", {
-        title: "Conexão inativada!",
+      toast.success("A conectividade foi excluída desta unidade.", {
+        title: "Conectividade excluída!",
       });
     } catch (error) {
       toast.error(getUnitConnectivityErrorMessage(error), {
-        title: "Erro ao inativar conexão",
+        title: "Erro ao excluir conectividade",
       });
       throw error;
     }
@@ -127,7 +127,7 @@ export default function UnitGeneralPage() {
         unitId={unit.id}
         onCreate={handleCreateConnectivity}
         onEdit={handleEditConnectivity}
-        onInactivate={handleInactivateConnectivity}
+        onDelete={handleInactivateConnectivity}
       />
 
       <AddressCard

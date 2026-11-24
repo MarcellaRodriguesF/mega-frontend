@@ -16,3 +16,12 @@
   font-weight: 500;
   overflow-wrap: anywhere;
 }
+
+.cursorPointer {
+  cursor: pointer;
+  color: var(--color-primary);
+}
+
+.cursorPointer:hover {
+  color: var(--color-primary-hover);
+}

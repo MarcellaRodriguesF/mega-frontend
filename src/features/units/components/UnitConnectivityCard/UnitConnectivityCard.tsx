@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { WifiHigh, PencilSimple, Plus, Prohibit, WifiSlash } from "@phosphor-icons/react";
+import { WifiHigh, WifiSlash } from "@phosphor-icons/react";
 
 import Card from "@/components/ui/Card/Card";
 import Button from "@/components/ui/Button/Button";
@@ -14,6 +14,10 @@ import { getConnectivityTechnologyLabel } from "@/features/units/schemas/unit-co
 import type { UnitConnectivity } from "@/services/api/unit-connectivities/unit-connectivities.types";
 
 import styles from "./UnitConnectivityCard.module.css";
+import IconButton from "@/components/ui/IconButton/IconButton";
+import ContactActions from "@/components/ui/ContactActions/ContactActions";
+import InfoField from "@/components/ui/InfoField/InfoField";
+import { useRouter } from "next/navigation";
 
 interface UnitConnectivityCardProps {
   unitId: string;
@@ -32,6 +36,8 @@ export default function UnitConnectivityCard({
     useState<UnitConnectivity | null>(null);
   const [isInactivating, setIsInactivating] = useState(false);
 
+  const router = useRouter();
+
   const {
     data: connectivities = [],
     isPending: isLoading,
@@ -42,7 +48,7 @@ export default function UnitConnectivityCard({
     queryFn: async () => {
       const response = await unitConnectivitiesApi.findByUnitId(unitId);
       return response.data.filter(
-        (connectivity) => connectivity.status === "ACTIVE",
+        (connectivity) => connectivity.status === "ACTIVE"
       );
     },
     enabled: Boolean(unitId),
@@ -62,6 +68,10 @@ export default function UnitConnectivityCard({
     }
   }
 
+  function navigateToProvider(providerId: string) {
+    router.push(`/providers/${providerId}`);
+  }
+
   return (
     <>
       <Card
@@ -69,14 +79,10 @@ export default function UnitConnectivityCard({
         icon={<WifiHigh size={20} />}
         actions={
           connectivities.length > 0 && (
-            <Button
-              text={
-                <>
-                  <Plus size={16} />
-                  Nova conexão
-                </>
-              }
+            <IconButton
+              action="add"
               onClick={onCreate}
+              disabled={isInactivating}
             />
           )
         }
@@ -113,36 +119,18 @@ export default function UnitConnectivityCard({
               <div key={connectivity.id} className={styles.connectivity}>
                 <div className={styles.header}>
                   <div className={styles.connectionTitle}>
-                    <span className={styles.connectionIcon}>
-                      <WifiHigh size={20} />
-                    </span>
-
-                    <div>
-                      <strong>{connectivity.name}</strong>
-                    </div>
+                    <strong>{connectivity.name}</strong>
                   </div>
 
                   <div className={styles.actions}>
-                    <Button
-                      variant="secondary"
-                      text={
-                        <>
-                          <PencilSimple size={15} />
-                          Editar
-                        </>
-                      }
+                    <IconButton
+                      action="edit"
                       onClick={() => onEdit(connectivity)}
                       disabled={isInactivating}
                     />
 
-                    <Button
-                      variant="secondary"
-                      text={
-                        <>
-                          <Prohibit size={15} />
-                          Inativar
-                        </>
-                      }
+                    <IconButton
+                      action="delete"
                       onClick={() => setConnectivityToInactivate(connectivity)}
                       disabled={isInactivating}
                     />
@@ -150,24 +138,30 @@ export default function UnitConnectivityCard({
                 </div>
 
                 <div className={styles.fields}>
-                  <div className={styles.field}>
-                    <span>Provedor</span>
-                    <strong>
-                      {connectivity.provider?.name ?? "Não informado"}
-                    </strong>
-                  </div>
+                  <InfoField
+                    label="Provedor"
+                    value={connectivity.provider?.name ?? "Não informado"}
+                    onActionsClick={() =>
+                      navigateToProvider(connectivity.provider?.id ?? "")
+                    }
+                  />
 
-                  <div className={styles.field}>
-                    <span>Tecnologia</span>
-                    <strong>
-                      {getConnectivityTechnologyLabel(connectivity.technology)}
-                    </strong>
-                  </div>
+                  <InfoField
+                    label="Tecnologia"
+                    value={getConnectivityTechnologyLabel(
+                      connectivity.technology
+                    )}
+                  />
 
-                  <div className={styles.field}>
-                    <span>IP público</span>
-                    <strong>{connectivity.publicIp || "Não informado"}</strong>
-                  </div>
+                  <InfoField
+                    label="IP público"
+                    value={connectivity.publicIp || "Não informado"}
+                  />
+
+                  <ContactActions
+                    phone={connectivity.provider?.phone}
+                    label="Telefone"
+                  />
                 </div>
               </div>
             ))}

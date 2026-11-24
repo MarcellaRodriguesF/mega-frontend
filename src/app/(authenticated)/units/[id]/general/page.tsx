@@ -73,7 +73,7 @@ export default function UnitGeneralPage() {
         onSubmit={async (data: UnitConnectivityFormData) => {
           await unitConnectivitiesApi.update(
             connectivity.id,
-            toUnitConnectivityPayload(data),
+            toUnitConnectivityPayload(data)
           );
 
           await refreshConnectivities();
@@ -90,10 +90,9 @@ export default function UnitGeneralPage() {
     try {
       await unitConnectivitiesApi.delete(connectivity.id);
       await refreshConnectivities();
-      toast.success(
-        "A conexão foi inativada e não aparece mais na lista.",
-        { title: "Conexão inativada!" },
-      );
+      toast.success("A conexão foi inativada e não aparece mais na lista.", {
+        title: "Conexão inativada!",
+      });
     } catch (error) {
       toast.error(getUnitConnectivityErrorMessage(error), {
         title: "Erro ao inativar conexão",

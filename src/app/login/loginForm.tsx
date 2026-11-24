@@ -46,7 +46,7 @@ export default function LoginForm() {
         }
       } else {
         setError(
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+          "Não foi possível conectar ao servidor. Verifique sua conexão."
         );
       }
     } finally {

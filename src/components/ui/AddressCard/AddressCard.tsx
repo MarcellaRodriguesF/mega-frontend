@@ -110,14 +110,15 @@ export default function AddressCard({
               location={cityLine}
             />
           ) : (
-            <div className={styles.empty}>
-              <MapPinIcon size={16} />
-              <span>
-                {hasAddress
-                  ? "Coordenadas não cadastradas para exibir o mapa."
-                  : "Nenhuma localização cadastrada."}
-              </span>
-            </div>
+            <></>
+            // <div className={styles.empty}>
+            //   <MapPinIcon size={16} />
+            //   <span>
+            //     {hasAddress
+            //       ? "Coordenadas não cadastradas para exibir o mapa."
+            //       : "Nenhuma localização cadastrada."}
+            //   </span>
+            // </div>
           )}
 
           {hasAddress && (

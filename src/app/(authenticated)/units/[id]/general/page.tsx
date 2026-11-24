@@ -38,11 +38,12 @@ export default function UnitGeneralPage() {
         onClose={closeDrawer}
         onSubmit={async (data) => {
           await unitConnectivitiesApi.create({
-            ...data,
             unitId: unit.id,
-            providerId: data.providerId || null,
-            publicIp: data.publicIp || null,
-            observations: data.observations || null,
+            name: data.connectionName ?? "",
+            providerId: data.providerId,
+            technology: data.technology,
+            publicIp: data.publicIp,
+            monitoringEnabled: data.monitoringEnabled,
           });
 
           await queryClient.invalidateQueries({

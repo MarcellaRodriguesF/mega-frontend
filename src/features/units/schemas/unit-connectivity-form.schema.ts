@@ -10,6 +10,11 @@ export const unitConnectivityFormSchema = z.object({
     .string()
     .min(1, "Selecione o provedor."),
 
+  connectionName: z
+    .string()
+    .trim()
+    .min(1, "Informe o nome da conexão."),
+
   publicIp: z
     .string()
     .trim()

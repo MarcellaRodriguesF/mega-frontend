@@ -61,7 +61,15 @@ export default function UnitConnectivityForm({
   return (
     <form id={formId} onSubmit={handleSubmit(onSubmit)} noValidate>
       <FormSection isContentGrid>
-        {" "}
+        <Input
+          label="Nome da conexão"
+          required
+          placeholder="Ex.: Conexão principal"
+          maxLength={45}
+          disabled={isLoading}
+          error={errors.connectionName?.message}
+          {...register("connectionName")}
+        />{" "}
         <Select
           label="Provedor"
           required

@@ -11,6 +11,12 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   CONNECTIVITY_ALREADY_EXISTS:
     "Esta unidade já possui uma conectividade cadastrada.",
   TOO_MANY_REQUESTS: "Muitas tentativas. Aguarde e tente novamente.",
+  FORM_TEMPLATE_IN_USE:
+    "Não é possível excluir este formulário porque ele está associado a requisitos.",
+  FORM_TEMPLATE_INACTIVE:
+    "O formulário precisa estar ativo para ser associado a uma atividade.",
+  ORDER_CONFLICT:
+    "Já existe um item com a mesma ordem ou chave neste grupo.",
   INTERNAL_SERVER_ERROR: "Ocorreu um erro inesperado. Tente novamente.",
   SERVICE_UNAVAILABLE:
     "O serviço está temporariamente indisponível. Tente novamente.",

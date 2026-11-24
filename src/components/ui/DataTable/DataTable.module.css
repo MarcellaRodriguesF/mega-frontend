@@ -46,6 +46,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: var(--spacing-3);
   padding: var(--spacing-4);
 }
@@ -54,7 +55,9 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
+  flex: 1 1 220px;
   width: 100%;
+  min-width: 0;
   max-width: 340px;
   height: 40px;
   padding: 0 var(--spacing-3);

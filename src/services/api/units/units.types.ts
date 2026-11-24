@@ -60,5 +60,25 @@ export type UpdateUnitRequest = Partial<CreateUnitRequest> & {
   status?: UnitStatus;
 };
 
+export interface CompanyUnitProvider {
+  id: string;
+  name: string;
+  phone: string | null;
+}
+
+export interface CompanyUnit {
+  id: string;
+  name: string;
+  status: UnitStatus;
+  publicIp: string | null;
+  provider: CompanyUnitProvider | null;
+}
+
+export interface CompanyUnitsQuery {
+  search?: string;
+  status?: UnitStatus;
+}
+
 export type UnitResponse = ApiSuccess<Unit>;
 export type UnitsResponse = ApiSuccess<Unit[]>;
+export type CompanyUnitsResponse = ApiSuccess<CompanyUnit[]>;

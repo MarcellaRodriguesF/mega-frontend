@@ -1,6 +1,8 @@
 import { apiClient } from "../api-client";
 
 import type {
+  CompanyUnitsQuery,
+  CompanyUnitsResponse,
   CreateUnitRequest,
   UnitResponse,
   UnitsResponse,
@@ -14,6 +16,22 @@ export const unitsApi = {
 
   findAll(): Promise<UnitsResponse> {
     return apiClient.get<UnitsResponse>("/units");
+  },
+
+  findByCompany(
+    companyId: string,
+    params: CompanyUnitsQuery = {},
+  ): Promise<CompanyUnitsResponse> {
+    const searchParams = new URLSearchParams();
+
+    if (params.search) searchParams.set("search", params.search);
+    if (params.status) searchParams.set("status", params.status);
+
+    const query = searchParams.toString();
+
+    return apiClient.get<CompanyUnitsResponse>(
+      `/companies/${companyId}/units${query ? `?${query}` : ""}`,
+    );
   },
 
   findById(id: string): Promise<UnitResponse> {

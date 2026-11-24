@@ -8,13 +8,11 @@ import Button from "@/components/ui/Button/Button";
 import UnitConnectivityForm from "../UnitConnectivityForm/UnitConnectivityForm";
 
 import type { UnitConnectivity } from "@/services/api/unit-connectivities/unit-connectivities.types";
-
 import type { UnitConnectivityFormData } from "@/features/units/schemas/unit-connectivity-form.schema";
 
 interface CreateProps {
   open: boolean;
   mode?: "create";
-  unitId: string;
   onClose: () => void;
   onSubmit: (data: UnitConnectivityFormData) => void | Promise<void>;
 }
@@ -22,7 +20,6 @@ interface CreateProps {
 interface EditProps {
   open: boolean;
   mode: "edit";
-  unitId: string;
   connectivity: UnitConnectivity;
   onClose: () => void;
   onSubmit: (data: UnitConnectivityFormData) => void | Promise<void>;
@@ -31,9 +28,10 @@ interface EditProps {
 type UnitConnectivityDrawerProps = CreateProps | EditProps;
 
 export default function UnitConnectivityDrawer(
-  props: UnitConnectivityDrawerProps
+  props: UnitConnectivityDrawerProps,
 ) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<unknown>(null);
 
   const isEditing = props.mode === "edit";
 
@@ -44,7 +42,10 @@ export default function UnitConnectivityDrawer(
   async function handleSubmit(data: UnitConnectivityFormData) {
     try {
       setIsSubmitting(true);
+      setSubmitError(null);
       await props.onSubmit(data);
+    } catch (error) {
+      setSubmitError(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -79,10 +80,10 @@ export default function UnitConnectivityDrawer(
       }
     >
       <UnitConnectivityForm
-        unitId={props.unitId}
         formId={formId}
         initialData={isEditing ? props.connectivity : undefined}
         isLoading={isSubmitting}
+        submitError={submitError}
         onSubmit={handleSubmit}
       />
     </Drawer>

@@ -8,6 +8,8 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   NOT_FOUND: "O conteúdo solicitado não foi encontrado.",
   USER_NOT_FOUND: "Usuário não encontrado.",
   CONFLICT: "Esta operação conflita com um registro existente.",
+  CONNECTIVITY_ALREADY_EXISTS:
+    "Já existe uma conexão ativa com esse provedor e tecnologia nesta unidade.",
   TOO_MANY_REQUESTS: "Muitas tentativas. Aguarde e tente novamente.",
   INTERNAL_SERVER_ERROR: "Ocorreu um erro inesperado. Tente novamente.",
   SERVICE_UNAVAILABLE:

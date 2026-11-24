@@ -1,5 +1,10 @@
 import type { ApiSuccess } from "../auth/auth.types";
 
+export const CONNECTIVITY_TECHNOLOGIES = ["FIBRA", "RADIO"] as const;
+
+export type ConnectivityTechnology =
+  (typeof CONNECTIVITY_TECHNOLOGIES)[number];
+
 export interface UnitConnectivityProvider {
   id: string;
   name: string;
@@ -42,24 +47,24 @@ export interface UnitConnectivity {
 
 export interface CreateUnitConnectivityRequest {
   unitId: string;
-  providerId?: string | null;
+  providerId: string;
   name: string;
-  technology: string;
+  technology: ConnectivityTechnology;
   publicIp?: string | null;
-  wanIp?: string | null;
-  gatewayIp?: string | null;
-  localIp?: string | null;
-  monitoringEnabled?: boolean;
   observations?: string | null;
 }
 
-export type UpdateUnitConnectivityRequest =
-  Partial<Omit<CreateUnitConnectivityRequest, "unitId">> & {
-    status?: string;
-  };
+export interface UpdateUnitConnectivityRequest {
+  providerId?: string;
+  name?: string;
+  technology?: ConnectivityTechnology;
+  publicIp?: string | null;
+  observations?: string | null;
+}
 
 export type UnitConnectivityResponse = ApiSuccess<UnitConnectivity>;
 export type UnitConnectivitiesResponse = ApiSuccess<UnitConnectivity[]>;
+export type DeleteUnitConnectivityResponse = ApiSuccess<null>;
 
 export interface ConnectivityPingResult {
   success: boolean;

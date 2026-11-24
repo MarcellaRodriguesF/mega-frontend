@@ -19,8 +19,13 @@ import UnitConnectivityDrawer from "@/features/units/components/UnitConnectivity
 import { UnitConnectivity } from "@/services/api/unit-connectivities/unit-connectivities.types";
 import { unitConnectivitiesApi } from "@/services/api/unit-connectivities/unit-connectivities.api";
 import { UnitConnectivityFormData } from "@/features/units/schemas/unit-connectivity-form.schema";
+import {
+  getUnitConnectivityErrorMessage,
+  toUnitConnectivityPayload,
+} from "@/features/units/unit-connectivity";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDrawer } from "@/hooks/useDrawer";
+import { useToast } from "@/contexts/ToastContext";
 
 export default function UnitGeneralPage() {
   const { unit } = useUnit();
@@ -28,29 +33,31 @@ export default function UnitGeneralPage() {
   const address = unit.address;
   const queryClient = useQueryClient();
   const { openDrawer, closeDrawer } = useDrawer();
+  const toast = useToast();
+
+  async function refreshConnectivities() {
+    await queryClient.invalidateQueries({
+      queryKey: ["unit-connectivities", unit.id],
+    });
+  }
 
   function handleCreateConnectivity() {
     openDrawer(
       <UnitConnectivityDrawer
         open
         mode="create"
-        unitId={unit.id}
         onClose={closeDrawer}
         onSubmit={async (data) => {
           await unitConnectivitiesApi.create({
             unitId: unit.id,
-            name: data.connectionName ?? "",
-            providerId: data.providerId,
-            technology: data.technology,
-            publicIp: data.publicIp,
-            monitoringEnabled: data.monitoringEnabled,
+            ...toUnitConnectivityPayload(data),
           });
 
-          await queryClient.invalidateQueries({
-            queryKey: ["unit-connectivities", unit.id],
-          });
-
+          await refreshConnectivities();
           closeDrawer();
+          toast.success("A conexão foi cadastrada com sucesso.", {
+            title: "Conexão cadastrada!",
+          });
         }}
       />
     );
@@ -61,25 +68,38 @@ export default function UnitGeneralPage() {
       <UnitConnectivityDrawer
         open
         mode="edit"
-        unitId={unit.id}
         connectivity={connectivity}
         onClose={closeDrawer}
         onSubmit={async (data: UnitConnectivityFormData) => {
-          await unitConnectivitiesApi.update(connectivity.id, {
-            ...data,
-            providerId: data.providerId || null,
-            publicIp: data.publicIp || null,
-            observations: data.observations || null,
-          });
+          await unitConnectivitiesApi.update(
+            connectivity.id,
+            toUnitConnectivityPayload(data),
+          );
 
-          await queryClient.invalidateQueries({
-            queryKey: ["unit-connectivities", unit.id],
-          });
-
+          await refreshConnectivities();
           closeDrawer();
+          toast.success("A conexão foi atualizada com sucesso.", {
+            title: "Conexão atualizada!",
+          });
         }}
       />
     );
+  }
+
+  async function handleInactivateConnectivity(connectivity: UnitConnectivity) {
+    try {
+      await unitConnectivitiesApi.delete(connectivity.id);
+      await refreshConnectivities();
+      toast.success(
+        "A conexão foi inativada e não aparece mais na lista.",
+        { title: "Conexão inativada!" },
+      );
+    } catch (error) {
+      toast.error(getUnitConnectivityErrorMessage(error), {
+        title: "Erro ao inativar conexão",
+      });
+      throw error;
+    }
   }
 
   return (
@@ -108,6 +128,7 @@ export default function UnitGeneralPage() {
         unitId={unit.id}
         onCreate={handleCreateConnectivity}
         onEdit={handleEditConnectivity}
+        onInactivate={handleInactivateConnectivity}
       />
 
       <AddressCard

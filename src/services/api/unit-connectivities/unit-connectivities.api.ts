@@ -2,6 +2,7 @@ import { apiClient } from "../api-client";
 
 import type {
   CreateUnitConnectivityRequest,
+  DeleteUnitConnectivityResponse,
   UnitConnectivityResponse,
   UnitConnectivitiesResponse,
   UpdateUnitConnectivityRequest,
@@ -34,6 +35,12 @@ export const unitConnectivitiesApi = {
     return apiClient.patch<UnitConnectivityResponse>(
       `/unit-connectivities/${id}`,
       data,
+    );
+  },
+
+  delete(id: string): Promise<DeleteUnitConnectivityResponse> {
+    return apiClient.delete<DeleteUnitConnectivityResponse>(
+      `/unit-connectivities/${id}`,
     );
   },
 };

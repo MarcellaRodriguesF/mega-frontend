@@ -338,6 +338,11 @@
   background: #053229;
 }
 
+.formPreview {
+  display: grid;
+  gap: 16px;
+}
+
 @media (max-width: 860px) {
   .layout {
     grid-template-columns: 1fr;

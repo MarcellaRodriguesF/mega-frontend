@@ -25,6 +25,7 @@ const companyTabs = [
   { value: "general", label: "Dados gerais" },
   { value: "units", label: "Unidades" },
   { value: "documents", label: "Documentos" },
+  { value: "calls", label: "Chamados" },
   { value: "opportunities", label: "Oportunidades" },
 ];
 
@@ -159,7 +160,7 @@ export default function CompanyDetailsLayout({
         onSubmit={handleUpdateCompany}
         mode="edit"
         company={company}
-      />,
+      />
     );
   }
 
@@ -176,7 +177,7 @@ export default function CompanyDetailsLayout({
         cancelText="Cancelar"
         onConfirm={handleDeleteCompany}
         onClose={closeDrawer}
-      />,
+      />
     );
   }
 

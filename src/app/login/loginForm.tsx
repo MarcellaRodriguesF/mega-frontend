@@ -3,7 +3,6 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button/Button";
 import Input from "@/components/ui/Input/Input";
-import FormMessage from "@/components/ui/FormMessage/FormMessage";
 import { authApi } from "@/services/api/auth/auth.api";
 import { ApiError } from "@/services/api/api-client";
 import styles from "./login.module.css";

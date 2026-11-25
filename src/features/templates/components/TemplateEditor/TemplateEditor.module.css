@@ -1,3 +1,19 @@
+.topBar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.topActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .link {
   display: inline-flex;
   align-items: center;
@@ -7,111 +23,212 @@
   text-decoration: none;
 }
 
-.statusRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+.pending {
+  color: var(--color-alert);
+  font-size: 13px;
+  font-weight: 600;
 }
 
-.note {
-  margin: 0;
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0 20px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
   color: var(--color-text-secondary);
   font-size: 14px;
 }
 
-.panel {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 20px;
-  padding: 20px;
+.stages {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 16px;
 }
 
-.panel h2,
-.stage h3,
-.activity h4 {
-  margin: 0;
-  color: var(--color-text);
+.stage + .stage {
+  border-top: 1px solid var(--color-border);
 }
 
-.panel p,
-.stage p,
-.activity p,
-.requirement p {
-  margin: 4px 0 0;
-  color: var(--color-text-secondary);
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.sectionHeader,
-.itemHeader,
-.requirement,
-.formActions,
-.actions {
-  display: flex;
+.stageHeader,
+.activity {
+  display: grid;
+  grid-template-columns: 28px 42px minmax(0, 1fr) auto auto auto;
+  gap: 8px;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  padding: 10px 12px;
 }
 
-.actions {
-  justify-content: flex-end;
-  flex-wrap: wrap;
+.stageHeader {
+  cursor: pointer;
 }
 
-.stack,
-.activities,
-.requirements {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.stage,
-.activity,
-.requirement {
-  padding: 16px;
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-}
-
-.activity,
-.requirement {
+.stageHeader:hover,
+.activity:hover {
   background: var(--color-muted-surface);
 }
 
-.empty {
-  margin: 0;
-  color: var(--color-text-secondary);
+.activities {
+  padding: 0 12px 12px 28px;
 }
 
-.iconAction {
+.activity {
+  grid-template-columns: 28px 52px minmax(0, 1fr) auto;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.activity + .activity {
+  margin-top: 8px;
+}
+
+.handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--color-text-secondary);
+  cursor: grab;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.index {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stageName,
+.activityMain {
+  min-width: 0;
+}
+
+.activityMain {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.count {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.expand {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
   color: var(--color-text);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: 8px;
   cursor: pointer;
 }
 
-.formActions {
+.expand:hover,
+.expand:focus-visible,
+.handle:focus-visible {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  outline: none;
+}
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.drawerFooter {
+  display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 12px;
+  width: 100%;
+}
+
+.templateDrawer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.templateStatus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.templateStatusActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.empty {
+  margin: 0;
+  padding: 16px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.addActivity,
+.addStage {
+  display: flex;
+  justify-content: flex-start;
+  padding-top: 12px;
+}
+
+.addStage {
+  padding: 12px;
+  border-top: 1px solid var(--color-border);
 }
 
 @media (max-width: 800px) {
-  .itemHeader,
-  .sectionHeader,
-  .requirement {
+  .topBar,
+  .stageHeader,
+  .activity {
     align-items: flex-start;
+  }
+
+  .topBar,
+  .stageHeader {
     flex-direction: column;
+  }
+
+  .topBar {
+    display: flex;
+  }
+
+  .stageHeader,
+  .activity {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .stageName,
+  .activityMain {
+    flex: 1 1 180px;
+  }
+
+  .activities {
+    padding-left: 12px;
   }
 }

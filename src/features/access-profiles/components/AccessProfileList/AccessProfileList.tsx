@@ -6,6 +6,7 @@ import DataTable from "@/components/ui/DataTable/DataTable";
 import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
 
 import {
+  UserStatus,
   UserStatusColor,
   UserStatusLabel,
 } from "@/constants/enums/users/user-status-record.enum";
@@ -32,15 +33,19 @@ export default function AccessProfileList({
   onEdit,
 }: AccessProfileListProps) {
   const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<"" | UserStatus>("");
 
   const filteredProfiles = useMemo(() => {
     const normalizedSearch = normalizeText(search);
+    const byStatus = status
+      ? profiles.filter((profile) => profile.status === status)
+      : profiles;
 
     if (!normalizedSearch) {
-      return profiles;
+      return byStatus;
     }
 
-    return profiles.filter((profile) => {
+    return byStatus.filter((profile) => {
       const searchableFields = [
         profile.name,
         profile.description ?? "",
@@ -55,7 +60,7 @@ export default function AccessProfileList({
         normalizeText(String(field)).includes(normalizedSearch),
       );
     });
-  }, [profiles, search]);
+  }, [profiles, search, status]);
 
   return (
     <DataTable<AccessProfile>
@@ -104,13 +109,26 @@ export default function AccessProfileList({
       onRowClick={onEdit}
       isLoading={isLoading}
       emptyMessage={
-        search
+        search || status
           ? "Nenhum perfil encontrado para essa busca."
           : "Nenhum perfil de acesso cadastrado."
       }
       searchPlaceholder="Buscar por nome, descrição ou permissão..."
       searchValue={search}
       onSearchChange={setSearch}
+      filters={[
+        {
+          id: "status",
+          label: "Status",
+          value: status,
+          onChange: (value) => setStatus(value as "" | UserStatus),
+          options: [
+            { value: "", label: "Todos" },
+            { value: UserStatus.ACTIVE, label: UserStatusLabel(UserStatus.ACTIVE) },
+            { value: UserStatus.INACTIVE, label: UserStatusLabel(UserStatus.INACTIVE) },
+          ],
+        },
+      ]}
     />
   );
 }

@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import type { TableFilterGroup } from "@/components/ui/TableFilters/TableFilters";
+
 export interface DataTableColumn<T> {
   key: keyof T | string;
   header: string;
@@ -29,6 +31,7 @@ export interface DataTableProps<T> {
   searchValue?: string;
   onSearchChange?: (value: string) => void;
 
+  filters?: TableFilterGroup[];
   toolbar?: ReactNode;
 
   pagination?: boolean;

@@ -2,11 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-
 import DataTable from "@/components/ui/DataTable/DataTable";
-import IconButton from "@/components/ui/IconButton/IconButton";
 import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
-import Button from "@/components/ui/Button/Button";
 
 import {
   TemplateStatus,
@@ -15,8 +12,6 @@ import {
 } from "@/constants/enums/templates/template-status.enum";
 import type { TemplateSummary } from "@/services/api/templates/templates.types";
 import { formatUpdatedAt } from "../../template-utils";
-
-import styles from "./TemplateList.module.css";
 
 function normalizeText(value: string) {
   return value
@@ -29,15 +24,11 @@ function normalizeText(value: string) {
 interface TemplateListProps {
   templates: TemplateSummary[];
   isLoading: boolean;
-  onPublish: (template: TemplateSummary) => void;
-  onArchive: (template: TemplateSummary) => void;
 }
 
 export default function TemplateList({
   templates,
   isLoading,
-  onPublish,
-  onArchive,
 }: TemplateListProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -50,8 +41,11 @@ export default function TemplateList({
       if (status && template.status !== status) return false;
       if (!normalizedSearch) return true;
 
-      return [template.name, template.description ?? "", TemplateStatusLabel(template.status)]
-        .some((field) => normalizeText(field).includes(normalizedSearch));
+      return [
+        template.name,
+        template.description ?? "",
+        TemplateStatusLabel(template.status),
+      ].some((field) => normalizeText(field).includes(normalizedSearch));
     });
   }, [templates, search, status]);
 
@@ -113,43 +107,20 @@ export default function TemplateList({
       searchValue={search}
       onSearchChange={setSearch}
       onRowClick={(template) => router.push(`/templates/${template.id}`)}
-      toolbar={
-        <select
-          className={styles.filter}
-          aria-label="Filtrar por status"
-          value={status}
-          onChange={(event) => setStatus(event.target.value as "" | TemplateStatus)}
-        >
-          <option value="">Todos os status</option>
-          <option value={TemplateStatus.DRAFT}>Rascunho</option>
-          <option value={TemplateStatus.PUBLISHED}>Publicado</option>
-          <option value={TemplateStatus.ARCHIVED}>Arquivado</option>
-        </select>
-      }
-      actions={(template) => (
-        <div className={styles.actions}>
-          <IconButton
-            action="edit"
-            size="sm"
-            label="Editar template"
-            onClick={() => router.push(`/templates/${template.id}`)}
-          />
-          {template.status !== TemplateStatus.PUBLISHED && (
-            <Button
-              variant="outline"
-              text="Publicar"
-              onClick={() => onPublish(template)}
-            />
-          )}
-          {template.status !== TemplateStatus.ARCHIVED && (
-            <Button
-              variant="secondary"
-              text="Arquivar"
-              onClick={() => onArchive(template)}
-            />
-          )}
-        </div>
-      )}
+      filters={[
+        {
+          id: "status",
+          label: "Status",
+          value: status,
+          onChange: (value) => setStatus(value as "" | TemplateStatus),
+          options: [
+            { value: "", label: "Todos" },
+            { value: TemplateStatus.DRAFT, label: "Rascunho" },
+            { value: TemplateStatus.PUBLISHED, label: "Publicado" },
+            { value: TemplateStatus.ARCHIVED, label: "Arquivado" },
+          ],
+        },
+      ]}
     />
   );
 }

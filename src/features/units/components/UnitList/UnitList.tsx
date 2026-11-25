@@ -8,6 +8,7 @@ import StatusBadge, {
 } from "@/components/ui/StatusBadge/StatusBadge";
 
 import {
+  UnitStatus,
   UnitStatusColor,
   UnitStatusLabel,
 } from "@/constants/enums/units/unit-status.enum";
@@ -32,13 +33,15 @@ function normalizeText(value: string): string {
 export default function UnitList({ units, isLoading }: UnitListProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<"" | UnitStatus>("");
 
   const filteredUnits = useMemo(() => {
     const normalizedSearch = normalizeText(search);
+    const byStatus = status ? units.filter((unit) => unit.status === status) : units;
 
-    if (!normalizedSearch) return units;
+    if (!normalizedSearch) return byStatus;
 
-    return units.filter((unit) => {
+    return byStatus.filter((unit) => {
       const searchableFields = [
         unit.name,
         unit.company?.tradeName ?? "",
@@ -53,7 +56,7 @@ export default function UnitList({ units, isLoading }: UnitListProps) {
         normalizeText(String(field)).includes(normalizedSearch)
       );
     });
-  }, [units, search]);
+  }, [units, search, status]);
 
   return (
     <DataTable<Unit>
@@ -108,8 +111,21 @@ export default function UnitList({ units, isLoading }: UnitListProps) {
       searchPlaceholder="Buscar por usina, empresa ou cidade..."
       searchValue={search}
       onSearchChange={setSearch}
+      filters={[
+        {
+          id: "status",
+          label: "Status",
+          value: status,
+          onChange: (value) => setStatus(value as "" | UnitStatus),
+          options: [
+            { value: "", label: "Todos" },
+            { value: UnitStatus.ACTIVE, label: UnitStatusLabel[UnitStatus.ACTIVE] },
+            { value: UnitStatus.INACTIVE, label: UnitStatusLabel[UnitStatus.INACTIVE] },
+          ],
+        },
+      ]}
       emptyMessage={
-        search
+        search || status
           ? "Nenhuma usina encontrada para essa busca."
           : "Nenhuma usina cadastrada."
       }

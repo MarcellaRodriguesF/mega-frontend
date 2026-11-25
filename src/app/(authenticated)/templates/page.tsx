@@ -15,9 +15,6 @@ import { PERMISSIONS } from "@/constants/enums/permissions";
 import { ApiError } from "@/services/api/api-client";
 import { getApiErrorMessage } from "@/services/api/error-messages";
 import { templatesApi } from "@/services/api/templates/templates.api";
-import { TemplateStatus } from "@/constants/enums/templates/template-status.enum";
-import type { TemplateSummary } from "@/services/api/templates/templates.types";
-
 import NamedItemDrawer from "@/features/templates/components/NamedItemDrawer/NamedItemDrawer";
 import TemplateList from "@/features/templates/components/TemplateList/TemplateList";
 import type { NamedItemData } from "@/features/templates/schemas/named-item.schema";
@@ -68,20 +65,6 @@ export default function TemplatesPage() {
     }
   }
 
-  async function updateStatus(template: TemplateSummary, status: TemplateStatus) {
-    try {
-      await templatesApi.updateStatus(template.id, { status });
-      toast.success("O status do template foi atualizado.");
-      await refresh();
-    } catch (error) {
-      const message =
-        error instanceof ApiError
-          ? getApiErrorMessage(error.code, error.message)
-          : "Não foi possível atualizar o status.";
-      toast.error(message);
-    }
-  }
-
   return (
     <PageContainer>
       <PageHeader
@@ -94,7 +77,10 @@ export default function TemplatesPage() {
               text="Formulários"
               onClick={() => router.push("/form-templates")}
             />
-            <Button text="Novo template" onClick={() => setIsCreateOpen(true)} />
+            <Button
+              text="Novo template"
+              onClick={() => setIsCreateOpen(true)}
+            />
           </>
         }
       />
@@ -103,14 +89,15 @@ export default function TemplatesPage() {
         <PageState
           type="error"
           title="Não foi possível carregar os templates"
-          action={{ label: "Tentar novamente", onClick: () => templatesQuery.refetch() }}
+          action={{
+            label: "Tentar novamente",
+            onClick: () => templatesQuery.refetch(),
+          }}
         />
       ) : (
         <TemplateList
           templates={templatesQuery.data?.data ?? []}
           isLoading={templatesQuery.isLoading}
-          onPublish={(template) => updateStatus(template, TemplateStatus.PUBLISHED)}
-          onArchive={(template) => updateStatus(template, TemplateStatus.ARCHIVED)}
         />
       )}
 

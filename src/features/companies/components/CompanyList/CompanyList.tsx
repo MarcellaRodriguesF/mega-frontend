@@ -8,6 +8,7 @@ import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
 import { CompanyRelationshipStageLabel } from "@/constants/enums/companies/company-relationship-stage.enum";
 
 import {
+  CompanyStatus,
   CompanyStatusColor,
   CompanyStatusLabel,
 } from "@/constants/enums/companies/company-status.enum";
@@ -30,17 +31,22 @@ export default function CompanyList({
 }: CompanyListProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<"" | CompanyStatus>("");
 
   const filteredCompanies = useMemo(() => {
     const normalizedSearch = normalizeText(search);
 
+    const byStatus = status
+      ? companies.filter((company) => company.status === status)
+      : companies;
+
     if (!normalizedSearch) {
-      return companies;
+      return byStatus;
     }
 
     const searchDigits = search.replace(/\D/g, "");
 
-    return companies.filter((company) => {
+    return byStatus.filter((company) => {
       const searchableAddresses = company.addresses ?? [];
 
       const searchableFields = [
@@ -75,7 +81,7 @@ export default function CompanyList({
 
       return matchesText || matchesCnpj || matchesCep;
     });
-  }, [companies, search]);
+  }, [companies, search, status]);
 
   return (
     <DataTable<Company>
@@ -135,13 +141,26 @@ export default function CompanyList({
       getRowKey={(company) => company.id}
       isLoading={isLoading}
       emptyMessage={
-        search
+        search || status
           ? "Nenhuma empresa encontrada para essa busca."
           : "Nenhuma empresa cadastrada."
       }
       searchPlaceholder="Buscar por nome, CNPJ, CEP ou cidade..."
       searchValue={search}
       onSearchChange={setSearch}
+      filters={[
+        {
+          id: "status",
+          label: "Status",
+          value: status,
+          onChange: (value) => setStatus(value as "" | CompanyStatus),
+          options: [
+            { value: "", label: "Todos" },
+            { value: CompanyStatus.ACTIVE, label: CompanyStatusLabel(CompanyStatus.ACTIVE) },
+            { value: CompanyStatus.INACTIVE, label: CompanyStatusLabel(CompanyStatus.INACTIVE) },
+          ],
+        },
+      ]}
     />
   );
 }

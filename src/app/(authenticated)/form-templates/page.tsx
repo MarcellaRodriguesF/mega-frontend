@@ -3,17 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
 import Button from "@/components/ui/Button/Button";
 import Modal from "@/components/ui/Modal/Modal";
 import { PageContainer } from "@/components/layout/PageContainer/PageContainer";
 import PageHeader from "@/components/ui/PageHeader/PageHeader";
 import PageState from "@/components/ui/PageState/PageState";
-
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import { PERMISSIONS } from "@/constants/enums/permissions";
-import { FormTemplateStatus } from "@/constants/enums/templates/form-template-status.enum";
 import { ApiError } from "@/services/api/api-client";
 import { getApiErrorMessage } from "@/services/api/error-messages";
 import { formTemplatesApi } from "@/services/api/form-templates/form-templates.api";
@@ -22,6 +19,7 @@ import type { FormTemplateSummary } from "@/services/api/form-templates/form-tem
 import NamedItemDrawer from "@/features/templates/components/NamedItemDrawer/NamedItemDrawer";
 import FormTemplateList from "@/features/form-templates/components/FormTemplateList/FormTemplateList";
 import type { NamedItemData } from "@/features/templates/schemas/named-item.schema";
+import { FormTemplateStatus } from "@/constants/enums/templates/form-template-status.enum";
 
 export default function FormTemplatesPage() {
   const { hasPermission } = useAuth();
@@ -29,7 +27,8 @@ export default function FormTemplatesPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [pendingDelete, setPendingDelete] = useState<FormTemplateSummary | null>(null);
+  const [pendingDelete, setPendingDelete] =
+    useState<FormTemplateSummary | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const formsQuery = useQuery({
@@ -74,20 +73,6 @@ export default function FormTemplatesPage() {
     }
   }
 
-  async function updateStatus(formTemplate: FormTemplateSummary, status: FormTemplateStatus) {
-    try {
-      await formTemplatesApi.updateStatus(formTemplate.id, status);
-      toast.success("O status do formulário foi atualizado.");
-      await refresh();
-    } catch (error) {
-      const message =
-        error instanceof ApiError
-          ? getApiErrorMessage(error.code, error.message)
-          : "Não foi possível atualizar o status.";
-      toast.error(message);
-    }
-  }
-
   async function confirmDelete() {
     if (!pendingDelete) return;
 
@@ -120,7 +105,10 @@ export default function FormTemplatesPage() {
               text="Templates"
               onClick={() => router.push("/templates")}
             />
-            <Button text="Novo formulário" onClick={() => setIsCreateOpen(true)} />
+            <Button
+              text="Novo formulário"
+              onClick={() => setIsCreateOpen(true)}
+            />
           </>
         }
       />
@@ -129,19 +117,15 @@ export default function FormTemplatesPage() {
         <PageState
           type="error"
           title="Não foi possível carregar os formulários"
-          action={{ label: "Tentar novamente", onClick: () => formsQuery.refetch() }}
+          action={{
+            label: "Tentar novamente",
+            onClick: () => formsQuery.refetch(),
+          }}
         />
       ) : (
         <FormTemplateList
           formTemplates={formsQuery.data?.data ?? []}
           isLoading={formsQuery.isLoading}
-          onActivate={(formTemplate) =>
-            updateStatus(formTemplate, FormTemplateStatus.ACTIVE)
-          }
-          onDeactivate={(formTemplate) =>
-            updateStatus(formTemplate, FormTemplateStatus.INACTIVE)
-          }
-          onDelete={setPendingDelete}
         />
       )}
 

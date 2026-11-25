@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Funnel, WhatsappLogo } from "@phosphor-icons/react";
+import { WhatsappLogo } from "@phosphor-icons/react";
 
 import DataTable from "@/components/ui/DataTable/DataTable";
-import Button from "@/components/ui/Button/Button";
 import PageHeader from "@/components/ui/PageHeader/PageHeader";
 import PageState from "@/components/ui/PageState/PageState";
 import StatusBadge, {
@@ -74,11 +73,9 @@ function ProviderContact({ phone }: { phone: string | null }) {
 
 export default function CompanyUnitList({ companyId }: CompanyUnitListProps) {
   const router = useRouter();
-  const filtersRef = useRef<HTMLDivElement>(null);
 
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<UnitStatus | "">("");
-  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const debouncedSearch = useDebouncedValue(search, 300).trim();
 
@@ -100,19 +97,6 @@ export default function CompanyUnitList({ companyId }: CompanyUnitListProps) {
     },
     enabled: Boolean(companyId),
   });
-
-  useEffect(() => {
-    if (!filtersOpen) return;
-
-    function handlePointerDown(event: MouseEvent) {
-      if (!filtersRef.current?.contains(event.target as Node)) {
-        setFiltersOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handlePointerDown);
-    return () => document.removeEventListener("mousedown", handlePointerDown);
-  }, [filtersOpen]);
 
   const hasCriteria = Boolean(debouncedSearch || status);
   const rows = units.map((unit) => ({
@@ -211,48 +195,15 @@ export default function CompanyUnitList({ companyId }: CompanyUnitListProps) {
               ? "Nenhuma unidade encontrada com os critérios utilizados."
               : "Este cliente ainda não possui unidades vinculadas."
           }
-          toolbar={
-            <div className={styles.filters} ref={filtersRef}>
-              <Button
-                variant="secondary"
-                text={
-                  <span className={styles.filterLabel}>
-                    <Funnel size={16} />
-                    {status ? `Filtros: ${UnitStatusLabel[status]}` : "Filtros"}
-                  </span>
-                }
-                aria-expanded={filtersOpen}
-                aria-haspopup="menu"
-                onClick={() => setFiltersOpen((open) => !open)}
-              />
-
-              {filtersOpen ? (
-                <div className={styles.filterMenu} role="menu">
-                  <span className={styles.filterTitle}>Status</span>
-
-                  {STATUS_OPTIONS.map((option) => (
-                    <button
-                      key={option.label}
-                      type="button"
-                      role="menuitemradio"
-                      aria-checked={status === option.value}
-                      className={
-                        status === option.value
-                          ? styles.filterOptionActive
-                          : styles.filterOption
-                      }
-                      onClick={() => {
-                        setStatus(option.value);
-                        setFiltersOpen(false);
-                      }}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          }
+          filters={[
+            {
+              id: "status",
+              label: "Status",
+              value: status,
+              onChange: (value) => setStatus(value as UnitStatus | ""),
+              options: STATUS_OPTIONS,
+            },
+          ]}
         />
       )}
     </section>

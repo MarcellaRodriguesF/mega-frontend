@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
   MagnifyingGlass,
@@ -10,6 +10,8 @@ import {
   CaretUp,
   CaretDown,
 } from "@phosphor-icons/react";
+
+import TableFilters from "@/components/ui/TableFilters/TableFilters";
 
 import type { DataTableProps } from "./DataTable.types";
 
@@ -33,6 +35,7 @@ export default function DataTable<T>({
   searchPlaceholder = "Buscar registros...",
   searchValue,
   onSearchChange,
+  filters,
   toolbar,
   pagination = true,
   pageSizeOptions = [10, 25, 50, 100],
@@ -43,7 +46,8 @@ export default function DataTable<T>({
 
   const totalItems = data.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-  const startIndex = (currentPage - 1) * pageSize;
+  const page = Math.min(currentPage, totalPages);
+  const startIndex = (page - 1) * pageSize;
   const endIndex = Math.min(startIndex + pageSize, totalItems);
 
   function handleSort(key: string) {
@@ -84,12 +88,8 @@ export default function DataTable<T>({
     ? sortedData.slice(startIndex, endIndex)
     : sortedData;
 
-  useEffect(() => {
-    setCurrentPage((current) => Math.min(current, totalPages));
-  }, [totalPages]);
-
-  function changePage(page: number) {
-    setCurrentPage(Math.min(Math.max(page, 1), totalPages));
+  function changePage(nextPage: number) {
+    setCurrentPage(Math.min(Math.max(nextPage, 1), totalPages));
   }
 
   function changePageSize(size: number) {
@@ -113,7 +113,7 @@ export default function DataTable<T>({
   }
 
   const renderToolbar = () => {
-    if (!onSearchChange && !toolbar) return null;
+    if (!onSearchChange && !toolbar && !filters?.length) return null;
 
     return (
       <div className={styles.toolbar}>
@@ -134,7 +134,12 @@ export default function DataTable<T>({
           </div>
         )}
 
-        {toolbar && <div className={styles.toolbarActions}>{toolbar}</div>}
+        {(filters?.length || toolbar) && (
+          <div className={styles.toolbarActions}>
+            {filters?.length ? <TableFilters groups={filters} /> : null}
+            {toolbar}
+          </div>
+        )}
       </div>
     );
   };
@@ -270,14 +275,14 @@ export default function DataTable<T>({
             </label>
 
             <span className={styles.pageIndicator}>
-              Página {currentPage} de {totalPages}
+              Página {page} de {totalPages}
             </span>
 
             <button
               type="button"
               className={styles.paginationButton}
-              onClick={() => changePage(currentPage - 1)}
-              disabled={currentPage === 1}
+              onClick={() => changePage(page - 1)}
+              disabled={page === 1}
               aria-label="Página anterior"
             >
               <CaretLeft size={17} />
@@ -286,8 +291,8 @@ export default function DataTable<T>({
             <button
               type="button"
               className={styles.paginationButton}
-              onClick={() => changePage(currentPage + 1)}
-              disabled={currentPage === totalPages}
+              onClick={() => changePage(page + 1)}
+              disabled={page === totalPages}
               aria-label="Próxima página"
             >
               <CaretRight size={17} />

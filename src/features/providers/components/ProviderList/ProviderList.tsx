@@ -7,6 +7,7 @@ import DataTable from "@/components/ui/DataTable/DataTable";
 import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
 
 import {
+  ProviderStatus,
   ProviderStatusColor,
   ProviderStatusLabel,
 } from "@/constants/enums/providers/provider-status.enum";
@@ -36,18 +37,22 @@ export default function ProviderList({
 }: ProviderListProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<"" | ProviderStatus>("");
 
   const filteredProviders = useMemo(() => {
     const normalizedSearch = normalizeText(search);
+    const byStatus = status
+      ? providers.filter((provider) => provider.status === status)
+      : providers;
 
     if (!normalizedSearch) {
-      return providers;
+      return byStatus;
     }
 
-    return providers.filter((provider) =>
+    return byStatus.filter((provider) =>
       normalizeText(provider.name).includes(normalizedSearch),
     );
-  }, [providers, search]);
+  }, [providers, search, status]);
 
   return (
     <DataTable<Provider>
@@ -89,13 +94,29 @@ export default function ProviderList({
       getRowKey={(provider) => provider.id}
       isLoading={isLoading}
       emptyMessage={
-        search
+        search || status
           ? "Nenhum provedor encontrado para essa busca."
           : "Nenhum provedor cadastrado."
       }
       searchPlaceholder="Buscar por nome..."
       searchValue={search}
       onSearchChange={setSearch}
+      filters={[
+        {
+          id: "status",
+          label: "Status",
+          value: status,
+          onChange: (value) => setStatus(value as "" | ProviderStatus),
+          options: [
+            { value: "", label: "Todos" },
+            { value: ProviderStatus.ACTIVE, label: ProviderStatusLabel(ProviderStatus.ACTIVE) },
+            {
+              value: ProviderStatus.INACTIVE,
+              label: ProviderStatusLabel(ProviderStatus.INACTIVE),
+            },
+          ],
+        },
+      ]}
     />
   );
 }

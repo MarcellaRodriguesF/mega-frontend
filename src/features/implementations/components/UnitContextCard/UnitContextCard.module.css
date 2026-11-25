@@ -1,0 +1,17 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.notice {
+  margin: 0;
+  grid-column: 1 / -1;
+  border: 1px solid color-mix(in srgb, var(--color-text) 16%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--color-text) 4%, var(--color-surface));
+  color: var(--color-text);
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}

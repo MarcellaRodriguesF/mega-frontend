@@ -17,6 +17,19 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
     "O formulário precisa estar ativo para ser associado a uma atividade.",
   ORDER_CONFLICT:
     "Já existe um item com a mesma ordem ou chave neste grupo.",
+  TEMPLATE_NOT_PUBLISHED:
+    "A implantação só pode ser criada a partir de um template publicado.",
+  IMPLEMENTATION_TEMPLATE_NOT_FOUND: "Template não encontrado.",
+  IMPLEMENTATION_UNIT_NOT_FOUND: "Unidade não encontrada.",
+  IMPLEMENTATION_NOT_FOUND: "Implantação não encontrada.",
+  FORM_SNAPSHOT_SOURCE_MISSING:
+    "Não foi possível copiar um formulário associado ao template.",
+  IMPLEMENTATION_SNAPSHOT_CONFLICT:
+    "Não foi possível copiar a estrutura do template.",
+  CONNECTIVITY_TARGET_INVALID:
+    "O campo não pode ser publicado nesta propriedade da conectividade.",
+  TEMPLATE_STRUCTURE_INVALID:
+    "O template publicado não possui etapas e atividades para copiar.",
   INTERNAL_SERVER_ERROR: "Ocorreu um erro inesperado. Tente novamente.",
   SERVICE_UNAVAILABLE:
     "O serviço está temporariamente indisponível. Tente novamente.",

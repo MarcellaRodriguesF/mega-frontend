@@ -62,6 +62,14 @@
   gap: 23px;
   overflow-x: hidden;
   overflow-y: auto;
+
+  /* Esconde a barra de rolagem */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.navigation::-webkit-scrollbar {
+  display: none;
 }
 
 .navGroup {

@@ -56,8 +56,7 @@
   --sidebar-overlay-display: none;
   --sidebar-close-display: inline-flex;
   --menu-trigger-display: inline-flex;
-  --page-padding: 20px;
-  --header-padding: 20px;
+  --page-padding: 0;
   --header-min-height: 64px;
   --header-label-display: none;
   --sidebar-collapse-display: none;
@@ -186,9 +185,6 @@ input:focus-visible {
 @media (min-width: 640px) {
   :root {
     --page-padding: 28px;
-    --header-padding: 28px;
-    --header-min-height: 74px;
-    --header-label-display: inline-flex;
     --login-card-padding: 34px;
     --card-padding: 25px;
     --page-header-direction: row;
@@ -198,13 +194,12 @@ input:focus-visible {
 @media (min-width: 768px) {
   :root {
     --page-padding: 32px;
-    --header-padding: 32px;
   }
 }
 
 @media (min-width: 1024px) {
   :root {
-    --sidebar-position: sticky;
+    --sidebar-position: fixed;
     --sidebar-inset: 0 auto 0 0;
     --sidebar-current-width: var(--sidebar-expanded-width);
     --sidebar-transform: none;
@@ -214,7 +209,7 @@ input:focus-visible {
     --sidebar-close-display: none;
     --sidebar-collapse-display: inline-flex;
     --menu-trigger-display: none;
-    --page-padding: 36px;
+    --page-padding: 108px 36px 36px 112px;
     --header-padding: 36px;
     /* --content-max-width: 1120px; */
   }

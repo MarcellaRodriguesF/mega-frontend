@@ -6,6 +6,7 @@ import { PERMISSIONS } from "@/constants/enums/permissions";
 import {
   ChartBar,
   Clipboard,
+  ClipboardText,
   Headset,
   House,
   ListChecks,
@@ -22,6 +23,7 @@ import styles from "./Sidebar.module.css";
 
 interface SidebarProps {
   collapsed: boolean;
+  mobileMenuOpen: boolean;
   onClose: () => void;
   onToggleCollapse: () => void;
   sidebarRef: RefObject<HTMLElement | null>;
@@ -29,12 +31,14 @@ interface SidebarProps {
 
 export default function Sidebar({
   collapsed,
+  mobileMenuOpen,
   onClose,
   onToggleCollapse,
   sidebarRef,
 }: SidebarProps) {
   const pathname = usePathname();
   const { hasPermission } = useAuth();
+
   const navigationGroups = [
     {
       items: [
@@ -61,6 +65,12 @@ export default function Sidebar({
           href: "/implementations",
           Icon: Clipboard,
           permission: PERMISSIONS.IMPLEMENTATIONS,
+        },
+        {
+          label: "Atividades",
+          href: "/activities",
+          Icon: ClipboardText,
+          permission: PERMISSIONS.ACTIVITIES,
         },
         {
           label: "Chamados",
@@ -109,66 +119,85 @@ export default function Sidebar({
   ] as const;
 
   return (
-    <aside
-      className={styles.sidebar}
-      id="mega-sidebar"
-      ref={sidebarRef}
-      aria-label="Barra lateral"
-    >
-      <div className={styles.sidebarTop}>
-        <button
-          className={styles.topToggleButton}
-          type="button"
-          aria-label={
-            collapsed ? "Expandir menu lateral" : "Recolher menu lateral"
-          }
-          aria-pressed={collapsed}
-          onClick={onToggleCollapse}
-          title={collapsed ? "Expandir menu" : "Recolher menu"}
-        >
-          <List size={22} weight="regular" aria-hidden="true" />
-        </button>
+    <>
+      {/* Fundo escurecido no mobile */}
+      <button
+        type="button"
+        className={`${styles.backdrop} ${
+          mobileMenuOpen ? styles.backdropVisible : ""
+        }`}
+        aria-label="Fechar menu de navegação"
+        tabIndex={mobileMenuOpen ? 0 : -1}
+        onClick={onClose}
+      />
 
-        <button
-          className={styles.closeButton}
-          type="button"
-          aria-label="Fechar menu de navegação"
-          data-mobile-close
-          onClick={onClose}
-        >
-          <X size={21} weight="regular" aria-hidden="true" />
-        </button>
-      </div>
+      <aside
+        className={[
+          styles.sidebar,
+          collapsed ? styles.collapsed : "",
+          mobileMenuOpen ? styles.mobileOpen : "",
+        ].join(" ")}
+        id="mega-sidebar"
+        ref={sidebarRef}
+        aria-label="Barra lateral"
+      >
+        {/* Cabeçalho */}
+        <div className={styles.sidebarTop}>
+          <button
+            className={styles.topToggleButton}
+            type="button"
+            aria-label={
+              collapsed ? "Expandir menu lateral" : "Recolher menu lateral"
+            }
+            aria-pressed={collapsed}
+            onClick={onToggleCollapse}
+            title={collapsed ? "Expandir menu" : "Recolher menu"}
+          >
+            <List size={22} weight="regular" aria-hidden="true" />
+          </button>
 
-      <nav className={styles.navigation} aria-label="Navegação principal">
-        <div className={styles.navGroup}>
-          {navigationGroups.map((group) => (
-            <div className={styles.navGroup} key="main">
+          <button
+            className={styles.closeButton}
+            type="button"
+            aria-label="Fechar menu de navegação"
+            onClick={onClose}
+          >
+            <X size={21} weight="regular" aria-hidden="true" />
+          </button>
+        </div>
+
+        {/* Navegação */}
+        <nav className={styles.navigation} aria-label="Navegação principal">
+          {navigationGroups.map((group, index) => (
+            <div className={styles.navGroup} key={index}>
               {group.items
                 .filter(({ permission }) => hasPermission(permission))
-                .map(({ label, href, Icon }) => (
-                  <Link
-                    className={`${styles.navLink} ${pathname.startsWith(href) ? styles.activeLink : ""}`}
-                    data-nav-link
-                    href={href}
-                    key={href}
-                    aria-label={label}
-                    aria-current={
-                      pathname.startsWith(href) ? "page" : undefined
-                    }
-                    title={collapsed ? label : undefined}
-                    onClick={onClose}
-                  >
-                    <Icon size={20} weight="regular" aria-hidden="true" />
-                    <span className={styles.navText} data-nav-text>
-                      {label}
-                    </span>
-                  </Link>
-                ))}
+                .map(({ label, href, Icon }) => {
+                  const active =
+                    pathname === href || pathname.startsWith(`${href}/`);
+
+                  return (
+                    <Link
+                      className={`${styles.navLink} ${
+                        active ? styles.activeLink : ""
+                      }`}
+                      href={href}
+                      key={href}
+                      aria-label={label}
+                      aria-current={active ? "page" : undefined}
+                      title={collapsed ? label : undefined}
+                      onClick={onClose}
+                    >
+                      <Icon size={20} weight="regular" aria-hidden="true" />
+
+                      <span className={styles.navText}>{label}</span>
+                    </Link>
+                  );
+                })}
             </div>
           ))}
-        </div>
-      </nav>
-    </aside>
+        </nav>
+      </aside>
+    </>
   );
 }

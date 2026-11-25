@@ -36,20 +36,25 @@ export default function ImplementationList({
       <DataTable<ImplementationSummary>
         columns={[
           {
+            key: "name",
+            header: "Implantação",
+            mobileRole: "title",
+            render: (item) => item.name,
+          },
+          {
             key: "unitName",
             header: "Unidade",
-            mobileRole: "title",
-            render: (item) => item.unitName,
+            render: (item) => item.unitName || "Sem unidade",
           },
           {
             key: "companyTradeName",
             header: "Cliente",
-            render: (item) => item.companyTradeName,
+            render: (item) => item.companyTradeName || "Sem cliente",
           },
           {
             key: "templateName",
             header: "Template",
-            render: (item) => item.templateName,
+            render: (item) => item.templateName || "Sem template",
           },
           {
             key: "initialProvider",

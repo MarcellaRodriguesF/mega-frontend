@@ -1,69 +1,95 @@
+
+/* SIDEBAR DESKTOP */
+
 .sidebar {
-  position: var(--sidebar-position);
-  z-index: 5;
-  inset: var(--sidebar-inset);
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 20;
+
   display: flex;
-  width: var(--sidebar-current-width);
-  height: 100dvh;
-  flex: 0 0 auto;
   flex-direction: column;
-  border-right: 1px solid var(--color-border);
+
+  width: 260px;
+  height: 100vh;
+  height: 100dvh;
+
+  padding: 20px 12px 16px;
+
   background: var(--color-sidebar);
-  padding: 22px 14px 16px;
-  box-shadow: var(--sidebar-shadow);
-  transform: var(--sidebar-transform);
-  visibility: var(--sidebar-visibility);
-  transition:
-    width 180ms ease,
-    transform 180ms ease,
-    visibility 180ms ease;
+  border-right: 1px solid var(--color-border);
+  box-shadow: none;
+
+  overflow: hidden;
+
+  transition: width 180ms ease, transform 180ms ease;
+}
+
+/* SIDEBAR RECOLHIDA */
+
+.collapsed {
+  width: 76px;
 }
 
 .sidebarTop {
   display: flex;
-  min-height: 44px;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 22px;
+
+  min-height: 44px;
+  flex-shrink: 0;
+  margin-bottom: 20px;
 }
 
-.topToggleButton {
+.topToggleButton,
+.closeButton {
   display: flex;
-  width: 40px;
-  min-height: 40px;
-  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
+
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+
   border: 0;
   border-radius: 8px;
   background: transparent;
   color: var(--color-text-secondary);
+
   cursor: pointer;
   padding: 0;
-  transition:
-    background-color 150ms ease,
-    color 150ms ease;
+
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
-.topToggleButton:hover {
+.topToggleButton:hover,
+.closeButton:hover {
   background: var(--color-muted-surface);
   color: var(--color-text);
 }
 
-.topToggleButton:focus-visible {
+.topToggleButton:focus-visible,
+.closeButton:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
+
+.closeButton {
+  display: none;
+}
+
+/* NAVEGAÇÃO */
 
 .navigation {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 23px;
+  gap: 8px;
+
+  min-height: 0;
+
   overflow-x: hidden;
   overflow-y: auto;
 
-  /* Esconde a barra de rolagem */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -77,33 +103,27 @@
   gap: 4px;
 }
 
-.groupLabel {
-  display: flex;
-  min-height: 20px;
-  align-items: center;
-  gap: 6px;
-  color: var(--color-text-secondary);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  padding: 0 11px 4px;
-  text-transform: uppercase;
-}
-
 .navLink {
   display: flex;
-  min-height: 42px;
   align-items: center;
   gap: 13px;
+
+  width: 100%;
+  min-height: 44px;
+  flex-shrink: 0;
+
+  padding: 0 12px;
+
   border-radius: 8px;
+
   color: var(--color-text-secondary);
   font-size: 13px;
   font-weight: 500;
-  padding: 0 11px;
   text-decoration: none;
-  transition:
-    background-color 150ms ease,
-    color 150ms ease;
+
+  white-space: nowrap;
+
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
 .navLink:hover {
@@ -119,118 +139,115 @@
 }
 
 .navText {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.closeButton {
-  display: var(--sidebar-close-display);
-  width: 40px;
-  min-height: 40px;
-  flex: 0 0 auto;
-  align-items: center;
+/* SIDEBAR RECOLHIDA */
+
+.collapsed .sidebarTop {
   justify-content: center;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
+}
+
+.collapsed .navLink {
+  justify-content: center;
+  gap: 0;
   padding: 0;
 }
 
-.closeButton:hover {
-  background: var(--color-muted-surface);
-  color: var(--color-text);
+.collapsed .navText {
+  display: none;
 }
 
-.closeButton:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+/* BACKDROP */
+
+.backdrop {
+  display: none;
 }
 
-.sidebarTop {
-  display: flex;
-  min-height: 44px;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 22px;
+/* TABLET E MOBILE */
+
+@media (max-width: 1023px) {
+  .sidebar {
+    inset: 0 auto 0 0;
+    z-index: 50;
+
+    width: min(300px, 85vw);
+    max-width: 300px;
+
+    padding: 16px 14px;
+
+    transform: translateX(-100%);
+    visibility: hidden;
+
+    transition:
+      transform 220ms ease,
+      visibility 220ms ease;
+  }
+
+  .sidebar.collapsed {
+    width: min(300px, 85vw);
+  }
+
+  .sidebar.mobileOpen {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .sidebarTop {
+    justify-content: flex-end;
+    margin-bottom: 20px;
+  }
+
+  .topToggleButton {
+    display: none;
+  }
+
+  .closeButton {
+    display: flex;
+  }
+
+  .sidebar .navLink {
+    justify-content: flex-start;
+    gap: 13px;
+    padding: 0 12px;
+  }
+
+  .sidebar .navText {
+    display: block;
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition: opacity 220ms ease, visibility 220ms ease;
+  }
+
+  .backdropVisible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
 }
 
-.brand {
-  display: flex;
-  min-width: 0;
-  min-height: 42px;
-  align-items: center;
-  justify-content: center;
-  padding: 0 10px;
-}
-
-.brandLogo {
-  display: block;
-  width: var(--sidebar-logo-width);
-  height: auto;
-  max-width: 100%;
-  border-radius: 4px;
-  background: var(--color-brand-white);
-}
-
-.navigation {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 23px;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-.navGroup {
-  display: grid;
-  gap: 4px;
-}
-
-.groupLabel {
-  display: flex;
-  min-height: 20px;
-  align-items: center;
-  gap: 6px;
-  color: var(--color-text-secondary);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  padding: 0 11px 4px;
-  text-transform: uppercase;
-}
-
-.navLink {
-  display: flex;
-  min-height: 42px;
-  align-items: center;
-  gap: 13px;
-  border-radius: 8px;
-  color: var(--color-text-secondary);
-  font-size: 13px;
-  font-weight: 500;
-  padding: 0 11px;
-  transition:
-    background-color 150ms ease,
-    color 150ms ease;
-}
-
-.navLink:hover {
-  background: var(--color-muted-surface);
-  color: var(--color-text);
-}
-
-.activeLink,
-.activeLink:hover {
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  font-weight: 650;
-}
-
-.navText {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .backdrop {
+    transition: none;
+  }
 }

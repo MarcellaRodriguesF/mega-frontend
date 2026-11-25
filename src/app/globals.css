@@ -42,19 +42,6 @@
     var(--color-brand-support) 35%,
     transparent
   );
-
-  --sidebar-expanded-width: 252px;
-  --sidebar-collapsed-width: 76px;
-  --sidebar-logo-width: 76px;
-  --sidebar-current-width: var(--sidebar-panel-width);
-  --sidebar-panel-width: min(84vw, 300px);
-  --sidebar-position: fixed;
-  --sidebar-inset: 0 auto 0 0;
-  --sidebar-transform: translateX(-102%);
-  --sidebar-visibility: hidden;
-  --sidebar-shadow: 0 0 0 transparent;
-  --sidebar-overlay-display: none;
-  --sidebar-close-display: inline-flex;
   --menu-trigger-display: inline-flex;
   --page-padding: 0;
   --header-min-height: 64px;
@@ -203,7 +190,6 @@ input:focus-visible {
     --sidebar-inset: 0 auto 0 0;
     --sidebar-current-width: var(--sidebar-expanded-width);
     --sidebar-transform: none;
-    --sidebar-visibility: visible;
     --sidebar-shadow: none;
     --sidebar-overlay-display: none;
     --sidebar-close-display: none;

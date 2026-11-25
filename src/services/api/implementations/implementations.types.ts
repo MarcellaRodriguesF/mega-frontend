@@ -3,6 +3,8 @@ import type { ImplementationStatus } from "@/constants/enums/implementations/imp
 import type { ImplementationWorkStatus } from "@/constants/enums/implementations/implementation-work-status.enum";
 import type { ActivityRequirementType } from "@/constants/enums/templates/activity-requirement-type.enum";
 
+export type AssignmentRole = "EXECUTOR" | "SUPERVISOR";
+
 export interface ImplementationProvider {
   id: string;
   name: string | null;
@@ -54,6 +56,11 @@ export interface ImplementationUnitContext {
   activeConnectivity: ActiveConnectivity | null;
 }
 
+export interface CatalogCompany {
+  id: string;
+  tradeName: string;
+}
+
 export interface CatalogTemplate {
   id: string;
   name: string;
@@ -62,17 +69,39 @@ export interface CatalogTemplate {
   activityCount: number;
 }
 
+export interface TemplatePreviewActivity {
+  id: string;
+  name: string;
+  description: string | null;
+  order: number;
+  requirements: { id: string; type: string; isRequired: boolean }[];
+}
+
+export interface TemplatePreview {
+  id: string;
+  name: string;
+  description: string | null;
+  stages: {
+    id: string;
+    name: string;
+    description: string | null;
+    order: number;
+    activities: TemplatePreviewActivity[];
+  }[];
+}
+
 export interface ImplementationSummary {
   id: string;
+  name: string;
   status: ImplementationStatus;
   startedAt: string;
   completedAt: string | null;
-  unitId: string;
-  unitName: string;
-  companyId: string;
-  companyTradeName: string;
+  unitId: string | null;
+  unitName: string | null;
+  companyId: string | null;
+  companyTradeName: string | null;
   templateId: string | null;
-  templateName: string;
+  templateName: string | null;
   initialProvider: ImplementationProvider | null;
   stageCount: number;
   activityCount: number;
@@ -90,7 +119,7 @@ export interface ImplementationAssignment {
   id: string;
   userId: string;
   userName: string;
-  role: "EXECUTION" | "COMPLETION";
+  role: AssignmentRole;
   createdAt: string;
 }
 
@@ -108,31 +137,6 @@ export interface ImplementationRequirement {
     sourceFormTemplateId: string | null;
   } | null;
   evidenceTypes: { id: string; type: string }[];
-}
-
-export interface ImplementationActivity {
-  id: string;
-  sourceActivityId: string | null;
-  name: string;
-  description: string | null;
-  order: number;
-  status: ImplementationWorkStatus;
-  startedAt: string | null;
-  completedAt: string | null;
-  assignments: ImplementationAssignment[];
-  requirements: ImplementationRequirement[];
-}
-
-export interface ImplementationStage {
-  id: string;
-  sourceStageId: string | null;
-  name: string;
-  description: string | null;
-  order: number;
-  status: ImplementationWorkStatus;
-  startedAt: string | null;
-  completedAt: string | null;
-  activities: ImplementationActivity[];
 }
 
 export interface ImplementationFormField {
@@ -159,8 +163,51 @@ export interface ImplementationFormSnapshot {
   fields: ImplementationFormField[];
 }
 
+export interface ImplementationActivity {
+  id: string;
+  implementationId: string | null;
+  stageId: string | null;
+  sourceActivityId: string | null;
+  name: string;
+  description: string | null;
+  order: number;
+  status: ImplementationWorkStatus;
+  startedAt: string | null;
+  completedAt: string | null;
+  companyId: string | null;
+  unitId: string | null;
+  unitName: string | null;
+  companyTradeName: string | null;
+  assignments: ImplementationAssignment[];
+  requirements: ImplementationRequirement[];
+  formSnapshots: ImplementationFormSnapshot[];
+}
+
+export interface ImplementationStage {
+  id: string;
+  sourceStageId: string | null;
+  name: string;
+  description: string | null;
+  order: number;
+  status: ImplementationWorkStatus;
+  startedAt: string | null;
+  completedAt: string | null;
+  activities: ImplementationActivity[];
+}
+
+export interface CapturedContext {
+  companyId: string | null;
+  companyTradeName: string | null;
+  unitId: string | null;
+  unitName: string | null;
+  address: ImplementationAddress;
+  initialProvider: ImplementationProvider | null;
+}
+
 export interface ImplementationDetail {
   id: string;
+  name: string;
+  description: string | null;
   status: ImplementationStatus;
   startedAt: string;
   completedAt: string | null;
@@ -168,25 +215,22 @@ export interface ImplementationDetail {
   updatedAt: string;
   template: {
     id: string | null;
-    name: string;
+    name: string | null;
     description: string | null;
-  };
-  capturedUnit: {
-    id: string;
-    name: string;
-    company: { id: string; tradeName: string };
-    address: ImplementationAddress;
-    initialProvider: ImplementationProvider | null;
-  };
+  } | null;
+  captured: CapturedContext;
   unit: ImplementationUnitContext | null;
+  directActivities: ImplementationActivity[];
   stages: ImplementationStage[];
-  formSnapshots: ImplementationFormSnapshot[];
   connectivityEditable: false;
 }
 
 export interface CreateImplementationRequest {
-  templateId: string;
-  unitId: string;
+  name: string;
+  description: string | null;
+  templateId: string | null;
+  companyId: string | null;
+  unitId: string | null;
 }
 
 export interface ListImplementationsQuery {
@@ -200,4 +244,7 @@ export interface ListImplementationsQuery {
 export type ImplementationResponse = ApiSuccess<ImplementationDetail>;
 export type ImplementationsResponse = ApiSuccess<ImplementationPage>;
 export type CatalogTemplatesResponse = ApiSuccess<CatalogTemplate[]>;
+export type CatalogTemplateResponse = ApiSuccess<TemplatePreview>;
 export type CatalogUnitsResponse = ApiSuccess<ImplementationUnitContext[]>;
+export type CatalogCompaniesResponse = ApiSuccess<CatalogCompany[]>;
+export type StageResponse = ApiSuccess<ImplementationStage>;

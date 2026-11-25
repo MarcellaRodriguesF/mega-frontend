@@ -9,6 +9,7 @@ import styles from "./PageContainer.module.css";
 interface PageContainerProps {
   children: ReactNode;
   className?: string;
+  sidebarCollapsed?: boolean;
   state?: PageStateType;
   stateAction?: {
     label: string;
@@ -19,11 +20,18 @@ interface PageContainerProps {
 export function PageContainer({
   children,
   className,
+  sidebarCollapsed = false,
   state,
   stateAction,
 }: PageContainerProps) {
   return (
-    <main className={`${styles.container} ${className ?? ""}`}>
+    <main
+      className={[
+        styles.container,
+        sidebarCollapsed ? styles.collapsed : "",
+        className ?? "",
+      ].join(" ")}
+    >
       {children}
 
       {state && <PageState type={state} action={stateAction} />}

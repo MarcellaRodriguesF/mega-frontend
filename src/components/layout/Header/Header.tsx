@@ -1,3 +1,4 @@
+
 import type { RefObject } from "react";
 import { List } from "@phosphor-icons/react";
 import Image from "next/image";
@@ -9,16 +10,23 @@ interface HeaderProps {
   onMenuClick: () => void;
   menuButtonRef: RefObject<HTMLButtonElement | null>;
   mobileMenuOpen: boolean;
+  sidebarCollapsed: boolean;
 }
 
 export default function Header({
   onMenuClick,
   menuButtonRef,
   mobileMenuOpen,
+  sidebarCollapsed,
 }: HeaderProps) {
   const { user, isLoading } = useAuth();
+
   return (
-    <header className={styles.header}>
+    <header
+      className={`${styles.header} ${
+        sidebarCollapsed ? styles.collapsed : ""
+      }`}
+    >
       <button
         className={styles.menuButton}
         type="button"
@@ -30,6 +38,7 @@ export default function Header({
       >
         <List size={22} weight="regular" aria-hidden="true" />
       </button>
+
       <Image
         src="/images/logomega.png"
         alt="MEGA Logo"
@@ -37,6 +46,7 @@ export default function Header({
         height={42}
         className={styles.logoContainer}
       />
+
       <div className={styles.actions}>
         {!isLoading && user && (
           <UserProfile

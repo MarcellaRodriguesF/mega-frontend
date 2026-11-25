@@ -131,7 +131,9 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
   if (serverSignature !== seenSignature) {
     setSeenSignature(serverSignature);
     if (serverDraft) {
-      setDraft((current) => (current ? mergeDraft(current, serverDraft) : serverDraft));
+      setDraft((current) =>
+        current ? mergeDraft(current, serverDraft) : serverDraft
+      );
     }
   }
 
@@ -164,7 +166,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
     if (template?.status !== TemplateStatus.PUBLISHED) {
       return action().then(
         () => true,
-        () => false,
+        () => false
       );
     }
 
@@ -208,7 +210,9 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
         try {
           await templatesApi.update(templateId, changes.template);
         } catch (error) {
-          failures.push(errorMessage(error, "Não foi possível salvar os dados do template."));
+          failures.push(
+            errorMessage(error, "Não foi possível salvar os dados do template.")
+          );
         }
       }
 
@@ -219,27 +223,44 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
             description: stage.description,
           });
         } catch (error) {
-          failures.push(errorMessage(error, `Não foi possível salvar a etapa ${stage.name}.`));
+          failures.push(
+            errorMessage(
+              error,
+              `Não foi possível salvar a etapa ${stage.name}.`
+            )
+          );
         }
       }
 
       if (changes.stageOrder) {
         try {
-          await templatesApi.reorderStages(templateId, { ids: changes.stageOrder });
+          await templatesApi.reorderStages(templateId, {
+            ids: changes.stageOrder,
+          });
         } catch (error) {
-          failures.push(errorMessage(error, "Não foi possível salvar a ordem das etapas."));
+          failures.push(
+            errorMessage(error, "Não foi possível salvar a ordem das etapas.")
+          );
         }
       }
 
       for (const activity of changes.activities) {
         try {
-          await templatesApi.updateActivity(templateId, activity.stageId, activity.id, {
-            name: activity.name,
-            description: activity.description,
-          });
+          await templatesApi.updateActivity(
+            templateId,
+            activity.stageId,
+            activity.id,
+            {
+              name: activity.name,
+              description: activity.description,
+            }
+          );
         } catch (error) {
           failures.push(
-            errorMessage(error, `Não foi possível salvar a atividade ${activity.name}.`),
+            errorMessage(
+              error,
+              `Não foi possível salvar a atividade ${activity.name}.`
+            )
           );
         }
       }
@@ -250,7 +271,12 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
             ids: order.ids,
           });
         } catch (error) {
-          failures.push(errorMessage(error, "Não foi possível salvar a ordem das atividades."));
+          failures.push(
+            errorMessage(
+              error,
+              "Não foi possível salvar a ordem das atividades."
+            )
+          );
         }
       }
 
@@ -281,7 +307,9 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
           setTemplateDrawerOpen(false);
           await refresh();
         } catch (error) {
-          toast.error(errorMessage(error, "Não foi possível atualizar o template."));
+          toast.error(
+            errorMessage(error, "Não foi possível atualizar o template.")
+          );
           throw error;
         }
       });
@@ -331,7 +359,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
         await templatesApi.deleteActivity(
           templateId,
           deletion.stageId,
-          deletion.activity.id,
+          deletion.activity.id
         );
       }
 
@@ -340,7 +368,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
           templateId,
           deletion.stageId,
           deletion.activityId,
-          deletion.requirement.id,
+          deletion.requirement.id
         );
       }
 
@@ -403,7 +431,10 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
             type="error"
             title="Não foi possível carregar o template"
             description="Verifique sua permissão ou tente novamente."
-            action={{ label: "Tentar novamente", onClick: () => templateQuery.refetch() }}
+            action={{
+              label: "Tentar novamente",
+              onClick: () => templateQuery.refetch(),
+            }}
           />
         </PageContainer>
       );
@@ -417,8 +448,9 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
   }
 
   const activityCount = draft.stageIds.reduce(
-    (total, stageId) => total + (draft.stages[stageId]?.activityIds.length ?? 0),
-    0,
+    (total, stageId) =>
+      total + (draft.stages[stageId]?.activityIds.length ?? 0),
+    0
   );
   const settings = settingsActivity
     ? findActivity(template, settingsActivity.activityId)
@@ -433,30 +465,6 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
 
   return (
     <PageContainer>
-      <div className={styles.topBar}>
-        <Link className={styles.link} href="/templates">
-          Voltar
-        </Link>
-        <div className={styles.topActions}>
-          {dirty ? <span className={styles.pending}>Alterações não salvas</span> : null}
-          {dirty ? (
-            <Button
-              variant="secondary"
-              text="Descartar"
-              onClick={() => setDraft(toDraft(template))}
-              disabled={isSaving}
-            />
-          ) : null}
-          <Button
-            text="Salvar alterações"
-            loading={isSaving}
-            textLoading="Salvando..."
-            disabled={!dirty || isSaving}
-            onClick={() => withPublishedWarning(persist)}
-          />
-        </div>
-      </div>
-
       <PageHeader
         title={draft.name}
         description={draft.description ?? undefined}
@@ -472,12 +480,35 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
               size="md"
               onClick={() => {
                 if (dirty) {
-                  toast.error("Salve ou descarte as alterações antes de excluir o template.");
+                  toast.error(
+                    "Salve ou descarte as alterações antes de excluir o template."
+                  );
                   return;
                 }
                 setPendingDelete({ kind: "template" });
               }}
             />
+            <div className={styles.topActions}>
+              <Button
+                text="Salvar alterações"
+                loading={isSaving}
+                textLoading="Salvando..."
+                disabled={!dirty || isSaving}
+                onClick={() => withPublishedWarning(persist)}
+              />
+              {dirty ? (
+                <Button
+                  variant="secondary"
+                  text="Descartar"
+                  onClick={() => setDraft(toDraft(template))}
+                  disabled={isSaving}
+                />
+              ) : null}
+              {dirty ? (
+                <span className={styles.pending}>Alterações não salvas</span>
+              ) : null}
+            </div>
+            <div className={styles.topBar}></div>
           </>
         }
       />
@@ -489,7 +520,8 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
             color={TemplateStatusColor(template.status)}
           />
           <span>
-            {draft.stageIds.length} {draft.stageIds.length === 1 ? "etapa" : "etapas"}
+            {draft.stageIds.length}{" "}
+            {draft.stageIds.length === 1 ? "etapa" : "etapas"}
           </span>
           <span>
             {activityCount} {activityCount === 1 ? "atividade" : "atividades"}
@@ -524,12 +556,17 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                   dropStage(stageId);
                 }}
               >
-                  <div
+                <div
                   className={styles.stageHeader}
                   onClick={(event) => {
                     const target = event.target;
                     if (!(target instanceof Element)) return;
-                    if (target.closest("button, input, textarea, a, [data-drag-handle]")) return;
+                    if (
+                      target.closest(
+                        "button, input, textarea, a, [data-drag-handle]"
+                      )
+                    )
+                      return;
                     toggleStage(stageId);
                   }}
                 >
@@ -573,7 +610,9 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                   </div>
                   <span className={styles.count}>
                     {stage.activityIds.length}{" "}
-                    {stage.activityIds.length === 1 ? "atividade" : "atividades"}
+                    {stage.activityIds.length === 1
+                      ? "atividade"
+                      : "atividades"}
                   </span>
                   <button
                     type="button"
@@ -582,20 +621,28 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                     aria-label={expanded ? "Recolher etapa" : "Expandir etapa"}
                     onClick={() => toggleStage(stageId)}
                   >
-                    {expanded ? <CaretDown size={16} /> : <CaretRight size={16} />}
+                    {expanded ? (
+                      <CaretDown size={16} />
+                    ) : (
+                      <CaretRight size={16} />
+                    )}
                   </button>
                   <div className={styles.rowActions}>
                     <IconButton
                       action="edit"
                       size="sm"
                       label="Editar etapa"
-                      onClick={() => setCreateDrawer({ kind: "stage-description", stageId })}
+                      onClick={() =>
+                        setCreateDrawer({ kind: "stage-description", stageId })
+                      }
                     />
                     <IconButton
                       action="delete"
                       size="sm"
                       label="Excluir etapa"
-                      onClick={() => setPendingDelete({ kind: "stage", stage: serverStage })}
+                      onClick={() =>
+                        setPendingDelete({ kind: "stage", stage: serverStage })
+                      }
                     />
                   </div>
                 </div>
@@ -603,11 +650,16 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                 {expanded ? (
                   <div className={styles.activities}>
                     {stage.activityIds.length === 0 ? (
-                      <p className={styles.empty}>Nenhuma atividade nesta etapa.</p>
+                      <p className={styles.empty}>
+                        Nenhuma atividade nesta etapa.
+                      </p>
                     ) : (
                       stage.activityIds.map((activityId, activityIndex) => {
                         const activity = draft.activities[activityId];
-                        const serverActivity = findActivity(template, activityId);
+                        const serverActivity = findActivity(
+                          template,
+                          activityId
+                        );
                         if (!activity || !serverActivity) return null;
 
                         return (
@@ -617,7 +669,12 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                             onClick={(event) => {
                               const target = event.target;
                               if (!(target instanceof Element)) return;
-                              if (target.closest("button, input, textarea, a, [data-drag-handle]")) return;
+                              if (
+                                target.closest(
+                                  "button, input, textarea, a, [data-drag-handle]"
+                                )
+                              )
+                                return;
                               setSettingsActivity({ stageId, activityId });
                             }}
                             onDragOver={(event) => {
@@ -642,9 +699,16 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                               draggable
                               aria-label="Reordenar atividade"
                               onDragStart={(event) => {
-                                dragRef.current = { kind: "activity", stageId, id: activityId };
+                                dragRef.current = {
+                                  kind: "activity",
+                                  stageId,
+                                  id: activityId,
+                                };
                                 event.dataTransfer.effectAllowed = "move";
-                                event.dataTransfer.setData("text/plain", activityId);
+                                event.dataTransfer.setData(
+                                  "text/plain",
+                                  activityId
+                                );
                                 event.stopPropagation();
                               }}
                               onDragEnd={() => {
@@ -663,14 +727,18 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                                 required
                                 onCommit={(name) =>
                                   updateDraft((current) => {
-                                    const currentActivity = current.activities[activityId];
+                                    const currentActivity =
+                                      current.activities[activityId];
                                     if (!currentActivity) return current;
 
                                     return {
                                       ...current,
                                       activities: {
                                         ...current.activities,
-                                        [activityId]: { ...currentActivity, name },
+                                        [activityId]: {
+                                          ...currentActivity,
+                                          name,
+                                        },
                                       },
                                     };
                                   })
@@ -685,7 +753,9 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                                 action="edit"
                                 size="sm"
                                 label="Editar atividade"
-                                onClick={() => setSettingsActivity({ stageId, activityId })}
+                                onClick={() =>
+                                  setSettingsActivity({ stageId, activityId })
+                                }
                               />
                               <IconButton
                                 action="delete"
@@ -709,7 +779,9 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                         variant="outline"
                         text="Adicionar atividade"
                         onClick={() => {
-                          setExpandedStages((current) => new Set(current).add(stageId));
+                          setExpandedStages((current) =>
+                            new Set(current).add(stageId)
+                          );
                           setCreateDrawer({ kind: "activity", stageId });
                         }}
                       />
@@ -722,7 +794,10 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
         )}
 
         <div className={styles.addStage}>
-          <Button text="Adicionar etapa" onClick={() => setCreateDrawer({ kind: "stage" })} />
+          <Button
+            text="Adicionar etapa"
+            onClick={() => setCreateDrawer({ kind: "stage" })}
+          />
         </div>
       </section>
 
@@ -817,7 +892,9 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
               setCreateDrawer(null);
               await refresh();
             } catch (error) {
-              toast.error(errorMessage(error, "Não foi possível cadastrar a etapa."));
+              toast.error(
+                errorMessage(error, "Não foi possível cadastrar a etapa.")
+              );
               throw error;
             }
           });
@@ -825,7 +902,10 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
       />
 
       <NamedItemDrawer
-        open={createDrawer?.kind === "stage-description" && Boolean(descriptionStage)}
+        open={
+          createDrawer?.kind === "stage-description" &&
+          Boolean(descriptionStage)
+        }
         title="Descrição da etapa"
         description="A descrição entra nas alterações pendentes e só é gravada ao salvar o template."
         nameLabel="Nome da etapa"
@@ -860,7 +940,9 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
             };
           });
           setCreateDrawer(null);
-          toast.success("A etapa foi atualizada no editor. Salve as alterações para gravar.");
+          toast.success(
+            "A etapa foi atualizada no editor. Salve as alterações para gravar."
+          );
         }}
       />
 
@@ -884,7 +966,9 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
               setCreateDrawer(null);
               await refresh();
             } catch (error) {
-              toast.error(errorMessage(error, "Não foi possível cadastrar a atividade."));
+              toast.error(
+                errorMessage(error, "Não foi possível cadastrar a atividade.")
+              );
               throw error;
             }
           });
@@ -916,7 +1000,9 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
               },
             };
           });
-          toast.success("A atividade foi atualizada no editor. Salve as alterações para gravar.");
+          toast.success(
+            "A atividade foi atualizada no editor. Salve as alterações para gravar."
+          );
         }}
         onSaveRequirement={(requirement, data: RequirementFormData) => {
           if (!settingsActivity) return Promise.resolve(false);
@@ -929,16 +1015,23 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                   stageId,
                   activityId,
                   requirement.id,
-                  data,
+                  data
                 );
                 toast.success("O requisito foi atualizado.");
               } else {
-                await templatesApi.createRequirement(templateId, stageId, activityId, data);
+                await templatesApi.createRequirement(
+                  templateId,
+                  stageId,
+                  activityId,
+                  data
+                );
                 toast.success("O requisito foi cadastrado.");
               }
               await refresh();
             } catch (error) {
-              toast.error(errorMessage(error, "Não foi possível salvar o requisito."));
+              toast.error(
+                errorMessage(error, "Não foi possível salvar o requisito.")
+              );
               throw error;
             }
           });
@@ -957,10 +1050,17 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
           const { stageId, activityId } = settingsActivity;
           await withPublishedWarning(async () => {
             try {
-              await templatesApi.reorderRequirements(templateId, stageId, activityId, { ids });
+              await templatesApi.reorderRequirements(
+                templateId,
+                stageId,
+                activityId,
+                { ids }
+              );
               await refresh();
             } catch (error) {
-              toast.error(errorMessage(error, "Não foi possível reordenar os requisitos."));
+              toast.error(
+                errorMessage(error, "Não foi possível reordenar os requisitos.")
+              );
               throw error;
             }
           });
@@ -1006,7 +1106,10 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
 
           if (!deletion) return;
 
-          if (template.status === TemplateStatus.PUBLISHED && deletion.kind !== "template") {
+          if (
+            template.status === TemplateStatus.PUBLISHED &&
+            deletion.kind !== "template"
+          ) {
             void withPublishedWarning(() => confirmDelete(deletion));
             return;
           }

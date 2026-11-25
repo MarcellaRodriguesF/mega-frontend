@@ -90,12 +90,14 @@ export default function ImplementationsPage() {
     <PageContainer>
       <PageHeader
         title="Implantações"
-        description="Acompanhamento das implantações criadas a partir de templates publicados."
+        description="Processos de implantação. Template, cliente e unidade são opcionais."
         action={
-          <Button
-            text="Nova implantação"
-            onClick={() => router.push("/implementations/new")}
-          />
+          hasPermission(PERMISSIONS.IMPLEMENTATIONS_CREATE) ? (
+            <Button
+              text="Nova implantação"
+              onClick={() => router.push("/implementations/new")}
+            />
+          ) : undefined
         }
       />
 

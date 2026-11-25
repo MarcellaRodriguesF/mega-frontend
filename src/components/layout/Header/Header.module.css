@@ -1,73 +1,105 @@
 .header {
   position: fixed;
   top: 0;
-  left: 76;
   right: 0;
-  z-index: 3;
-  top: 0;
+  left: 260px;
+  z-index: 30;
+
   display: flex;
-  min-height: 70px;
   align-items: center;
   gap: 14px;
-  border-bottom: 1px solid var(--color-border);
+
+  height: 64px;
+  padding: 4px 24px;
+
   background: var(--color-header);
-  padding: 4px 20px 4px 36px;
+  border-bottom: 1px solid var(--color-border);
   backdrop-filter: blur(10px);
+
+  transition: left 180ms ease;
+}
+
+.collapsed {
+  left: 76px;
 }
 
 .logoContainer {
-  display: flex;
+  display: block;
   width: auto;
-  height: 40px;
-}
-
-.eyebrow {
-  color: var(--color-primary);
-  font-size: 10px;
-  font-weight: 750;
-  letter-spacing: 0.12em;
-}
-
-.title {
-  margin-top: 3px;
-  color: var(--color-text-secondary);
-  font-size: 12px;
+  height: 38px;
+  max-width: 150px;
+  object-fit: contain;
 }
 
 .actions {
   display: flex;
-  width: 100%;
   align-items: center;
   justify-content: flex-end;
+  flex: 1;
+  min-width: 0;
   gap: 8px;
 }
 
-.headerLabel {
-  display: var(--header-label-display);
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  color: var(--color-text-secondary);
-  font-size: 11px;
-  padding: 7px 11px;
-}
-
 .menuButton {
-  display: var(--menu-trigger-display);
-  width: 40px;
-  height: 40px;
-  flex: 0 0 auto;
+  display: none;
+
   align-items: center;
   justify-content: center;
+
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+
   border: 1px solid var(--color-border);
   border-radius: 9px;
+
   background: var(--color-surface);
   color: var(--color-text);
+
   cursor: pointer;
 }
 
+.menuButton:hover {
+  background: var(--color-muted-surface);
+}
 
-@media (max-width: 639px) {
-  .header {
+.menuButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* TABLET E MOBILE */
+
+@media (max-width: 1023px) {
+  .header,
+  .header.collapsed {
     left: 0;
+    height: 64px;
+    padding: 4px 16px;
+  }
+
+  .menuButton {
+    display: flex;
+  }
+
+  .logoContainer {
+    height: 34px;
+    max-width: 130px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    gap: 10px;
+    padding-inline: 12px;
+  }
+
+  .logoContainer {
+    height: 30px;
+    max-width: 115px;
+  }
+
+  .actions {
+    gap: 4px;
   }
 }

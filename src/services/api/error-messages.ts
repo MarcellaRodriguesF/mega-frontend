@@ -26,6 +26,25 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
     "Não foi possível copiar um formulário associado ao template.",
   IMPLEMENTATION_SNAPSHOT_CONFLICT:
     "Não foi possível copiar a estrutura do template.",
+  UNIT_COMPANY_MISMATCH: "A unidade não pertence ao cliente informado.",
+  ACTIVITY_ALREADY_LINKED:
+    "A atividade já pertence a outra implantação. Mova-a dentro da implantação atual ou desvincule antes.",
+  ACTIVITY_COMPLETED_MOVE_REQUIRES_CONFIRMATION:
+    "Confirme explicitamente para mover ou vincular uma atividade concluída.",
+  SUPERVISOR_ALREADY_ASSIGNED: "Esta atividade já possui um supervisor.",
+  ASSIGNMENT_DUPLICATE: "Este responsável já está atribuído com esse papel.",
+  ACTIVITY_EXECUTE_FORBIDDEN:
+    "Somente um executor atribuído, ou quem tem gestão global de atividades, pode iniciar a execução.",
+  ACTIVITY_COMPLETE_FORBIDDEN:
+    "Somente o supervisor atribuído, ou quem tem gestão global de atividades, pode concluir a atividade.",
+  ACTIVITY_STAGE_WITHOUT_IMPLEMENTATION:
+    "Uma etapa só pode ser usada dentro de uma implantação.",
+  STAGE_IMPLEMENTATION_MISMATCH: "A etapa não pertence a esta implantação.",
+  IMPLEMENTATION_ALREADY_CANCELLED: "Esta implantação já está cancelada.",
+  IMPLEMENTATION_CANCELLED:
+    "Não é possível vincular uma atividade a uma implantação cancelada.",
+  ACTIVITY_ALREADY_INDEPENDENT: "A atividade já está independente.",
+  ACTIVITY_ALREADY_COMPLETED: "A atividade já foi concluída.",
   CONNECTIVITY_TARGET_INVALID:
     "O campo não pode ser publicado nesta propriedade da conectividade.",
   TEMPLATE_STRUCTURE_INVALID:

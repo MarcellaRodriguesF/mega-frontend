@@ -1,33 +1,54 @@
 .appShell {
-  display: flex;
+  width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
+/* ÁREA DE TRABALHO */
+
 .workspace {
-  display: flex;
+  width: calc(100% - 260px);
   min-width: 0;
   min-height: 100vh;
-  flex: 1;
-  flex-direction: column;
+  min-height: 100dvh;
+
+  margin-left: 260px;
+
+  transition:
+    width 180ms ease,
+    margin-left 180ms ease;
 }
+
+/* SIDEBAR RECOLHIDA */
+
+.workspaceCollapsed {
+  width: calc(100% - 76px);
+  margin-left: 76px;
+}
+
+/* CONTEÚDO */
 
 .main {
   width: 100%;
-  flex: 1;
-  /* padding: 38px var(--page-padding) 48px; */
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  padding-top: 64px;
 }
 
-.pageContainer {
-  width: min(100%, var(--content-max-width));
-  margin: 0 auto;
+/* MOBILE E TABLET */
+
+@media (max-width: 1023px) {
+  .workspace,
+  .workspaceCollapsed {
+    width: 100%;
+    margin-left: 0;
+  }
 }
 
-.overlay {
-  position: fixed;
-  z-index: 4;
-  inset: 0;
-  display: var(--sidebar-overlay-display);
-  border: 0;
-  background: color-mix(in srgb, var(--color-brand-black) 48%, transparent);
-  cursor: pointer;
+@media (prefers-reduced-motion: reduce) {
+  .workspace {
+    transition: none;
+  }
 }

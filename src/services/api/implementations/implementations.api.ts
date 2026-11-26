@@ -79,4 +79,16 @@ export const implementationsApi = {
   cancel(id: string): Promise<ImplementationResponse> {
     return apiClient.post<ImplementationResponse>(`/implementations/${id}/cancel`);
   },
+
+  update(id: string, data: { name: string; description: string | null }): Promise<ImplementationResponse> {
+    return apiClient.patch<ImplementationResponse>(`/implementations/${id}`, data);
+  },
+
+  updateStage(id: string, stageId: string, data: { name: string; description: string | null }): Promise<StageResponse> {
+    return apiClient.patch<StageResponse>(`/implementations/${id}/stages/${stageId}`, data);
+  },
+
+  deleteStage(id: string, stageId: string): Promise<{ success: boolean }> {
+    return apiClient.delete<{ success: boolean }>(`/implementations/${id}/stages/${stageId}`);
+  },
 };

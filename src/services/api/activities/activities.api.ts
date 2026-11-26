@@ -26,6 +26,10 @@ export const activitiesApi = {
     return apiClient.post<ActivityResponse>("/activities", data);
   },
 
+  update(id: string, data: { name: string; description: string | null }): Promise<ActivityResponse> {
+    return apiClient.patch<ActivityResponse>(`/activities/${id}`, data);
+  },
+
   findAll(params: ListActivitiesQuery = {}): Promise<ActivitiesResponse> {
     return apiClient.get<ActivitiesResponse>(
       `/activities${toQuery({

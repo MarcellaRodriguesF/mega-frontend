@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -32,7 +32,7 @@ interface AddressDrawerProps {
 }
 
 function getAddressValues(
-  data?: Partial<Record<keyof AddressFormInput, string | null>> | null
+  data?: Partial<Record<keyof AddressFormInput, string | null>> | null,
 ): AddressFormInput {
   return {
     zipCode: data?.zipCode ?? "",
@@ -85,12 +85,15 @@ export default function AddressDrawer({
     state: watchedAddress.state ?? "",
   };
 
-  function handleAddressChange(field: AddressFormField, value: string) {
-    setValue(field, value, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-  }
+  const handleAddressChange = useCallback(
+    (field: AddressFormField, value: string) => {
+      setValue(field, value, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    },
+    [setValue],
+  );
 
   const addressErrors: AddressFormErrors = {
     zipCode: errors.zipCode?.message,

@@ -58,13 +58,13 @@
   font-weight: 700;
 }
 
-.iconWrapper.danger {
+.dangerIcon {
   color: #dc3535;
   background: #fce5e5;
   box-shadow: 0 0 0 7px #fff1f1;
 }
 
-.iconWrapper.info {
+.infoIcon {
   color: #2453e6;
   background: #e3eaff;
   box-shadow: 0 0 0 7px #f0f3ff;
@@ -110,19 +110,19 @@
   border: 1px solid transparent;
 }
 
-.confirmButton.danger {
+.confirmButtonDanger {
   background: #d93636;
 }
 
-.confirmButton.danger:hover:not(:disabled) {
+.confirmButtonDanger:hover:not(:disabled) {
   background: #bd2929;
 }
 
-.confirmButton.info {
+.confirmButtonInfo {
   background: #2853ed;
 }
 
-.confirmButton.info:hover:not(:disabled) {
+.confirmButtonInfo:hover:not(:disabled) {
   background: #1942d0;
 }
 

@@ -17,6 +17,7 @@ import Modal from "@/components/ui/Modal/Modal";
 import ContactDrawer from "@/features/contacts/ContactDrawer/ContactDrawer";
 
 import { CompanyRelationshipStageLabel } from "@/constants/enums/companies/company-relationship-stage.enum";
+import { CompanyAddressType } from "@/constants/enums/companies/company-address-type.enum";
 import {
   CompanyStatusColor,
   CompanyStatusLabel,
@@ -79,15 +80,10 @@ export default function CompanyGeneralPage() {
 
   async function handleUpdateAddress(data: AddressFormData) {
     try {
-      if (!primaryAddress) {
-        toast.error("Não foi possível identificar o endereço da empresa.");
-        return;
-      }
-
       const response = await companiesApi.update(company.id, {
         address: {
-          name: primaryAddress.name,
-          type: primaryAddress.type,
+          name: primaryAddress?.name ?? "Matriz",
+          type: primaryAddress?.type ?? CompanyAddressType.HEADQUARTERS,
           zipCode: data.zipCode,
           street: data.street,
           number: data.number,
@@ -95,10 +91,10 @@ export default function CompanyGeneralPage() {
           neighborhood: data.neighborhood,
           city: data.city,
           state: data.state,
-          latitude: primaryAddress.latitude,
-          longitude: primaryAddress.longitude,
-          isPrimary: primaryAddress.isPrimary,
-          observations: primaryAddress.observations,
+          latitude: primaryAddress?.latitude ?? null,
+          longitude: primaryAddress?.longitude ?? null,
+          isPrimary: primaryAddress?.isPrimary ?? true,
+          observations: primaryAddress?.observations ?? null,
         },
       });
 

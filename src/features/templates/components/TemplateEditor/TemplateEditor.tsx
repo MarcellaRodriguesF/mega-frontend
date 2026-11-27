@@ -132,7 +132,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
     setSeenSignature(serverSignature);
     if (serverDraft) {
       setDraft((current) =>
-        current ? mergeDraft(current, serverDraft) : serverDraft
+        current ? mergeDraft(current, serverDraft) : serverDraft,
       );
     }
   }
@@ -166,7 +166,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
     if (template?.status !== TemplateStatus.PUBLISHED) {
       return action().then(
         () => true,
-        () => false
+        () => false,
       );
     }
 
@@ -211,7 +211,10 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
           await templatesApi.update(templateId, changes.template);
         } catch (error) {
           failures.push(
-            errorMessage(error, "Não foi possível salvar os dados do template.")
+            errorMessage(
+              error,
+              "Não foi possível salvar os dados do template.",
+            ),
           );
         }
       }
@@ -226,8 +229,8 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
           failures.push(
             errorMessage(
               error,
-              `Não foi possível salvar a etapa ${stage.name}.`
-            )
+              `Não foi possível salvar a etapa ${stage.name}.`,
+            ),
           );
         }
       }
@@ -239,7 +242,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
           });
         } catch (error) {
           failures.push(
-            errorMessage(error, "Não foi possível salvar a ordem das etapas.")
+            errorMessage(error, "Não foi possível salvar a ordem das etapas."),
           );
         }
       }
@@ -253,14 +256,14 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
             {
               name: activity.name,
               description: activity.description,
-            }
+            },
           );
         } catch (error) {
           failures.push(
             errorMessage(
               error,
-              `Não foi possível salvar a atividade ${activity.name}.`
-            )
+              `Não foi possível salvar a atividade ${activity.name}.`,
+            ),
           );
         }
       }
@@ -274,8 +277,8 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
           failures.push(
             errorMessage(
               error,
-              "Não foi possível salvar a ordem das atividades."
-            )
+              "Não foi possível salvar a ordem das atividades.",
+            ),
           );
         }
       }
@@ -308,7 +311,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
           await refresh();
         } catch (error) {
           toast.error(
-            errorMessage(error, "Não foi possível atualizar o template.")
+            errorMessage(error, "Não foi possível atualizar o template."),
           );
           throw error;
         }
@@ -359,7 +362,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
         await templatesApi.deleteActivity(
           templateId,
           deletion.stageId,
-          deletion.activity.id
+          deletion.activity.id,
         );
       }
 
@@ -368,7 +371,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
           templateId,
           deletion.stageId,
           deletion.activityId,
-          deletion.requirement.id
+          deletion.requirement.id,
         );
       }
 
@@ -450,7 +453,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
   const activityCount = draft.stageIds.reduce(
     (total, stageId) =>
       total + (draft.stages[stageId]?.activityIds.length ?? 0),
-    0
+    0,
   );
   const settings = settingsActivity
     ? findActivity(template, settingsActivity.activityId)
@@ -481,7 +484,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
               onClick={() => {
                 if (dirty) {
                   toast.error(
-                    "Salve ou descarte as alterações antes de excluir o template."
+                    "Salve ou descarte as alterações antes de excluir o template.",
                   );
                   return;
                 }
@@ -563,7 +566,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                     if (!(target instanceof Element)) return;
                     if (
                       target.closest(
-                        "button, input, textarea, a, [data-drag-handle]"
+                        "button, input, textarea, a, [data-drag-handle]",
                       )
                     )
                       return;
@@ -658,7 +661,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                         const activity = draft.activities[activityId];
                         const serverActivity = findActivity(
                           template,
-                          activityId
+                          activityId,
                         );
                         if (!activity || !serverActivity) return null;
 
@@ -671,7 +674,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                               if (!(target instanceof Element)) return;
                               if (
                                 target.closest(
-                                  "button, input, textarea, a, [data-drag-handle]"
+                                  "button, input, textarea, a, [data-drag-handle]",
                                 )
                               )
                                 return;
@@ -707,7 +710,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                                 event.dataTransfer.effectAllowed = "move";
                                 event.dataTransfer.setData(
                                   "text/plain",
-                                  activityId
+                                  activityId,
                                 );
                                 event.stopPropagation();
                               }}
@@ -780,7 +783,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                         text="Adicionar atividade"
                         onClick={() => {
                           setExpandedStages((current) =>
-                            new Set(current).add(stageId)
+                            new Set(current).add(stageId),
                           );
                           setCreateDrawer({ kind: "activity", stageId });
                         }}
@@ -893,7 +896,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
               await refresh();
             } catch (error) {
               toast.error(
-                errorMessage(error, "Não foi possível cadastrar a etapa.")
+                errorMessage(error, "Não foi possível cadastrar a etapa."),
               );
               throw error;
             }
@@ -941,7 +944,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
           });
           setCreateDrawer(null);
           toast.success(
-            "A etapa foi atualizada no editor. Salve as alterações para gravar."
+            "A etapa foi atualizada no editor. Salve as alterações para gravar.",
           );
         }}
       />
@@ -967,7 +970,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
               await refresh();
             } catch (error) {
               toast.error(
-                errorMessage(error, "Não foi possível cadastrar a atividade.")
+                errorMessage(error, "Não foi possível cadastrar a atividade."),
               );
               throw error;
             }
@@ -1001,7 +1004,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
             };
           });
           toast.success(
-            "A atividade foi atualizada no editor. Salve as alterações para gravar."
+            "A atividade foi atualizada no editor. Salve as alterações para gravar.",
           );
         }}
         onSaveRequirement={(requirement, data: RequirementFormData) => {
@@ -1015,7 +1018,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                   stageId,
                   activityId,
                   requirement.id,
-                  data
+                  data,
                 );
                 toast.success("O requisito foi atualizado.");
               } else {
@@ -1023,14 +1026,14 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                   templateId,
                   stageId,
                   activityId,
-                  data
+                  data,
                 );
                 toast.success("O requisito foi cadastrado.");
               }
               await refresh();
             } catch (error) {
               toast.error(
-                errorMessage(error, "Não foi possível salvar o requisito.")
+                errorMessage(error, "Não foi possível salvar o requisito."),
               );
               throw error;
             }
@@ -1054,12 +1057,15 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
                 templateId,
                 stageId,
                 activityId,
-                { ids }
+                { ids },
               );
               await refresh();
             } catch (error) {
               toast.error(
-                errorMessage(error, "Não foi possível reordenar os requisitos.")
+                errorMessage(
+                  error,
+                  "Não foi possível reordenar os requisitos.",
+                ),
               );
               throw error;
             }
@@ -1072,6 +1078,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
         title="Salvar template publicado"
         description="Este template está publicado e é compartilhado entre as empresas. As alterações poderão valer para futuras implantações que usarem este template. Implantações já criadas não são alteradas, porque cada uma utiliza a própria cópia da estrutura."
         confirmText="Continuar"
+        variant="info"
         isLoading={isSaving}
         onClose={() => {
           if (isSaving) return;

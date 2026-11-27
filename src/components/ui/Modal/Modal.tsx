@@ -9,7 +9,7 @@ interface ModalProps {
   description: string;
   confirmText?: string;
   cancelText?: string;
-  variant?: "danger" | "info";
+  variant: "danger" | "info";
   isLoading?: boolean;
   onConfirm: () => void;
   onClose: () => void;
@@ -21,7 +21,7 @@ export default function Modal({
   description,
   confirmText = "Confirmar",
   cancelText = "Cancelar",
-  variant = "info",
+  variant,
   isLoading = false,
   onConfirm,
   onClose,
@@ -70,7 +70,11 @@ export default function Modal({
           ×
         </button>
 
-        <div className={`${styles.iconWrapper} ${styles[variant]}`}>
+        <div
+          className={`${styles.iconWrapper} ${
+            variant === "danger" ? styles.dangerIcon : styles.infoIcon
+          }`}
+        >
           {variant === "danger" ? "!" : "?"}
         </div>
 
@@ -85,7 +89,11 @@ export default function Modal({
         <div className={styles.actions}>
           <button
             type="button"
-            className={`${styles.confirmButton} ${styles[variant]}`}
+            className={`${styles.confirmButton} ${
+              variant === "danger"
+                ? styles.confirmButtonDanger
+                : styles.confirmButtonInfo
+            }`}
             onClick={onConfirm}
             disabled={isLoading}
           >

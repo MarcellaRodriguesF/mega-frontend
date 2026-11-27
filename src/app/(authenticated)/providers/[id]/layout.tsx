@@ -25,6 +25,7 @@ import type { Provider } from "@/services/api/providers/providers.types";
 
 const providerTabs = [
   { value: "general", label: "Dados gerais" },
+  { value: "documents", label: "Documentos" },
   { value: "units", label: "Unidades" },
   { value: "tickets", label: "Chamados" },
 ];
@@ -188,11 +189,7 @@ export default function ProviderDetailsLayout({
   const page = (
     <PageContainer
       state={
-        isLoading
-          ? "loading"
-          : !provider
-            ? getPageState(statusCode)
-            : undefined
+        isLoading ? "loading" : !provider ? getPageState(statusCode) : undefined
       }
       stateAction={
         !isLoading && !provider
@@ -225,11 +222,7 @@ export default function ProviderDetailsLayout({
         }
       />
 
-      <Tabs
-        items={providerTabs}
-        value={activeTab}
-        onChange={handleTabChange}
-      />
+      <Tabs items={providerTabs} value={activeTab} onChange={handleTabChange} />
 
       {!isLoading && provider ? children : null}
     </PageContainer>

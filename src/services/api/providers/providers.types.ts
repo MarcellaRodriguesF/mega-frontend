@@ -16,6 +16,8 @@ export interface ProviderContact {
 export interface ProviderDocument {
   id: string;
   providerId: string;
+  companyId: null;
+  unitId: null;
   name: string;
   type: string | null;
   fileName: string;

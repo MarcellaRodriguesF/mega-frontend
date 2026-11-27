@@ -26,7 +26,7 @@ const companyTabs = [
   { value: "units", label: "Unidades" },
   { value: "documents", label: "Documentos" },
   { value: "calls", label: "Chamados" },
-  { value: "opportunities", label: "Oportunidades" },
+  // { value: "opportunities", label: "Oportunidades" },
 ];
 
 function getPageState(statusCode?: number): PageStateType {

@@ -5,6 +5,8 @@ export const PROVIDER_DOCUMENT_MAX_SIZE_BYTES = 10 * 1024 * 1024;
 export const PROVIDER_DOCUMENT_ACCEPT =
   ".pdf,.png,.jpg,.jpeg,.webp,.gif,.txt,.doc,.docx,.xls,.xlsx";
 
+export const NO_DOCUMENT_UNIT = "__no_unit__";
+
 const ALLOWED_EXTENSIONS = new Set([
   "pdf",
   "png",
@@ -35,6 +37,18 @@ export function createProviderDocumentFormSchema(requireFile: boolean) {
         .trim()
         .min(1, "O nome do documento é obrigatório.")
         .max(150, "O nome deve ter no máximo 150 caracteres."),
+
+      type: z
+        .string()
+        .max(50, "O tipo deve ter no máximo 50 caracteres.")
+        .transform((value) => value.trim() || null),
+
+      unitId: z
+        .string()
+        .transform((value) =>
+          value === "" || value === NO_DOCUMENT_UNIT ? null : value,
+        )
+        .pipe(z.string().uuid("Unidade inválida.").nullable()),
 
       file: z.custom<File | null>(
         (value) => value === null || value instanceof File,
@@ -97,6 +111,8 @@ export type ProviderDocumentFormData = z.output<
 
 export const providerDocumentDefaultValues: ProviderDocumentFormInput = {
   name: "",
+  type: "",
+  unitId: NO_DOCUMENT_UNIT,
   file: null,
   observations: "",
 };

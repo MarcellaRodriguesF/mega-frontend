@@ -8,23 +8,16 @@ import InfoField from "@/components/ui/InfoField/InfoField";
 import Modal from "@/components/ui/Modal/Modal";
 import ProviderContactDrawer from "@/features/providers/components/ProviderContactDrawer/ProviderContactDrawer";
 import ProviderContacts from "@/features/providers/components/ProviderContacts/ProviderContacts";
-import ProviderDocumentDrawer from "@/features/providers/components/ProviderDocumentDrawer/ProviderDocumentDrawer";
-import ProviderDocuments from "@/features/providers/components/ProviderDocuments/ProviderDocuments";
 import { useProvider } from "@/contexts/ProviderContext";
 import { useDrawer } from "@/hooks/useDrawer";
 import { useToast } from "@/contexts/ToastContext";
 
 import { providerContactsApi } from "@/services/api/provider-contacts/provider-contacts.api";
-import { providerDocumentsApi } from "@/services/api/provider-documents/provider-documents.api";
 import { ApiError } from "@/services/api/api-client";
 import { getApiErrorMessage } from "@/services/api/error-messages";
 
 import type { ProviderContactFormData } from "@/features/providers/schemas/provider-contact.schema";
-import type { ProviderDocumentFormData } from "@/features/providers/schemas/provider-document.schema";
-import type {
-  ProviderContact,
-  ProviderDocument,
-} from "@/services/api/providers/providers.types";
+import type { ProviderContact } from "@/services/api/providers/providers.types";
 import ContactActions from "@/components/ui/ContactActions/ContactActions";
 
 export default function ProviderGeneralPage() {
@@ -46,29 +39,12 @@ export default function ProviderGeneralPage() {
     const contacts = provider.contacts
       .filter((item) => item.id !== contact.id)
       .map((item) =>
-        contact.isPrimary ? { ...item, isPrimary: false } : item
+        contact.isPrimary ? { ...item, isPrimary: false } : item,
       );
 
     updateProvider({
       ...provider,
       contacts: sortContacts([...contacts, contact]),
-    });
-  }
-
-  function sortDocuments(documents: ProviderDocument[]) {
-    return [...documents].sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-  }
-
-  function updateDocumentList(document: ProviderDocument) {
-    updateProvider({
-      ...provider,
-      documents: sortDocuments([
-        ...provider.documents.filter((item) => item.id !== document.id),
-        document,
-      ]),
     });
   }
 
@@ -103,19 +79,19 @@ export default function ProviderGeneralPage() {
         onClose={closeDrawer}
         onSubmit={handleCreateContact}
         mode="create"
-      />
+      />,
     );
   }
 
   async function handleUpdateContact(
     contactId: string,
-    data: ProviderContactFormData
+    data: ProviderContactFormData,
   ) {
     try {
       const response = await providerContactsApi.update(
         provider.id,
         contactId,
-        data
+        data,
       );
 
       updateContactList(response.data);
@@ -146,7 +122,7 @@ export default function ProviderGeneralPage() {
         onSubmit={(data) => handleUpdateContact(contact.id, data)}
         mode="edit"
         contact={contact}
-      />
+      />,
     );
   }
 
@@ -189,168 +165,7 @@ export default function ProviderGeneralPage() {
         cancelText="Cancelar"
         onConfirm={() => handleDeleteContact(contact)}
         onClose={closeDrawer}
-      />
-    );
-  }
-
-  async function handleCreateDocument(data: ProviderDocumentFormData) {
-    try {
-      const response = await providerDocumentsApi.create(provider.id, data);
-
-      updateDocumentList(response.data);
-      closeDrawer();
-
-      toast.success("O documento foi cadastrado com sucesso.", {
-        title: "Documento adicionado!",
-      });
-    } catch (error) {
-      const message =
-        error instanceof ApiError
-          ? getApiErrorMessage(error.code, error.message)
-          : "Não foi possível cadastrar o documento. Tente novamente.";
-
-      toast.error(message, {
-        title: "Erro ao cadastrar documento",
-      });
-
-      throw error;
-    }
-  }
-
-  async function handleViewDocument(document: ProviderDocument) {
-    try {
-      await providerDocumentsApi.open(
-        provider.id,
-        document.id,
-        document.fileName,
-      );
-    } catch (error) {
-      const message =
-        error instanceof ApiError
-          ? getApiErrorMessage(error.code, error.message)
-          : error instanceof Error
-            ? error.message
-            : "Não foi possível visualizar o documento. Tente novamente.";
-
-      toast.error(message, {
-        title: "Erro ao visualizar documento",
-      });
-    }
-  }
-
-  async function handleDownloadDocument(document: ProviderDocument) {
-    try {
-      await providerDocumentsApi.download(
-        provider.id,
-        document.id,
-        document.fileName,
-      );
-    } catch (error) {
-      const message =
-        error instanceof ApiError
-          ? getApiErrorMessage(error.code, error.message)
-          : "Não foi possível baixar o documento. Tente novamente.";
-
-      toast.error(message, {
-        title: "Erro ao baixar documento",
-      });
-    }
-  }
-
-  function handleOpenCreateDocumentDrawer() {
-    openDrawer(
-      <ProviderDocumentDrawer
-        open
-        onClose={closeDrawer}
-        onSubmit={handleCreateDocument}
-        mode="create"
-      />
-    );
-  }
-
-  async function handleUpdateDocument(
-    documentId: string,
-    data: ProviderDocumentFormData
-  ) {
-    try {
-      const response = await providerDocumentsApi.update(
-        provider.id,
-        documentId,
-        data
-      );
-
-      updateDocumentList(response.data);
-      closeDrawer();
-
-      toast.success("O documento foi atualizado com sucesso.", {
-        title: "Documento atualizado!",
-      });
-    } catch (error) {
-      const message =
-        error instanceof ApiError
-          ? getApiErrorMessage(error.code, error.message)
-          : "Não foi possível atualizar o documento. Tente novamente.";
-
-      toast.error(message, {
-        title: "Erro ao atualizar documento",
-      });
-
-      throw error;
-    }
-  }
-
-  function handleOpenEditDocumentDrawer(document: ProviderDocument) {
-    openDrawer(
-      <ProviderDocumentDrawer
-        open
-        onClose={closeDrawer}
-        onSubmit={(data) => handleUpdateDocument(document.id, data)}
-        mode="edit"
-        document={document}
-      />
-    );
-  }
-
-  async function handleDeleteDocument(document: ProviderDocument) {
-    try {
-      await providerDocumentsApi.delete(provider.id, document.id);
-
-      updateProvider({
-        ...provider,
-        documents: provider.documents.filter((item) => item.id !== document.id),
-      });
-
-      closeDrawer();
-
-      toast.success("O documento foi excluído com sucesso.", {
-        title: "Documento excluído!",
-      });
-    } catch (error) {
-      const message =
-        error instanceof ApiError
-          ? getApiErrorMessage(error.code, error.message)
-          : "Não foi possível excluir o documento. Tente novamente.";
-
-      toast.error(message, {
-        title: "Erro ao excluir documento",
-      });
-
-      throw error;
-    }
-  }
-
-  function handleOpenDeleteDocumentModal(document: ProviderDocument) {
-    openDrawer(
-      <Modal
-        open
-        variant="danger"
-        title="Excluir documento?"
-        description={`O documento ${document.name} será excluído permanentemente. Essa ação não poderá ser desfeita.`}
-        confirmText="Excluir documento"
-        cancelText="Cancelar"
-        onConfirm={() => handleDeleteDocument(document)}
-        onClose={closeDrawer}
-      />
+      />,
     );
   }
 
@@ -367,15 +182,6 @@ export default function ProviderGeneralPage() {
         onAdd={handleOpenCreateContactDrawer}
         onEdit={handleOpenEditContactDrawer}
         onDelete={handleOpenDeleteContactModal}
-      />
-
-      <ProviderDocuments
-        documents={provider.documents}
-        onAdd={handleOpenCreateDocumentDrawer}
-        onView={handleViewDocument}
-        onDownload={handleDownloadDocument}
-        onEdit={handleOpenEditDocumentDrawer}
-        onDelete={handleOpenDeleteDocumentModal}
       />
     </InfoCardGrid>
   );

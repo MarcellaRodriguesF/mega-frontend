@@ -1,41 +1,26 @@
 import { apiClient } from "../api-client";
+import {
+  openDocumentPreview,
+  saveDocumentFile,
+  toDocumentFormData,
+} from "../documents/document-files";
+import type { SaveDocumentRequest } from "../documents/documents.types";
 
 import type { ApiSuccess } from "../auth/auth.types";
 import type { ProviderDocument } from "../providers/providers.types";
 
-export interface SaveProviderDocumentRequest {
-  name: string;
-  file?: File | null;
-  observations?: string | null;
-}
+export type SaveProviderDocumentRequest = Omit<SaveDocumentRequest, "unitId">;
 
 export type ProviderDocumentResponse = ApiSuccess<ProviderDocument>;
 export type ProviderDocumentsResponse = ApiSuccess<ProviderDocument[]>;
 
-function toFormData(data: SaveProviderDocumentRequest) {
-  const formData = new FormData();
-
-  formData.append("name", data.name);
-  formData.append("observations", data.observations ?? "");
-
-  if (data.file instanceof File) {
-    formData.append("file", data.file, data.file.name);
-  }
-
-  return formData;
-}
-
-function saveFile(blob: Blob, fileName: string) {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = fileName;
-  link.rel = "noopener";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+function toProviderFormData(data: SaveProviderDocumentRequest) {
+  return toDocumentFormData({
+    name: data.name,
+    type: data.type,
+    file: data.file,
+    observations: data.observations,
+  });
 }
 
 export const providerDocumentsApi = {
@@ -49,7 +34,7 @@ export const providerDocumentsApi = {
 
     return apiClient.post<ProviderDocumentResponse>(
       `/providers/${providerId}/documents`,
-      toFormData(data),
+      toProviderFormData(data),
     );
   },
 
@@ -75,7 +60,7 @@ export const providerDocumentsApi = {
   ): Promise<ProviderDocumentResponse> {
     return apiClient.patch<ProviderDocumentResponse>(
       `/providers/${providerId}/documents/${documentId}`,
-      toFormData(data),
+      toProviderFormData(data),
     );
   },
 
@@ -84,23 +69,14 @@ export const providerDocumentsApi = {
       `/providers/${providerId}/documents/${documentId}/file?disposition=attachment`,
     );
 
-    saveFile(file.blob, file.fileName || fileName);
+    saveDocumentFile(file.blob, file.fileName || fileName);
   },
 
   async open(providerId: string, documentId: string, fileName: string) {
     const file = await apiClient.getBlob(
       `/providers/${providerId}/documents/${documentId}/file?disposition=inline`,
     );
-    const url = URL.createObjectURL(file.blob);
-    const preview = window.open(url, "_blank", "noopener,noreferrer");
-
-    if (!preview) {
-      URL.revokeObjectURL(url);
-      saveFile(file.blob, file.fileName || fileName);
-      return;
-    }
-
-    window.setTimeout(() => URL.revokeObjectURL(url), 120_000);
+    openDocumentPreview(file.blob, file.fileName || fileName);
   },
 
   delete(providerId: string, documentId: string): Promise<void> {

@@ -1,13 +1,10 @@
-
 "use client";
 
-import { FileText } from "@phosphor-icons/react";
-
+import Button from "@/components/ui/Button/Button";
 import Card from "@/components/ui/Card/Card";
-import IconButton from "@/components/ui/IconButton/IconButton";
-import DocumentList from "@/components/ui/DocumentList/DocumentList";
-
-import type { DocumentListItem } from "@/types/document.types";
+import DocumentTable, {
+  type DocumentTableItem,
+} from "@/features/documents/components/DocumentTable/DocumentTable";
 import type { ProviderDocument } from "@/services/api/providers/providers.types";
 
 interface ProviderDocumentsProps {
@@ -17,6 +14,7 @@ interface ProviderDocumentsProps {
   onDownload: (document: ProviderDocument) => void | Promise<void>;
   onEdit: (document: ProviderDocument) => void;
   onDelete: (document: ProviderDocument) => void;
+  isLoading?: boolean;
 }
 
 export default function ProviderDocuments({
@@ -26,16 +24,20 @@ export default function ProviderDocuments({
   onDownload,
   onEdit,
   onDelete,
+  isLoading = false,
 }: ProviderDocumentsProps) {
-  const documentItems: DocumentListItem[] = documents.map((document) => ({
+  const documentItems: DocumentTableItem[] = documents.map((document) => ({
     id: document.id,
     name: document.name,
+    type: document.type,
     fileName: document.fileName,
     mimeType: document.mimeType,
     createdAt: document.createdAt,
+    unitId: null,
+    unitName: null,
   }));
 
-  function getProviderDocument(item: DocumentListItem) {
+  function getProviderDocument(item: DocumentTableItem) {
     return documents.find((document) => document.id === item.id);
   }
 
@@ -43,13 +45,11 @@ export default function ProviderDocuments({
     <Card
       title="Documentos"
       display="default"
-      icon={<FileText size={20} />}
-      actions={
-        <IconButton action="add" size="sm" onClick={onAdd} />
-      }
+      actions={<Button text="Novo documento" onClick={onAdd} />}
     >
-      <DocumentList
+      <DocumentTable
         documents={documentItems}
+        isLoading={isLoading}
         onView={(item) => {
           const document = getProviderDocument(item);
           if (document) return onView(document);

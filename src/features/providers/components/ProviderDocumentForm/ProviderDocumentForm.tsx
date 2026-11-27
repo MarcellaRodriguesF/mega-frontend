@@ -7,11 +7,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import FormSection from "@/components/ui/FormSection/FormSection";
 import Input from "@/components/ui/Input/Input";
 import Textarea from "@/components/ui/Textarea/Textarea";
+import Select, { type SelectOption } from "@/components/ui/Select/Select";
 
 import {
   createProviderDocumentFormSchema,
   providerDocumentDefaultValues,
   PROVIDER_DOCUMENT_ACCEPT,
+  NO_DOCUMENT_UNIT,
   type ProviderDocumentFormData,
   type ProviderDocumentFormInput,
 } from "@/features/providers/schemas/provider-document.schema";
@@ -25,6 +27,7 @@ interface ProviderDocumentFormProps {
   initialData?: ProviderDocumentFormInput;
   requireFile?: boolean;
   currentFileName?: string;
+  unitOptions?: SelectOption[];
 }
 
 export default function ProviderDocumentForm({
@@ -33,6 +36,7 @@ export default function ProviderDocumentForm({
   initialData,
   requireFile = true,
   currentFileName,
+  unitOptions,
 }: ProviderDocumentFormProps) {
   const {
     register,
@@ -53,6 +57,12 @@ export default function ProviderDocumentForm({
 
   const fileError =
     typeof errors.file?.message === "string" ? errors.file.message : undefined;
+  const typeError =
+    typeof errors.type?.message === "string" ? errors.type.message : undefined;
+  const unitError =
+    typeof errors.unitId?.message === "string"
+      ? errors.unitId.message
+      : undefined;
 
   function handleFileChange(file: File | null) {
     setValue("file", file, {
@@ -78,6 +88,29 @@ export default function ProviderDocumentForm({
           error={errors.name?.message}
           {...register("name")}
         />
+
+        <Input
+          label="Tipo do documento"
+          placeholder="Ex.: Contrato"
+          maxLength={50}
+          disabled={isLoading}
+          error={typeError}
+          {...register("type")}
+        />
+
+        {unitOptions ? (
+          <Select
+            label="Unidade"
+            placeholder="Selecione uma unidade"
+            options={[
+              { value: NO_DOCUMENT_UNIT, label: "Sem unidade associada" },
+              ...unitOptions,
+            ]}
+            disabled={isLoading || unitOptions.length === 0}
+            error={unitError}
+            {...register("unitId")}
+          />
+        ) : null}
 
         <FileUpload
           label="Arquivo"

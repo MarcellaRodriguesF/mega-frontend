@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import Drawer from "@/components/layout/Drawer/Drawer";
 import Button from "@/components/ui/Button/Button";
+import type { SelectOption } from "@/components/ui/Select/Select";
 
 import ProviderDocumentForm from "../ProviderDocumentForm/ProviderDocumentForm";
 
@@ -11,7 +12,14 @@ import type {
   ProviderDocumentFormData,
   ProviderDocumentFormInput,
 } from "@/features/providers/schemas/provider-document.schema";
-import type { ProviderDocument } from "@/services/api/providers/providers.types";
+interface DocumentFormRecord {
+  id: string;
+  name: string;
+  type: string | null;
+  unitId?: string | null;
+  fileName: string;
+  observations: string | null;
+}
 
 interface ProviderDocumentDrawerProps {
   open: boolean;
@@ -19,7 +27,9 @@ interface ProviderDocumentDrawerProps {
   onSubmit: (data: ProviderDocumentFormData) => void | Promise<void>;
   isLoading?: boolean;
   mode?: "create" | "edit";
-  document?: ProviderDocument;
+  document?: DocumentFormRecord;
+  unitOptions?: SelectOption[];
+  entityLabel?: "provedor" | "empresa";
 }
 
 export default function ProviderDocumentDrawer({
@@ -29,6 +39,8 @@ export default function ProviderDocumentDrawer({
   isLoading = false,
   mode = "create",
   document,
+  unitOptions,
+  entityLabel = "provedor",
 }: ProviderDocumentDrawerProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,6 +50,8 @@ export default function ProviderDocumentDrawer({
   const initialData: ProviderDocumentFormInput | undefined = document
     ? {
         name: document.name,
+        type: document.type ?? "",
+        unitId: document.unitId ?? "__no_unit__",
         file: null,
         observations: document.observations ?? "",
       }
@@ -60,7 +74,7 @@ export default function ProviderDocumentDrawer({
       description={
         isEditing
           ? "Atualize os dados deste documento."
-          : "Preencha os dados para adicionar um documento ao provedor."
+          : `Preencha os dados para adicionar um documento ${entityLabel === "empresa" ? "à empresa" : "ao provedor"}.`
       }
       footer={
         <>
@@ -87,6 +101,7 @@ export default function ProviderDocumentDrawer({
         initialData={initialData}
         requireFile={!isEditing}
         currentFileName={document?.fileName}
+        unitOptions={unitOptions}
       />
     </Drawer>
   );

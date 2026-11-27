@@ -13,7 +13,7 @@ import {
   UnitStatusLabel,
 } from "@/constants/enums/units/unit-status.enum";
 
-import { UnitTypeLabel } from "@/constants/enums/units/unit-type.enum";
+import { UnitType, UnitTypeLabel } from "@/constants/enums/units/unit-type.enum";
 
 import type { Unit } from "@/services/api/units/units.types";
 
@@ -37,7 +37,9 @@ export default function UnitList({ units, isLoading }: UnitListProps) {
 
   const filteredUnits = useMemo(() => {
     const normalizedSearch = normalizeText(search);
-    const byStatus = status ? units.filter((unit) => unit.status === status) : units;
+    const byStatus = status
+      ? units.filter((unit) => unit.status === status)
+      : units;
 
     if (!normalizedSearch) return byStatus;
 
@@ -53,7 +55,7 @@ export default function UnitList({ units, isLoading }: UnitListProps) {
       ];
 
       return searchableFields.some((field) =>
-        normalizeText(String(field)).includes(normalizedSearch)
+        normalizeText(String(field)).includes(normalizedSearch),
       );
     });
   }, [units, search, status]);
@@ -63,7 +65,7 @@ export default function UnitList({ units, isLoading }: UnitListProps) {
       columns={[
         {
           key: "name",
-          header: "Usina",
+          header: "Unidade",
           sortable: true,
           mobileRole: "title",
           render: (unit) => unit.name,
@@ -78,8 +80,16 @@ export default function UnitList({ units, isLoading }: UnitListProps) {
           key: "type",
           header: "Tipo",
           sortable: true,
-          render: (unit) =>
-            UnitTypeLabel[unit.type as keyof typeof UnitTypeLabel] ?? unit.type,
+          render: (unit) => {
+            const type = unit.type as UnitType;
+
+            return (
+              <StatusBadge
+                label={UnitTypeLabel[type] ?? unit.type}
+                color="green"
+              />
+            );
+          },
         },
         {
           key: "address",
@@ -119,8 +129,14 @@ export default function UnitList({ units, isLoading }: UnitListProps) {
           onChange: (value) => setStatus(value as "" | UnitStatus),
           options: [
             { value: "", label: "Todos" },
-            { value: UnitStatus.ACTIVE, label: UnitStatusLabel[UnitStatus.ACTIVE] },
-            { value: UnitStatus.INACTIVE, label: UnitStatusLabel[UnitStatus.INACTIVE] },
+            {
+              value: UnitStatus.ACTIVE,
+              label: UnitStatusLabel[UnitStatus.ACTIVE],
+            },
+            {
+              value: UnitStatus.INACTIVE,
+              label: UnitStatusLabel[UnitStatus.INACTIVE],
+            },
           ],
         },
       ]}

@@ -69,7 +69,7 @@ export default function TemplatesPage() {
     <PageContainer>
       <PageHeader
         title="Templates"
-        description="Modelos globais de etapas, atividades e requisitos, compartilhados entre as empresas."
+        description="Modelos globais de etapas, atividades e requisitos, compartilhados entre as implantações e atividades."
         action={
           <>
             <Button

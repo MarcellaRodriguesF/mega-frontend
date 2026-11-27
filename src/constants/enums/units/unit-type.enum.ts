@@ -1,3 +1,5 @@
+import { StatusBadgeColor } from "@/components/ui/StatusBadge/StatusBadge";
+
 export const UnitType = {
   PHOTOVOLTAIC_PLANT: "PHOTOVOLTAIC_PLANT",
 } as const;
@@ -26,4 +28,14 @@ export function getUnitTypeLabel(type: string | null | undefined): string {
     .replace(/_/g, " ")
     .toLocaleLowerCase("pt-BR")
     .replace(/(^|\s)\S/g, (character) => character.toLocaleUpperCase("pt-BR"));
+}
+
+export function getUnitTypeColor(type: string): StatusBadgeColor {
+  const colors: Record<string, StatusBadgeColor> = {
+    SITE_CORPORATIVO: "blue",
+    USINA_FOTOVOLTAICA: "green",
+    PHOTOVOLTAIC_PLANT: "green",
+  };
+
+  return colors[type] ?? "gray";
 }

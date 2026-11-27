@@ -11,6 +11,12 @@ import IconButton from "@/components/ui/IconButton/IconButton";
 import Modal from "@/components/ui/Modal/Modal";
 import PageState from "@/components/ui/PageState/PageState";
 import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
+import Card from "@/components/ui/Card/Card";
+import Input from "@/components/ui/Input/Input";
+import Textarea from "@/components/ui/Textarea/Textarea";
+import Select from "@/components/ui/Select/Select";
+import CheckBoxInput from "@/components/ui/CheckBoxInput/CheckBoxInput";
+import FileUpload from "@/components/ui/FileUpload/FileUpload.tsx";
 import { PageContainer } from "@/components/layout/PageContainer/PageContainer";
 import PageHeader from "@/components/ui/PageHeader/PageHeader";
 
@@ -24,14 +30,14 @@ import {
   FormTemplateStatusColor,
   FormTemplateStatusLabel,
 } from "@/constants/enums/templates/form-template-status.enum";
-import { FormFieldTypeLabel } from "@/constants/enums/templates/form-field-type.enum";
+import { FormFieldType, FormFieldTypeLabel } from "@/constants/enums/templates/form-field-type.enum";
 import NamedItemForm from "@/features/templates/components/NamedItemForm/NamedItemForm";
 import { moveId } from "@/features/templates/template-utils";
 
 import FormFieldDrawer from "../FormFieldDrawer/FormFieldDrawer";
 import type { FormFieldFormInput } from "../../schemas/form-field-form.schema";
 
-import styles from "@/features/templates/components/TemplateEditor/TemplateEditor.module.css";
+import styles from "./FormTemplateEditor.module.css";
 
 interface FormTemplateEditorProps {
   formTemplateId: string;
@@ -57,6 +63,29 @@ function toFieldForm(field: FormField): FormFieldFormInput {
   };
 }
 
+function PreviewField({ field }: { field: FormField }) {
+  const id = `form-preview-${field.id}`;
+  const options = (field.options ?? []).map((option) => ({
+    value: option.value,
+    label: option.label,
+  }));
+
+  if (field.type === FormFieldType.TEXTAREA) {
+    return <Textarea id={id} label={field.label} placeholder={field.placeholder ?? undefined} required={field.isRequired} disabled />;
+  }
+  if (field.type === FormFieldType.SINGLE_SELECT || field.type === FormFieldType.MULTIPLE_SELECT) {
+    return <Select id={id} label={field.label} options={options} placeholder={field.placeholder || "Selecione uma opção"} required={field.isRequired} disabled multiple={field.type === FormFieldType.MULTIPLE_SELECT} />;
+  }
+  if (field.type === FormFieldType.CHECKBOX) {
+    return <CheckBoxInput id={id} label={field.label} required={field.isRequired} disabled checked={false} readOnly />;
+  }
+  if (field.type === FormFieldType.FILE) {
+    return <FileUpload label={field.label} file={null} onChange={() => undefined} required={field.isRequired} disabled helperText="Arquivo será anexado no preenchimento." />;
+  }
+
+  return <Input id={id} label={field.label} type={field.type === FormFieldType.NUMBER ? "number" : field.type === FormFieldType.DATE ? "date" : "text"} placeholder={field.placeholder ?? undefined} required={field.isRequired} disabled />;
+}
+
 export default function FormTemplateEditor({ formTemplateId }: FormTemplateEditorProps) {
   const router = useRouter();
   const toast = useToast();
@@ -65,6 +94,7 @@ export default function FormTemplateEditor({ formTemplateId }: FormTemplateEdito
   const [pendingDelete, setPendingDelete] = useState<FormField | "form" | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isStatusUpdating, setIsStatusUpdating] = useState(false);
+  const [isReordering, setIsReordering] = useState(false);
 
   const formQuery = useQuery({
     queryKey: ["form-template", formTemplateId],
@@ -129,6 +159,22 @@ export default function FormTemplateEditor({ formTemplateId }: FormTemplateEdito
     }
   }
 
+  async function reorderField(fieldId: string, direction: -1 | 1) {
+    if (!formTemplate) return;
+    const ids = moveId(formTemplate.fields.map((field) => field.id), fieldId, direction);
+    if (!ids) return;
+
+    try {
+      setIsReordering(true);
+      await formTemplatesApi.reorderFields(formTemplateId, { ids });
+      await refresh();
+    } catch (error) {
+      toast.error(errorMessage(error, "Não foi possível reordenar os campos."));
+    } finally {
+      setIsReordering(false);
+    }
+  }
+
   if (formQuery.isLoading) {
     return (
       <PageContainer>
@@ -155,7 +201,7 @@ export default function FormTemplateEditor({ formTemplateId }: FormTemplateEdito
         title={formTemplate.name}
         description="Edite o formulário reutilizável e a ordem dos seus campos."
         action={
-          <>
+          <div className={styles.headerActions}>
             <Link className={styles.link} href="/form-templates">
               Voltar
             </Link>
@@ -172,19 +218,15 @@ export default function FormTemplateEditor({ formTemplateId }: FormTemplateEdito
               }
             />
             <Button variant="outline" text="Excluir" onClick={() => setPendingDelete("form")} />
-          </>
+          </div>
         }
       />
 
-      <div className={styles.statusRow}>
-        <StatusBadge
-          label={FormTemplateStatusLabel(formTemplate.status)}
-          color={FormTemplateStatusColor(formTemplate.status)}
-        />
-      </div>
-
       <section className={styles.panel}>
-        <h2>Informações gerais</h2>
+        <div className={styles.sectionHeading}>
+          <div><h2>Informações do formulário</h2><p>Modelo reutilizável para atividades operacionais.</p></div>
+          <StatusBadge label={FormTemplateStatusLabel(formTemplate.status)} color={FormTemplateStatusColor(formTemplate.status)} />
+        </div>
         <NamedItemForm
           key={`${formTemplate.id}-${formTemplate.updatedAt}`}
           formId="form-template-general"
@@ -207,6 +249,7 @@ export default function FormTemplateEditor({ formTemplateId }: FormTemplateEdito
         </div>
       </section>
 
+      <div className={styles.builderLayout}>
       <section className={styles.panel}>
         <div className={styles.sectionHeader}>
           <div>
@@ -217,65 +260,37 @@ export default function FormTemplateEditor({ formTemplateId }: FormTemplateEdito
         </div>
 
         {formTemplate.fields.length === 0 ? (
-          <p className={styles.empty}>Nenhum campo cadastrado.</p>
+          <div className={styles.emptyState}><p>Comece adicionando o primeiro campo que será preenchido nas atividades.</p><Button text="Adicionar primeiro campo" onClick={() => setFieldDrawer("new")} /></div>
         ) : (
-          <div className={styles.stack}>
-            {formTemplate.fields.map((field) => (
-              <article className={styles.requirement} key={field.id}>
-                <div>
-                  <strong>
-                    {field.label} · {FormFieldTypeLabel(field.type)}
-                    {field.isRequired ? " · Obrigatório" : ""}
-                  </strong>
-                  <p>
-                    {field.key}
-                    {field.options?.length
-                      ? ` · ${field.options.map((option) => option.label).join(", ")}`
-                      : ""}
-                  </p>
+          <ol className={styles.fieldList}>
+            {formTemplate.fields.map((field, index) => (
+              <li className={styles.fieldItem} key={field.id}>
+                <div className={styles.fieldOrder} aria-label={`Campo ${index + 1}`}>{index + 1}</div>
+                <div className={styles.fieldContent}>
+                  <div className={styles.fieldTitle}><strong>{field.label}</strong><StatusBadge label={FormFieldTypeLabel(field.type)} color="gray" />{field.isRequired ? <StatusBadge label="Obrigatório" color="blue" /> : null}</div>
+                  <p>Chave: <code>{field.key}</code>{field.options?.length ? ` · Opções: ${field.options.map((option) => option.label).join(", ")}` : ""}</p>
+                  {field.description ? <p>{field.description}</p> : null}
                 </div>
-                <div className={styles.actions}>
+                <div className={styles.fieldActions} aria-label={`Ações do campo ${field.label}`}>
                   <button
                     type="button"
-                    className={styles.iconAction}
                     aria-label="Mover campo para cima"
-                    onClick={async () => {
-                      const ids = moveId(
-                        formTemplate.fields.map((item) => item.id),
-                        field.id,
-                        -1,
-                      );
-                      if (!ids) return;
-                      try {
-                        await formTemplatesApi.reorderFields(formTemplateId, { ids });
-                        await refresh();
-                      } catch (error) {
-                        toast.error(errorMessage(error, "Não foi possível reordenar os campos."));
-                      }
-                    }}
+                    className={styles.orderButton}
+                    disabled={index === 0 || isReordering}
+                    onClick={() => void reorderField(field.id, -1)}
                   >
                     <CaretUp size={16} />
+                    <span>Subir</span>
                   </button>
                   <button
                     type="button"
-                    className={styles.iconAction}
                     aria-label="Mover campo para baixo"
-                    onClick={async () => {
-                      const ids = moveId(
-                        formTemplate.fields.map((item) => item.id),
-                        field.id,
-                        1,
-                      );
-                      if (!ids) return;
-                      try {
-                        await formTemplatesApi.reorderFields(formTemplateId, { ids });
-                        await refresh();
-                      } catch (error) {
-                        toast.error(errorMessage(error, "Não foi possível reordenar os campos."));
-                      }
-                    }}
+                    className={styles.orderButton}
+                    disabled={index === formTemplate.fields.length - 1 || isReordering}
+                    onClick={() => void reorderField(field.id, 1)}
                   >
                     <CaretDown size={16} />
+                    <span>Descer</span>
                   </button>
                   <IconButton
                     action="edit"
@@ -290,11 +305,16 @@ export default function FormTemplateEditor({ formTemplateId }: FormTemplateEdito
                     onClick={() => setPendingDelete(field)}
                   />
                 </div>
-              </article>
+              </li>
             ))}
-          </div>
+          </ol>
         )}
       </section>
+
+      <Card title="Prévia do formulário" description="Visualização de referência dos campos que serão apresentados no preenchimento." display="default">
+        {formTemplate.fields.length === 0 ? <p className={styles.previewEmpty}>A prévia aparecerá quando você adicionar campos.</p> : <div className={styles.previewFields}>{formTemplate.fields.map((field) => <PreviewField key={field.id} field={field} />)}</div>}
+      </Card>
+      </div>
 
       <FormFieldDrawer
         open={fieldDrawer !== null}

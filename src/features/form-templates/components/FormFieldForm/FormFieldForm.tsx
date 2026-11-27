@@ -1,6 +1,6 @@
 "use client";
 
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import Button from "@/components/ui/Button/Button";
@@ -50,7 +50,6 @@ export default function FormFieldForm({
     register,
     control,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<FormFieldFormInput, unknown, FormFieldFormData>({
     resolver: zodResolver(formFieldFormSchema),
@@ -62,19 +61,12 @@ export default function FormFieldForm({
     name: "options",
   });
 
-  const type = watch("type");
+  const type = useWatch({ control, name: "type" });
   const showOptions = fieldTypeUsesOptions(type);
+  const showPlaceholder = ![FormFieldType.CHECKBOX, FormFieldType.FILE].includes(type);
 
   return (
     <form id={formId} className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
-      <Input
-        label="Chave"
-        placeholder="Ex.: tipo_cabo"
-        required
-        disabled={isLoading}
-        error={errors.key?.message}
-        {...register("key")}
-      />
       <Input
         label="Rótulo"
         placeholder="Ex.: Tipo do cabo"
@@ -82,12 +74,6 @@ export default function FormFieldForm({
         disabled={isLoading}
         error={errors.label?.message}
         {...register("label")}
-      />
-      <Textarea
-        label="Descrição"
-        disabled={isLoading}
-        error={errors.description?.message}
-        {...register("description")}
       />
       <Select
         label="Tipo"
@@ -98,11 +84,16 @@ export default function FormFieldForm({
         {...register("type")}
       />
       <Input
-        label="Placeholder"
+        label="Chave técnica"
+        placeholder="Ex.: tipo_cabo"
+        helperText="Identificador usado pelo sistema para reconhecer este campo."
+        required
         disabled={isLoading}
-        error={errors.placeholder?.message}
-        {...register("placeholder")}
+        error={errors.key?.message}
+        {...register("key")}
       />
+      <Textarea label="Descrição" disabled={isLoading} error={errors.description?.message} {...register("description")} />
+      {showPlaceholder ? <Input label="Texto de orientação" disabled={isLoading} error={errors.placeholder?.message} {...register("placeholder")} /> : null}
       <label className={styles.check}>
         <input type="checkbox" disabled={isLoading} {...register("isRequired")} />
         Campo obrigatório

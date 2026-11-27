@@ -23,10 +23,10 @@ import type { Unit } from "@/services/api/units/units.types";
 
 const unitTabs = [
   { value: "general", label: "Geral" },
-  { value: "installations", label: "Implantações", disabled: true },
-  { value: "connectivity", label: "Conectividade", disabled: true },
-  { value: "documents", label: "Documentos", disabled: true },
-  { value: "history", label: "Histórico", disabled: true },
+  { value: "installations", label: "Implantações" },
+  { value: "connectivity", label: "Conectividade" },
+  { value: "documents", label: "Documentos" },
+  { value: "history", label: "Histórico" },
 ];
 
 function getPageState(statusCode?: number): PageStateType {
@@ -91,7 +91,7 @@ export default function UnitDetailsLayout({
     "general";
 
   function handleTabChange(value: string) {
-    router.push(`/plants/${params.id}/${value}`);
+    router.push(`/units/${params.id}/${value}`);
   }
 
   const page = (

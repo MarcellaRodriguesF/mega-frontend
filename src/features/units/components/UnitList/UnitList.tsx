@@ -13,7 +13,12 @@ import {
   UnitStatusLabel,
 } from "@/constants/enums/units/unit-status.enum";
 
-import { UnitType, UnitTypeLabel } from "@/constants/enums/units/unit-type.enum";
+import {
+  getUnitTypeColor,
+  getUnitTypeLabel,
+  UnitType,
+  UnitTypeLabel,
+} from "@/constants/enums/units/unit-type.enum";
 
 import type { Unit } from "@/services/api/units/units.types";
 
@@ -80,16 +85,12 @@ export default function UnitList({ units, isLoading }: UnitListProps) {
           key: "type",
           header: "Tipo",
           sortable: true,
-          render: (unit) => {
-            const type = unit.type as UnitType;
-
-            return (
-              <StatusBadge
-                label={UnitTypeLabel[type] ?? unit.type}
-                color="green"
-              />
-            );
-          },
+          render: (unit) => (
+            <StatusBadge
+              label={getUnitTypeLabel(unit.type)}
+              color={getUnitTypeColor(unit.type)}
+            />
+          ),
         },
         {
           key: "address",

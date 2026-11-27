@@ -1,0 +1,119 @@
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-2);
+}
+
+.contextGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--spacing-4);
+}
+
+.assignmentList,
+.requirementList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.assignment {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.assignment strong {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.assignForm,
+.moveForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-4);
+}
+
+.emptyAssignments {
+  margin: 0;
+  padding: var(--spacing-3);
+  color: var(--color-text-secondary);
+  background: var(--color-muted-surface);
+  border-radius: var(--radius-md);
+}
+
+.requirement {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.requirement p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.requirementHeading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+}
+
+.secondaryActions {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.secondaryActions > summary {
+  padding: var(--spacing-4);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.secondaryActions[open] > summary {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.secondaryActions > :global(div) {
+  margin: var(--spacing-4);
+}
+
+@media (max-width: 900px) {
+  .contextGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .headerActions {
+    justify-content: flex-start;
+  }
+
+  .contextGrid,
+  .assignForm,
+  .moveForm {
+    grid-template-columns: 1fr;
+  }
+
+  .assignment strong {
+    flex-basis: 100%;
+  }
+}

@@ -1076,7 +1076,7 @@ export default function TemplateEditor({ templateId }: TemplateEditorProps) {
       <Modal
         open={impactOpen}
         title="Salvar template publicado"
-        description="Este template está publicado e é compartilhado entre as empresas. As alterações poderão valer para futuras implantações que usarem este template. Implantações já criadas não são alteradas, porque cada uma utiliza a própria cópia da estrutura."
+        description="Este template está publicado e é compartilhado entre as atividades e implantações. As alterações poderão valer para futuras implantações que usarem este template. Implantações já criadas não são alteradas, porque cada uma utiliza a própria cópia da estrutura."
         confirmText="Continuar"
         variant="info"
         isLoading={isSaving}

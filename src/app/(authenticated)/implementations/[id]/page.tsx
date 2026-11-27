@@ -45,6 +45,8 @@ import {
   ImplementationWorkStatusColor,
   ImplementationWorkStatusLabel,
 } from "@/constants/enums/implementations/implementation-work-status.enum";
+import { ActivityRequirementTypeLabel } from "@/constants/enums/templates/activity-requirement-type.enum";
+import { EvidenceTypeLabel } from "@/constants/enums/templates/evidence-type";
 import UnitContextCard from "@/features/implementations/components/UnitContextCard/UnitContextCard";
 import { activitiesApi } from "@/services/api/activities/activities.api";
 import { ApiError } from "@/services/api/api-client";
@@ -580,6 +582,9 @@ export default function ImplementationDetailsPage({
                             </div>
                           ) : null}
                         </div>
+                      <div className={styles.stageMeter}>
+                        <progress value={getProgress(stage.activities)} max={100} aria-label={`Progresso da etapa ${stage.name}`} />
+                      </div>
                         {expanded ? (
                           <div className={styles.stageContent}>
                             {stage.activities.length ? (
@@ -589,7 +594,6 @@ export default function ImplementationDetailsPage({
                                 getItem={getActivityListItem}
                                 renderActions={(activity) => (
                                   <div className={styles.listActions}>
-                                    <StatusBadge label={ImplementationWorkStatusLabel(activity.status)} color={ImplementationWorkStatusColor(activity.status)} />
                                     {canUpdateActivity ? <Button variant="outline" text="Editar" onClick={() => { setEditingActivity(activity); setActivityName(activity.name); setActivityDescription(activity.description || ""); setDrawer("editActivity"); }} /> : null}
                                     <Link href={`/activities/${activity.id}`}>Abrir</Link>
                                   </div>
@@ -618,7 +622,6 @@ export default function ImplementationDetailsPage({
                     getItem={getActivityListItem}
                     renderActions={(activity) => (
                       <div className={styles.listActions}>
-                        <StatusBadge label={ImplementationWorkStatusLabel(activity.status)} color={ImplementationWorkStatusColor(activity.status)} />
                         {canUpdateActivity ? <Button variant="outline" text="Editar" onClick={() => { setEditingActivity(activity); setActivityName(activity.name); setActivityDescription(activity.description || ""); setDrawer("editActivity"); }} /> : null}
                         <Link href={`/activities/${activity.id}`}>Abrir</Link>
                       </div>
@@ -712,15 +715,16 @@ export default function ImplementationDetailsPage({
 }
 
 function getActivityListItem(activity: ImplementationActivity) {
-  const assignments = activity.assignments.map((item) => item.userName);
+  const assignments = activity.assignments.map((item) => `${item.userName} (${item.role === "SUPERVISOR" ? "Supervisor" : "Executor"})`);
+  const requirements = activity.requirements.map((item) => `${ActivityRequirementTypeLabel(item.type)}${item.isRequired ? (["EVIDENCE", "FORM", "QUANTITY", "ENGINEER_APPROVAL"].includes(item.type) ? " obrigatória" : " obrigatório") : " opcional"}`);
   const evidenceTypes = activity.requirements.flatMap((item) =>
-    item.evidenceTypes.map((evidence) => evidence.type),
+    item.evidenceTypes.map((evidence) => EvidenceTypeLabel(evidence.type)),
   );
   const forms = activity.formSnapshots.map((form) => form.name);
   return {
     title: <Link href={`/activities/${activity.id}`}>{activity.name}</Link>,
-    subtitle: `${ImplementationWorkStatusLabel(activity.status)} · ${assignments.length ? assignments.join(", ") : "Sem responsável"}`,
-    description: `${activity.description ? `${activity.description} · ` : ""}${evidenceTypes.length ? `Evidências: ${evidenceTypes.join(", ")}` : "Sem evidências exigidas"}${forms.length ? ` · Formulários: ${forms.join(", ")}` : ""}`,
+    subtitle: <span className={styles.activitySubtitle}><StatusBadge label={ImplementationWorkStatusLabel(activity.status)} color={ImplementationWorkStatusColor(activity.status)} /> <span>{assignments.length ? `Responsáveis: ${assignments.join(", ")}` : "Nenhum responsável atribuído"}</span></span>,
+    description: `${activity.description ? `${activity.description} · ` : ""}${requirements.length ? `Requisitos: ${requirements.join(", ")}` : "Sem requisitos configurados"}${evidenceTypes.length ? ` · Evidências aceitas: ${[...new Set(evidenceTypes)].join(", ")}` : ""}${forms.length ? ` · Formulários: ${forms.join(", ")}` : ""}`,
   };
 }
 

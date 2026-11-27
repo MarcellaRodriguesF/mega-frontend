@@ -68,6 +68,17 @@
   padding: var(--spacing-2) var(--spacing-3);
 }
 
+.stageMeter {
+  padding: 0 var(--spacing-5) var(--spacing-2);
+}
+
+.stageMeter progress {
+  display: block;
+  width: 100%;
+  height: 6px;
+  accent-color: var(--color-primary);
+}
+
 .stageToggle {
   display: flex;
   flex: 1;
@@ -123,6 +134,7 @@
 
 .listActions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--spacing-2);
 }
@@ -131,6 +143,13 @@
   color: var(--color-primary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
+}
+
+.activitySubtitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2);
 }
 
 .note {

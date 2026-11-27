@@ -29,7 +29,7 @@ interface ProviderDocumentDrawerProps {
   mode?: "create" | "edit";
   document?: DocumentFormRecord;
   unitOptions?: SelectOption[];
-  entityLabel?: "provedor" | "empresa";
+  entityLabel?: "provedor" | "empresa" | "unidade";
 }
 
 export default function ProviderDocumentDrawer({
@@ -74,7 +74,7 @@ export default function ProviderDocumentDrawer({
       description={
         isEditing
           ? "Atualize os dados deste documento."
-          : `Preencha os dados para adicionar um documento ${entityLabel === "empresa" ? "à empresa" : "ao provedor"}.`
+          : `Preencha os dados para adicionar um documento ${entityLabel === "empresa" ? "à empresa" : entityLabel === "unidade" ? "à unidade" : "ao provedor"}.`
       }
       footer={
         <>

@@ -1,0 +1,192 @@
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-2);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.panel h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+}
+
+.sectionHeading,
+.sectionHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+}
+
+.sectionHeading p,
+.sectionHeader p {
+  margin: var(--spacing-1) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.builderLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+  align-items: start;
+  gap: var(--section-gap);
+}
+
+.fieldList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fieldItem {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.fieldOrder {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--color-muted-surface);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.fieldContent {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.fieldTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.fieldContent p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.fieldContent code {
+  font-size: var(--font-size-xs);
+}
+
+.fieldActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--spacing-1);
+}
+
+.orderButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--spacing-1) var(--spacing-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+}
+
+.orderButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.emptyState,
+.previewEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  margin: 0;
+  padding: var(--spacing-4);
+  border-radius: var(--radius-md);
+  background: var(--color-muted-surface);
+  color: var(--color-text-secondary);
+}
+
+.previewEmpty {
+  display: block;
+}
+
+.previewFields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+@media (max-width: 900px) {
+  .builderLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .panel {
+    padding: var(--spacing-3);
+  }
+
+  .headerActions {
+    justify-content: flex-start;
+  }
+
+  .fieldItem {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+
+  .fieldActions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    padding-top: var(--spacing-2);
+    border-top: 1px solid var(--color-border);
+  }
+}

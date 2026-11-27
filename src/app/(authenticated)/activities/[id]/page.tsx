@@ -13,9 +13,13 @@ import PageHeader from "@/components/ui/PageHeader/PageHeader";
 import PageState from "@/components/ui/PageState/PageState";
 import Select from "@/components/ui/Select/Select";
 import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
+import InfoCardGrid from "@/components/ui/InfoCardGrid/InfoCardGrid";
+import CheckBoxInput from "@/components/ui/CheckBoxInput/CheckBoxInput";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import { PERMISSIONS } from "@/constants/enums/permissions";
+import { ActivityRequirementTypeLabel } from "@/constants/enums/templates/activity-requirement-type.enum";
+import { EvidenceTypeLabel } from "@/constants/enums/templates/evidence-type";
 import {
   ImplementationWorkStatusColor,
   ImplementationWorkStatusLabel,
@@ -26,7 +30,7 @@ import { ApiError } from "@/services/api/api-client";
 import { getApiErrorMessage } from "@/services/api/error-messages";
 import { implementationsApi } from "@/services/api/implementations/implementations.api";
 
-import styles from "../../implementations/[id]/page.module.css";
+import styles from "./page.module.css";
 
 const roleLabel = {
   EXECUTOR: "Executor",
@@ -145,15 +149,15 @@ export default function ActivityDetailsPage({
         title={activity.name}
         description={activity.description || "Atividade operacional."}
         action={
-          <div className={styles.actions}>
+          <div className={styles.headerActions}>
             <StatusBadge
               label={ImplementationWorkStatusLabel(activity.status)}
               color={ImplementationWorkStatusColor(activity.status)}
             />
-            {canExecute && activity.status !== "COMPLETED" ? (
+            {canExecute && activity.status === "NOT_STARTED" ? (
               <Button
                 text="Iniciar"
-                disabled={busy || activity.status === "IN_PROGRESS"}
+                disabled={busy}
                 onClick={() =>
                   run(() => activitiesApi.start(id), "Execução iniciada.", "Não foi possível iniciar.")
                 }
@@ -161,6 +165,7 @@ export default function ActivityDetailsPage({
             ) : null}
             {canComplete && activity.status !== "COMPLETED" ? (
               <Button
+                variant={activity.status === "IN_PROGRESS" ? "primary" : "secondary"}
                 text="Concluir"
                 disabled={busy}
                 onClick={() =>
@@ -177,37 +182,27 @@ export default function ActivityDetailsPage({
         }
       />
 
-      <Card title="Contexto">
-        <InfoField
-          label="Implantação"
-          value={
-            activity.implementation ? (
-              <Link href={`/implementations/${activity.implementation.id}`}>
-                {activity.implementation.name}
-              </Link>
-            ) : (
-              "Independente"
-            )
-          }
-        />
-        <InfoField label="Etapa" value={activity.stage?.name || "Sem etapa"} />
-        <InfoField label="Cliente" value={activity.companyTradeName || "Não informado"} />
-        <InfoField label="Unidade" value={activity.unitName || "Não informada"} />
+      <Card title="Contexto da atividade" display="default">
+        <InfoCardGrid className={styles.contextGrid}>
+          <InfoField label="Implantação" value={activity.implementation ? <Link href={`/implementations/${activity.implementation.id}`}>{activity.implementation.name}</Link> : "Independente"} />
+          <InfoField label="Cliente" value={activity.companyTradeName || "Não informado"} />
+          <InfoField label="Unidade" value={activity.unitName || "Não informada"} />
+          <InfoField label="Etapa" value={activity.stage?.name || "Sem etapa"} />
+        </InfoCardGrid>
       </Card>
 
-      <Card title="Responsáveis">
+      <Card title="Responsáveis e executores" display="default" description="Usuários atribuídos e seus papéis nesta atividade.">
         {activity.assignments.length === 0 ? (
-          <p>Nenhum responsável atribuído.</p>
+          <p className={styles.emptyAssignments}>Ainda não há usuários atribuídos a esta atividade.</p>
         ) : (
-          activity.assignments.map((assignment) => (
-            <div className={styles.actions} key={assignment.id}>
-              <span>
-                {assignment.userName} · {roleLabel[assignment.role]}
-              </span>
+          <div className={styles.assignmentList}>{activity.assignments.map((assignment) => (
+            <div className={styles.assignment} key={assignment.id}>
+              <strong>{assignment.userName}</strong>
+              <StatusBadge label={roleLabel[assignment.role]} color={assignment.role === "SUPERVISOR" ? "purple" : "blue"} />
               {canAssign ? (
                 <Button
                   variant="outline"
-                  text="Remover"
+                  text="Remover atribuição"
                   disabled={busy}
                   onClick={() =>
                     run(
@@ -219,10 +214,10 @@ export default function ActivityDetailsPage({
                 />
               ) : null}
             </div>
-          ))
+          ))}</div>
         )}
         {canAssign ? (
-          <div className={styles.actions}>
+          <div className={styles.assignForm}>
             <Select
               label="Usuário"
               value={userId}
@@ -256,28 +251,35 @@ export default function ActivityDetailsPage({
         ) : null}
       </Card>
 
-      <Card title="Requisitos e formulários">
-        {activity.requirements.length === 0 ? <p>Sem requisitos.</p> : null}
-        {activity.requirements.map((requirement) => (
-          <p key={requirement.id}>
-            {requirement.type}
-            {requirement.isRequired ? " · obrigatório" : " · opcional"}
-          </p>
-        ))}
-        {activity.formSnapshots.map((form) => (
-          <p key={form.id}>
-            {form.name} · {form.fields.length} campo(s). O preenchimento ainda não está disponível.
-          </p>
-        ))}
+      <Card title="Requisitos e formulários" display="default" description="Critérios configurados para a conclusão da atividade.">
+        {activity.requirements.length === 0 && activity.formSnapshots.length === 0 ? <p className={styles.emptyAssignments}>Esta atividade não possui requisitos ou formulários vinculados.</p> : null}
+        <div className={styles.requirementList}>
+          {activity.requirements.map((requirement) => (
+            <article className={styles.requirement} key={requirement.id}>
+              <div className={styles.requirementHeading}>
+                <strong>{ActivityRequirementTypeLabel(requirement.type)}</strong>
+                <StatusBadge label={requirement.isRequired ? "Obrigatório" : "Opcional"} color={requirement.isRequired ? "blue" : "gray"} />
+              </div>
+              {requirement.evidenceTypes.length > 0 ? <p>Tipos aceitos: {requirement.evidenceTypes.map((item) => EvidenceTypeLabel(item.type)).join(", ")}</p> : null}
+              {requirement.formSnapshot ? <p>Formulário: {requirement.formSnapshot.sourceFormTemplateId ? <Link href={`/form-templates/${requirement.formSnapshot.sourceFormTemplateId}`}>{requirement.formSnapshot.name}</Link> : requirement.formSnapshot.name}</p> : null}
+            </article>
+          ))}
+          {activity.formSnapshots.map((form) => (
+            <article className={styles.requirement} key={form.id}>
+              <div className={styles.requirementHeading}><strong>{form.name}</strong><StatusBadge label="Formulário" color="purple" /></div>
+              <p>{form.fields.length} {form.fields.length === 1 ? "campo configurado" : "campos configurados"}. O preenchimento deste formulário ainda não está disponível nesta tela.</p>
+              {form.sourceFormTemplateId ? <Link href={`/form-templates/${form.sourceFormTemplateId}`}>Acessar formulário reutilizável</Link> : null}
+            </article>
+          ))}
+        </div>
       </Card>
 
       {canLink ? (
-        <Card
-          title={activity.independent ? "Vincular a uma implantação" : "Mover ou desvincular"}
-          description="O vínculo usa a mesma atividade. Uma atividade concluída exige confirmação explícita."
-        >
+        <details className={styles.secondaryActions}>
+          <summary>{activity.independent ? "Vincular a uma implantação" : "Movimentar ou desvincular atividade"}</summary>
+          <Card title={activity.independent ? "Vínculo da atividade" : "Destino da atividade"} display="default" description="A atividade mantém seus dados e identificador durante a movimentação.">
           {activity.independent && hasPermission(PERMISSIONS.IMPLEMENTATIONS) ? (
-            <div className={styles.actions}>
+            <div className={styles.moveForm}>
               <Select
                 label="Implantação"
                 value={implementationId}
@@ -287,17 +289,10 @@ export default function ActivityDetailsPage({
                 }))}
                 onChange={(event) => setImplementationId(event.target.value)}
               />
-              <label>
-                <input
-                  type="checkbox"
-                  checked={acknowledgeCompleted}
-                  onChange={(event) => setAcknowledgeCompleted(event.target.checked)}
-                />{" "}
-                Confirmo a movimentação de atividade concluída
-              </label>
+              {activity.status === "COMPLETED" ? <CheckBoxInput label="Confirmo a movimentação desta atividade concluída" checked={acknowledgeCompleted} onChange={(event) => setAcknowledgeCompleted(event.target.checked)} /> : null}
               <Button
                 text="Vincular"
-                disabled={busy || !implementationId}
+                disabled={busy || !implementationId || (activity.status === "COMPLETED" && !acknowledgeCompleted)}
                 onClick={() =>
                   run(
                     () =>
@@ -315,7 +310,7 @@ export default function ActivityDetailsPage({
             </div>
           ) : null}
           {!activity.independent && activity.implementation ? (
-            <div className={styles.actions}>
+            <div className={styles.moveForm}>
               <Select
                 label="Mover nesta implantação"
                 value={stageId}
@@ -330,7 +325,7 @@ export default function ActivityDetailsPage({
               />
               <Button
                 text="Mover"
-                disabled={busy}
+                disabled={busy || (activity.status === "COMPLETED" && !acknowledgeCompleted)}
                 onClick={() =>
                   run(
                     () =>
@@ -348,7 +343,7 @@ export default function ActivityDetailsPage({
               <Button
                 variant="outline"
                 text="Desvincular"
-                disabled={busy}
+                disabled={busy || (activity.status === "COMPLETED" && !acknowledgeCompleted)}
                 onClick={() =>
                   run(
                     () =>
@@ -363,21 +358,13 @@ export default function ActivityDetailsPage({
               />
             </div>
           ) : null}
-          {activity.status === "COMPLETED" && !activity.independent ? (
-            <label>
-              <input
-                type="checkbox"
-                checked={acknowledgeCompleted}
-                onChange={(event) => setAcknowledgeCompleted(event.target.checked)}
-              />{" "}
-              Confirmo a desvinculação de atividade concluída
-            </label>
-          ) : null}
-        </Card>
+          {activity.status === "COMPLETED" && !activity.independent ? <CheckBoxInput label="Confirmo a movimentação desta atividade concluída" checked={acknowledgeCompleted} onChange={(event) => setAcknowledgeCompleted(event.target.checked)} /> : null}
+          </Card>
+        </details>
       ) : null}
 
       {activity.placements.length > 0 ? (
-        <Card title="Histórico de posicionamento">
+        <Card title="Histórico de movimentação" display="default">
           {activity.placements.map((placement) => (
             <p key={placement.id}>
               {placement.fromImplementationName || "Independente"}

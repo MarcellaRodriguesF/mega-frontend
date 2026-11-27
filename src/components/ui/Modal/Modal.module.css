@@ -65,7 +65,7 @@
 }
 
 .infoIcon {
-  color: #2453e6;
+  color: var(--color-primary);
   background: #e3eaff;
   box-shadow: 0 0 0 7px #f0f3ff;
 }
@@ -119,11 +119,11 @@
 }
 
 .confirmButtonInfo {
-  background: #2853ed;
+  background: var(--color-primary);
 }
 
 .confirmButtonInfo:hover:not(:disabled) {
-  background: #1942d0;
+  background: var(--color-primary);
 }
 
 .cancelButton {

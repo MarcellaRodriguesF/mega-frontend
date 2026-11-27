@@ -1,11 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useParams } from "next/navigation";
 
 import Button from "@/components/ui/Button/Button";
+import IconButton from "@/components/ui/IconButton/IconButton";
+import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
+import AccessProfileDrawer from "@/features/access-profiles/components/AccessProfileDrawer/AccessProfileDrawer";
 import FormActions from "@/components/ui/FormActions/FormActions";
 import FormPageLayout from "@/components/layout/FormPageLayout/FormPageLayout";
+import { useDrawer } from "@/hooks/useDrawer";
 
 import PermissionGroup from "@/features/access-profiles/components/PermissionGroup/PermissionGroup";
 
@@ -15,7 +19,11 @@ import { getApiErrorMessage } from "@/services/api/error-messages";
 
 import { accessProfilesApi } from "@/services/api/access-profiles/access-profiles.api";
 
-import { UserStatus } from "@/constants/enums/users/user-status-record.enum";
+import {
+  UserStatus,
+  UserStatusColor,
+  UserStatusLabel,
+} from "@/constants/enums/users/user-status-record.enum";
 
 import type {
   AccessProfile,
@@ -25,9 +33,6 @@ import type {
 import { useFormChanges } from "@/hooks/useFormChanges";
 
 import styles from "./page.module.css";
-import Input from "@/components/ui/Input/Input";
-import Textarea from "@/components/ui/Textarea/Textarea";
-import Select from "@/components/ui/Select/Select";
 
 interface ProfileFormData {
   name: string;
@@ -44,8 +49,8 @@ function normalizePermissionCodes(codes: string[]) {
 
 export default function AccessProfileDetailsPage() {
   const params = useParams<{ id: string }>();
-  const router = useRouter();
   const toast = useToast();
+  const { openDrawer, closeDrawer } = useDrawer();
 
   const profileId = params.id;
 
@@ -61,6 +66,7 @@ export default function AccessProfileDetailsPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const profileLoadRequestId = useRef(0);
 
   const currentData = useMemo<ProfileFormData>(
     () => ({
@@ -74,54 +80,75 @@ export default function AccessProfileDetailsPage() {
 
   const { isDirty } = useFormChanges(initialData, currentData);
 
-  const loadProfile = useCallback(async () => {
-    setIsLoading(true);
+  const loadProfile = useCallback(
+    async () => {
+      const requestId = ++profileLoadRequestId.current;
 
-    try {
-      const [profileResponse, permissionsResponse] = await Promise.all([
-        accessProfilesApi.findById(profileId),
-        accessProfilesApi.findPermissions(),
-      ]);
+      try {
+        const [profileResponse, permissionsResponse] = await Promise.all([
+          accessProfilesApi.findById(profileId),
+          accessProfilesApi.findPermissions(),
+        ]);
 
-      const loadedProfile = profileResponse.data;
+        if (requestId !== profileLoadRequestId.current) return;
 
-      const permissionCodes = normalizePermissionCodes(
-        loadedProfile.profilePermissions.map((item) => item.permission.code),
-      );
+        const loadedProfile = profileResponse.data;
 
-      const formData: ProfileFormData = {
-        name: loadedProfile.name,
-        description: loadedProfile.description ?? "",
-        status: loadedProfile.status,
-        permissionCodes,
-      };
+        const permissionCodes = normalizePermissionCodes(
+          loadedProfile.profilePermissions.map((item) => item.permission.code),
+        );
 
-      setProfile(loadedProfile);
-      setPermissions(permissionsResponse.data);
+        const formData: ProfileFormData = {
+          name: loadedProfile.name,
+          description: loadedProfile.description ?? "",
+          status: loadedProfile.status,
+          permissionCodes,
+        };
 
-      setName(formData.name);
-      setDescription(formData.description);
-      setStatus(formData.status);
-      setSelectedCodes(formData.permissionCodes);
+        setProfile(loadedProfile);
+        setPermissions(permissionsResponse.data);
 
-      setInitialData(formData);
-    } catch (error) {
-      const message =
-        error instanceof ApiError
-          ? getApiErrorMessage(error.code, error.message)
-          : "Não foi possível carregar o perfil de acesso.";
+        setName(formData.name);
+        setDescription(formData.description);
+        setStatus(formData.status);
+        setSelectedCodes(formData.permissionCodes);
 
-      toast.error(message, {
-        title: "Erro ao carregar perfil",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [profileId, toast]);
+        setInitialData(formData);
+      } catch (error) {
+        if (requestId !== profileLoadRequestId.current) return;
+
+        const message =
+          error instanceof ApiError
+            ? getApiErrorMessage(error.code, error.message)
+            : "Não foi possível carregar o perfil de acesso.";
+
+        toast.error(message, {
+          title: "Erro ao carregar perfil",
+        });
+      } finally {
+        if (requestId === profileLoadRequestId.current) setIsLoading(false);
+      }
+    },
+    [profileId, toast],
+  );
 
   useEffect(() => {
-    loadProfile();
+    let isActive = true;
+
+    queueMicrotask(() => {
+      if (isActive) void loadProfile();
+    });
+
+    return () => {
+      isActive = false;
+      profileLoadRequestId.current += 1;
+    };
   }, [loadProfile]);
+
+  function handleRetryProfileLoad() {
+    setIsLoading(true);
+    void loadProfile();
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -182,19 +209,69 @@ export default function AccessProfileDetailsPage() {
     setSelectedCodes(initialData.permissionCodes);
   }
 
-  function handleBack() {
-    if (isDirty) {
-      const shouldLeave = window.confirm(
-        "Existem alterações não salvas. Deseja sair sem salvar?",
+  async function handleUpdateProfileInfo(data: {
+    name: string;
+    description: string;
+    status?: UserStatus;
+  }) {
+    if (!profile || isSaving) return;
+
+    setIsSaving(true);
+
+    try {
+      const response = await accessProfilesApi.update(profile.id, {
+        name: data.name.trim(),
+        description: data.description.trim() || null,
+        status: data.status ?? profile.status,
+      });
+
+      const updatedProfile = response.data;
+      setProfile(updatedProfile);
+      setName(updatedProfile.name);
+      setDescription(updatedProfile.description ?? "");
+      setStatus(updatedProfile.status);
+      setInitialData((current) =>
+        current
+          ? {
+              ...current,
+              name: updatedProfile.name,
+              description: updatedProfile.description ?? "",
+              status: updatedProfile.status,
+            }
+          : current,
       );
 
-      if (!shouldLeave) return;
-    }
+      toast.success("As informações do perfil foram salvas.", {
+        title: "Perfil atualizado!",
+      });
+      closeDrawer();
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? getApiErrorMessage(error.code, error.message)
+          : "Não foi possível salvar as informações do perfil.";
 
-    router.push("/access-profiles");
+      toast.error(message, { title: "Erro ao atualizar perfil" });
+    } finally {
+      setIsSaving(false);
+    }
   }
 
-  if (isLoading) {
+  function handleOpenEditDrawer() {
+    if (!profile) return;
+
+    openDrawer(
+      <AccessProfileDrawer
+        open
+        profile={profile}
+        isLoading={isSaving}
+        onClose={closeDrawer}
+        onSubmit={handleUpdateProfileInfo}
+      />,
+    );
+  }
+
+  if (isLoading || profile?.id !== profileId) {
     return (
       <FormPageLayout
         title="Carregando perfil..."
@@ -211,63 +288,38 @@ export default function AccessProfileDetailsPage() {
         title="Perfil de acesso"
         description="Não foi possível carregar os dados deste perfil."
       >
-        <Button
-          text="Voltar para perfis"
-          onClick={() => router.push("/access-profiles")}
-        />
+        <Button text="Tentar novamente" onClick={handleRetryProfileLoad} />
       </FormPageLayout>
     );
   }
 
   return (
     <FormPageLayout
-      title="Editar perfil de acesso"
-      description="Gerencie os dados e as permissões deste perfil."
-      action={<Button text="Voltar" variant="secondary" onClick={handleBack} />}
+      title={profile.name}
+      description="Configure os módulos e as permissões disponíveis para este perfil."
+      action={
+        <div className={styles.pageActions}>
+          <IconButton
+            action="edit"
+            size="md"
+            label="Editar informações do perfil"
+            onClick={handleOpenEditDrawer}
+          />
+        </div>
+      }
     >
+      <section className={styles.profileSummary} aria-label="Dados do perfil">
+        <StatusBadge
+          label={UserStatusLabel(profile.status)}
+          color={UserStatusColor(profile.status)}
+        />
+        <p>{profile.description || "Sem descrição cadastrada."}</p>
+        <span className={styles.userCount}>
+          Usuários vinculados: <strong>{profile._count.users}</strong>
+        </span>
+      </section>
+
       <form id={FORM_ID} onSubmit={handleSubmit} className={styles.form}>
-        <section className={styles.section}>
-          <div className={styles.sectionHeader}>
-            <div>
-              <h2>Informações do perfil</h2>
-              <p>Defina a identificação e a finalidade deste perfil.</p>
-            </div>
-          </div>
-
-          <div className={styles.fields}>
-            <Input
-              label="Nome do perfil"
-              placeholder="Ex.: Administrador"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              maxLength={255}
-              required
-            />
-            <Select
-              label="Status"
-              value={status}
-              onChange={(event) => setStatus(event.target.value as UserStatus)}
-              options={[
-                { value: UserStatus.ACTIVE, label: "Ativo" },
-                { value: UserStatus.INACTIVE, label: "Inativo" },
-              ]}
-            />
-            <Textarea
-              label="Descrição"
-              placeholder="Descreva a finalidade deste perfil."
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              maxLength={255}
-              rows={3}
-            />
-          </div>
-          <div className={styles.profileMetadata}>
-            <span>
-              Usuários vinculados: <strong>{profile._count.users}</strong>
-            </span>
-          </div>
-        </section>
-
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <div>

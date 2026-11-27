@@ -30,6 +30,13 @@ export default function AccessProfileDrawer({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loading = isLoading || isSubmitting;
+  const formId = profile
+    ? `edit-access-profile-${profile.id}`
+    : "access-profile-form";
+
+  function handleClose() {
+    if (!loading) onClose();
+  }
 
   async function handleSubmit(data: AccessProfileFormData) {
     try {
@@ -43,22 +50,26 @@ export default function AccessProfileDrawer({
   return (
     <Drawer
       open={open}
-      onClose={onClose}
-      title="Novo perfil de acesso"
-      description="Cadastre o nome e a finalidade do perfil. As permissões serão configuradas em seguida."
+      onClose={handleClose}
+      title={profile ? "Editar informações do perfil" : "Novo perfil de acesso"}
+      description={
+        profile
+          ? "Atualize a identificação, a descrição e o status deste perfil."
+          : "Cadastre o nome e a finalidade do perfil. As permissões serão configuradas em seguida."
+      }
       footer={
         <div className={styles.actions}>
           <Button
             variant="secondary"
             text="Cancelar"
-            onClick={onClose}
+            onClick={handleClose}
             disabled={loading}
           />
 
           <Button
-            text="Criar perfil"
+            text={profile ? "Salvar informações" : "Criar perfil"}
             type="submit"
-            form="access-profile-form"
+            form={formId}
             loading={loading}
           />
         </div>
@@ -68,6 +79,7 @@ export default function AccessProfileDrawer({
         onSubmit={handleSubmit}
         isLoading={loading}
         initialData={profile}
+        formId={formId}
       />
     </Drawer>
   );

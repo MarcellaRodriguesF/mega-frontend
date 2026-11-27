@@ -13,6 +13,7 @@ import IconButton from "@/components/ui/IconButton/IconButton";
 import Card from "@/components/ui/Card/Card";
 import { List } from "@/components/ui/List/List";
 import Modal from "@/components/ui/Modal/Modal";
+import ContactActions from "@/components/ui/ContactActions/ContactActions";
 
 import ContactDrawer from "@/features/contacts/ContactDrawer/ContactDrawer";
 
@@ -279,7 +280,12 @@ export default function CompanyGeneralPage() {
           keyExtractor={(contact) => contact.id}
           getItem={(contact) => ({
             title: contact.name,
-            subtitle: formatPhone(contact.phone) || "-",
+            subtitle: (
+              <ContactActions
+                phone={formatPhone(contact.phone)}
+                label="Telefone"
+              />
+            ),
             description: contact.email || "-",
           })}
           renderActions={(contact) => (

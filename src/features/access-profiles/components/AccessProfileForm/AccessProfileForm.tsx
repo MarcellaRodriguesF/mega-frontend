@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "@/components/ui/Input/Input";
 import Textarea from "@/components/ui/Textarea/Textarea";
 import FormSection from "@/components/ui/FormSection/FormSection";
+import Select from "@/components/ui/Select/Select";
+import { UserStatus } from "@/constants/enums/users/user-status-record.enum";
 
 import {
   accessProfileFormSchema,
@@ -20,12 +22,14 @@ interface AccessProfileFormProps {
   onSubmit: (data: AccessProfileFormData) => void | Promise<void>;
   isLoading?: boolean;
   initialData?: AccessProfile;
+  formId?: string;
 }
 
 export default function AccessProfileForm({
   onSubmit,
   isLoading = false,
   initialData,
+  formId = "access-profile-form",
 }: AccessProfileFormProps) {
   const {
     register,
@@ -36,19 +40,18 @@ export default function AccessProfileForm({
     defaultValues: {
       name: initialData?.name ?? "",
       description: initialData?.description ?? "",
+      status: initialData?.status ?? UserStatus.ACTIVE,
     },
   });
 
   return (
     <form
-      id="access-profile-form"
+      id={formId}
       className={styles.form}
       onSubmit={handleSubmit(onSubmit)}
       noValidate
     >
-      <FormSection
-        isContentGrid={false}
-      >
+      <FormSection isContentGrid={false}>
         <Input
           label="Nome do perfil"
           placeholder="Ex.: Supervisor"
@@ -68,6 +71,18 @@ export default function AccessProfileForm({
           error={errors.description?.message}
           {...register("description")}
         />
+        {initialData ? (
+          <Select
+            label="Status"
+            options={[
+              { value: UserStatus.ACTIVE, label: "Ativo" },
+              { value: UserStatus.INACTIVE, label: "Inativo" },
+            ]}
+            disabled={isLoading}
+            error={errors.status?.message}
+            {...register("status")}
+          />
+        ) : null}
       </FormSection>
     </form>
   );

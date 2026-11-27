@@ -74,7 +74,7 @@ export default function CompanyGeneralPage() {
         onClose={closeDrawer}
         initialData={primaryAddress}
         onSubmit={handleUpdateAddress}
-      />
+      />,
     );
   }
 
@@ -152,7 +152,7 @@ export default function CompanyGeneralPage() {
         onClose={closeDrawer}
         onSubmit={handleCreateContact}
         mode="create"
-      />
+      />,
     );
   }
 
@@ -190,7 +190,7 @@ export default function CompanyGeneralPage() {
         onSubmit={(data) => handleUpdateContact(contact.id, data)}
         mode="edit"
         contact={contact}
-      />
+      />,
     );
   }
 
@@ -234,7 +234,7 @@ export default function CompanyGeneralPage() {
         cancelText="Cancelar"
         onConfirm={() => handleDeleteContact(contact)}
         onClose={closeDrawer}
-      />
+      />,
     );
   }
 

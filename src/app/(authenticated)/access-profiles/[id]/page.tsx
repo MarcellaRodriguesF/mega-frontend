@@ -80,57 +80,54 @@ export default function AccessProfileDetailsPage() {
 
   const { isDirty } = useFormChanges(initialData, currentData);
 
-  const loadProfile = useCallback(
-    async () => {
-      const requestId = ++profileLoadRequestId.current;
+  const loadProfile = useCallback(async () => {
+    const requestId = ++profileLoadRequestId.current;
 
-      try {
-        const [profileResponse, permissionsResponse] = await Promise.all([
-          accessProfilesApi.findById(profileId),
-          accessProfilesApi.findPermissions(),
-        ]);
+    try {
+      const [profileResponse, permissionsResponse] = await Promise.all([
+        accessProfilesApi.findById(profileId),
+        accessProfilesApi.findPermissions(),
+      ]);
 
-        if (requestId !== profileLoadRequestId.current) return;
+      if (requestId !== profileLoadRequestId.current) return;
 
-        const loadedProfile = profileResponse.data;
+      const loadedProfile = profileResponse.data;
 
-        const permissionCodes = normalizePermissionCodes(
-          loadedProfile.profilePermissions.map((item) => item.permission.code),
-        );
+      const permissionCodes = normalizePermissionCodes(
+        loadedProfile.profilePermissions.map((item) => item.permission.code),
+      );
 
-        const formData: ProfileFormData = {
-          name: loadedProfile.name,
-          description: loadedProfile.description ?? "",
-          status: loadedProfile.status,
-          permissionCodes,
-        };
+      const formData: ProfileFormData = {
+        name: loadedProfile.name,
+        description: loadedProfile.description ?? "",
+        status: loadedProfile.status,
+        permissionCodes,
+      };
 
-        setProfile(loadedProfile);
-        setPermissions(permissionsResponse.data);
+      setProfile(loadedProfile);
+      setPermissions(permissionsResponse.data);
 
-        setName(formData.name);
-        setDescription(formData.description);
-        setStatus(formData.status);
-        setSelectedCodes(formData.permissionCodes);
+      setName(formData.name);
+      setDescription(formData.description);
+      setStatus(formData.status);
+      setSelectedCodes(formData.permissionCodes);
 
-        setInitialData(formData);
-      } catch (error) {
-        if (requestId !== profileLoadRequestId.current) return;
+      setInitialData(formData);
+    } catch (error) {
+      if (requestId !== profileLoadRequestId.current) return;
 
-        const message =
-          error instanceof ApiError
-            ? getApiErrorMessage(error.code, error.message)
-            : "Não foi possível carregar o perfil de acesso.";
+      const message =
+        error instanceof ApiError
+          ? getApiErrorMessage(error.code, error.message)
+          : "Não foi possível carregar o perfil de acesso.";
 
-        toast.error(message, {
-          title: "Erro ao carregar perfil",
-        });
-      } finally {
-        if (requestId === profileLoadRequestId.current) setIsLoading(false);
-      }
-    },
-    [profileId, toast],
-  );
+      toast.error(message, {
+        title: "Erro ao carregar perfil",
+      });
+    } finally {
+      if (requestId === profileLoadRequestId.current) setIsLoading(false);
+    }
+  }, [profileId, toast]);
 
   useEffect(() => {
     let isActive = true;

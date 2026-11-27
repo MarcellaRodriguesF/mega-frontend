@@ -105,6 +105,7 @@ export interface ImplementationSummary {
   initialProvider: ImplementationProvider | null;
   stageCount: number;
   activityCount: number;
+  completedActivityCount: number;
 }
 
 export interface ImplementationPage {

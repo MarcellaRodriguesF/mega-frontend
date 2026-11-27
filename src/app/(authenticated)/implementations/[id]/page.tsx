@@ -1,8 +1,8 @@
 "use client";
 
-import { use, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CaretDown,
@@ -126,6 +126,7 @@ export default function ImplementationDetailsPage({
   const { hasPermission } = useAuth();
   const toast = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const canAccess = hasPermission(PERMISSIONS.IMPLEMENTATIONS);
   const canManageStages = hasPermission(
@@ -139,11 +140,17 @@ export default function ImplementationDetailsPage({
     PERMISSIONS.IMPLEMENTATIONS_UPDATE,
   );
 
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useState<Tab>(() =>
+    searchParams.get("tab") === "work" ? "work" : "overview",
+  );
   const [expandedStages, setExpandedStages] = useState<Set<string>>(
     () => new Set(),
   );
-  const [drawer, setDrawer] = useState<DrawerMode>(null);
+  const [drawer, setDrawer] = useState<DrawerMode>(() =>
+    canCreateActivity && searchParams.get("action") === "addActivity"
+      ? "activity"
+      : null,
+  );
   const [confirmation, setConfirmation] = useState<Confirmation>(null);
   const [busy, setBusy] = useState(false);
   const [implementationName, setImplementationName] = useState("");
@@ -174,6 +181,13 @@ export default function ImplementationDetailsPage({
     enabled: canAccess && canLinkActivity,
   });
   const implementation = implementationQuery.data?.data;
+
+  useEffect(() => {
+    if (searchParams.get("action") === "addActivity") {
+      router.replace(`/implementations/${id}?tab=work`, { scroll: false });
+    }
+  }, [id, router, searchParams]);
+
   const activities = useMemo(
     () =>
       implementation

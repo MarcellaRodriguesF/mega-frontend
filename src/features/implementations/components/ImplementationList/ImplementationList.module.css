@@ -1,33 +1,338 @@
 .list {
   display: flex;
+  min-width: 0;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--spacing-3);
+}
+
+.accordionHeader {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: minmax(180px, 1.2fr) minmax(330px, 1.6fr) minmax(155px, 0.75fr);
+  align-items: center;
+  gap: var(--spacing-5);
+}
+
+.identity,
+.facts,
+.progress {
+  min-width: 0;
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.titleRow strong {
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  overflow-wrap: anywhere;
+}
+
+.context {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-3);
+}
+
+.fact {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.fact span,
+.progressLabel span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.fact strong {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  overflow-wrap: anywhere;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.progressLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+}
+
+.progressLabel strong {
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+}
+
+.progress progress {
+  display: block;
+  width: 100%;
+  height: 8px;
+  accent-color: var(--color-primary);
+}
+
+.progress small {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.actionMenu {
+  position: relative;
+}
+
+.actionMenu summary {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  list-style: none;
+}
+
+.actionMenu summary::-webkit-details-marker {
+  display: none;
+}
+
+.actionMenu summary:hover,
+.actionMenu summary:focus-visible {
+  border-color: var(--color-border);
+  background: var(--color-muted-surface);
+  outline: none;
+}
+
+.actionMenuItems {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  display: flex;
+  min-width: 190px;
+  flex-direction: column;
+  padding: var(--spacing-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.actionMenuItems a {
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+}
+
+.actionMenuItems a:hover,
+.actionMenuItems a:focus-visible {
+  background: var(--color-muted-surface);
+  outline: none;
+}
+
+.expandedContent {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.expandedHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+}
+
+.expandedHeader h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+}
+
+.expandedHeader p {
+  margin: var(--spacing-1) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.addActivity {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  min-height: 40px;
+  padding: 0 var(--spacing-3);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-brand-white);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+}
+
+.addActivity:hover,
+.addActivity:focus-visible {
+  filter: brightness(0.96);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.activityName {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.activityName strong {
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}
+
+.activityName small {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.openActivity {
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+}
+
+.openActivity:hover,
+.openActivity:focus-visible {
+  text-decoration: underline;
+}
+
+.dataLimitNote {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.queryError {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
 }
 
 .pager {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--spacing-3);
   color: var(--color-text-secondary);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .pagerActions {
   display: flex;
-  gap: 8px;
+  gap: var(--spacing-2);
 }
 
 .pagerActions button {
+  min-height: 38px;
+  padding: 0 var(--spacing-3);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: var(--color-surface);
   color: var(--color-text);
-  padding: 8px 12px;
+  font: inherit;
   cursor: pointer;
 }
 
 .pagerActions button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+@media (max-width: 1100px) {
+  .accordionHeader {
+    grid-template-columns: minmax(0, 1fr) minmax(165px, 0.65fr);
+    gap: var(--spacing-3);
+  }
+
+  .facts {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .progress {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 700px) {
+  .accordionHeader {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-3);
+  }
+
+  .identity,
+  .facts,
+  .progress {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .facts {
+    grid-template-columns: 1fr;
+  }
+
+  .expandedHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .addActivity {
+    width: 100%;
+  }
+
+  .pager {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }

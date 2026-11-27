@@ -1,0 +1,39 @@
+import type { ReactNode } from "react";
+
+import type { TableFilterGroup } from "@/components/ui/TableFilters/TableFilters";
+
+export interface DataTableColumn<T> {
+  key: keyof T | string;
+  header: string;
+  render?: (item: T) => ReactNode;
+  align?: "left" | "center" | "right";
+  width?: string;
+  hideOnMobile?: boolean;
+  sortable?: boolean;
+  mobileRole?: "title" | "status" | "full" | "default";
+}
+
+export interface DataTableProps<T> {
+  columns: DataTableColumn<T>[];
+  data: T[];
+  getRowKey: (item: T) => string;
+
+  title?: string;
+  description?: string;
+
+  isLoading?: boolean;
+  emptyMessage?: string;
+
+  actions?: (item: T) => ReactNode;
+  onRowClick?: (item: T) => void;
+
+  searchPlaceholder?: string;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
+
+  filters?: TableFilterGroup[];
+  toolbar?: ReactNode;
+
+  pagination?: boolean;
+  pageSizeOptions?: number[];
+}

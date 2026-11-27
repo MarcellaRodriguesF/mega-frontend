@@ -1,0 +1,399 @@
+.page {
+  --ink: #053229;
+  --ink-soft: #3d6554;
+  --card: #ffffff;
+  --field: #f3f8f5;
+  --green: #046939;
+  --green-deep: #053229;
+  --green-soft: #4fc676;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+  color: var(--ink);
+  color-scheme: light;
+  background:
+    radial-gradient(
+      ellipse at 16% 46%,
+      rgba(255, 255, 255, 0.92),
+      transparent 42%
+    ),
+    radial-gradient(
+      ellipse at 82% 6%,
+      rgba(79, 198, 118, 0.38),
+      transparent 34%
+    ),
+    linear-gradient(180deg, #f4fbf7 0%, #e3f6eb 46%, #cfeedd 100%);
+}
+
+.background {
+  position: absolute;
+  inset: auto 0 0;
+  height: 48vh;
+  pointer-events: none;
+}
+
+.wave {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.header {
+  position: relative;
+  z-index: 2;
+  padding: 28px clamp(28px, 4vw, 56px) 0;
+}
+
+.brand {
+  color: var(--green);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+}
+
+.layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 420px);
+  align-items: center;
+  gap: clamp(32px, 6vw, 80px);
+  width: 100%;
+  max-width: 1180px;
+  flex: 1;
+  margin: 0 auto;
+  padding: 24px clamp(28px, 4vw, 56px) 48px;
+}
+
+.hero {
+  position: relative;
+  min-height: 340px;
+}
+
+.bubbles {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 340px;
+  margin-left: clamp(72px, 12vw, 150px);
+}
+
+.bubbles p {
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 8px 24px rgba(4, 105, 57, 0.1);
+  color: #5d7568;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.bubbles p:nth-child(1) {
+  margin-left: 36px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.bubbles p:nth-child(2) {
+  margin-left: 8px;
+}
+
+.bubbles p:nth-child(3) {
+  margin-left: 18px;
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.mark {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.kicker,
+.kickerBottom {
+  color: #6a947c;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.kicker {
+  margin: 0 0 10px 4px;
+}
+
+.kickerBottom {
+  margin: 12px 0 0 4px;
+}
+
+.wordmark h1 {
+  margin: 0;
+  color: var(--green-deep);
+  font-size: clamp(64px, 7vw, 92px);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+}
+
+.dots {
+  position: relative;
+  display: block;
+  width: 54px;
+  height: 72px;
+  flex: 0 0 54px;
+}
+
+.dots i {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  background: #8fd9a8;
+}
+
+.dots i:nth-child(1) {
+  top: 6px;
+  left: 22px;
+  width: 7px;
+  height: 7px;
+  opacity: 0.55;
+}
+
+.dots i:nth-child(2) {
+  top: 18px;
+  left: 8px;
+  width: 5px;
+  height: 5px;
+  opacity: 0.4;
+}
+
+.dots i:nth-child(3) {
+  top: 28px;
+  left: 28px;
+  width: 9px;
+  height: 9px;
+  background: var(--green);
+  opacity: 0.85;
+}
+
+.dots i:nth-child(4) {
+  top: 42px;
+  left: 12px;
+  width: 6px;
+  height: 6px;
+  opacity: 0.5;
+}
+
+.dots i:nth-child(5) {
+  top: 50px;
+  left: 34px;
+  width: 4px;
+  height: 4px;
+  opacity: 0.35;
+}
+
+.dots i:nth-child(6) {
+  top: 58px;
+  left: 20px;
+  width: 7px;
+  height: 7px;
+  opacity: 0.45;
+}
+
+.panel {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  padding: 32px 28px 28px;
+  border-radius: 22px;
+  background: var(--card);
+  box-shadow:
+    0 18px 50px rgba(5, 50, 41, 0.12),
+    0 2px 8px rgba(5, 50, 41, 0.05);
+}
+
+.card h2 {
+  margin: 0;
+  color: #1c2434;
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+
+.cardLead {
+  margin: 8px 0 22px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field > span {
+  color: #4e596d;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.field input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  outline: none;
+  background: var(--field);
+  color: #1c2434;
+  font: inherit;
+  font-size: 14px;
+}
+
+.field input::placeholder {
+  color: #a3adbd;
+}
+
+.field input:focus {
+  border-color: #b7e4c7;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(4, 105, 57, 0.14);
+}
+
+.field input:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.passwordWrap {
+  position: relative;
+  display: block;
+}
+
+.passwordWrap input {
+  padding-right: 44px;
+}
+
+.passwordToggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #8b95a8;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.passwordToggle:hover:not(:disabled) {
+  color: #3d4a63;
+}
+
+.passwordToggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.form button.submit {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 4px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #1a8a52 0%, #046939 100%);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 18px rgba(4, 105, 57, 0.28);
+}
+
+.form button.submit:hover:not(:disabled) {
+  background: #053229;
+}
+
+.formPreview {
+  display: grid;
+  gap: 16px;
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding-top: 36px;
+  }
+
+  .hero {
+    min-height: 0;
+  }
+
+  .bubbles {
+    margin-left: 0;
+  }
+
+  .wordmark h1 {
+    font-size: 64px;
+  }
+
+  .panel {
+    justify-content: stretch;
+  }
+
+  .card {
+    max-width: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .header {
+    padding: 20px 18px 0;
+  }
+
+  .layout {
+    padding: 28px 18px 32px;
+  }
+
+  .bubbles {
+    display: none;
+  }
+
+  .wordmark {
+    margin-top: 8px;
+  }
+
+  .wordmark h1 {
+    font-size: 52px;
+  }
+
+  .card {
+    padding: 26px 20px 22px;
+    border-radius: 18px;
+  }
+}

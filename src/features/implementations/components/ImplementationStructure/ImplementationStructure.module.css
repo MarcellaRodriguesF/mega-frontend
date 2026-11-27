@@ -1,0 +1,61 @@
+.stack,
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionHeader h2,
+.stage h3,
+.activityHeader strong {
+  margin: 0;
+  color: var(--color-text);
+}
+
+.sectionHeader p,
+.stage p,
+.meta {
+  margin: 4px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface-elevated);
+  padding: 16px;
+}
+
+.stageHeader,
+.activityHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.activities,
+.requirements {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.activities > li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.requirements {
+  gap: 6px;
+  color: var(--color-text);
+  font-size: 14px;
+}

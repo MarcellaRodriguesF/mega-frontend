@@ -1,0 +1,74 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.requirementsHeader,
+.requirementActions,
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.requirementsHeader h3 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 16px;
+}
+
+.requirements {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.requirements li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+.requirements strong {
+  color: var(--color-text);
+  font-size: 14px;
+}
+
+.empty {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.orderButton {
+  height: 32px;
+  padding: 0 8px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.actions {
+  justify-content: flex-end;
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .requirements li,
+  .requirementsHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

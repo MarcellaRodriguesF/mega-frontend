@@ -1,0 +1,44 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.statusField {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.statusField label {
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.statusField select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--card);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 13px;
+}
+
+.statusField select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.statusField span,
+.error {
+  color: #dc2626;
+  font-size: 12px;
+}
+
+.error {
+  margin: 0;
+}

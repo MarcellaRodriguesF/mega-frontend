@@ -1,0 +1,45 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.contact {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+}
+
+.contact span {
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--color-status-green);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-status-green);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.whatsapp:hover {
+  background: var(--color-status-green-bg);
+}
+
+.unavailable {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
